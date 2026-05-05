@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大阪旅遊行程 8/19–26</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1612;
+  --ink2: #4a3f35;
+  --ink3: #8a7a6e;
+  --paper: #fdf8f2;
+  --paper2: #f5ede0;
+  --paper3: #ede0ce;
+  --accent: #c0392b;
+  --accent2: #e67e22;
+  --teal: #1a7a6e;
+  --teal-lt: #e8f5f3;
+  --blue: #2563a8;
+  --blue-lt: #e8f0fa;
+  --gold: #b8860b;
+  --gold-lt: #fef9e7;
+  --red-lt: #fdf0ee;
+  --border: rgba(26,22,18,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* HEADER */
+.site-header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.header-bg {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 40px,
+    rgba(255,255,255,0.02) 40px,
+    rgba(255,255,255,0.02) 41px
+  );
+}
+.header-inner {
+  position: relative; z-index: 1;
+  max-width: 1100px; margin: 0 auto;
+  padding: 40px 32px 36px;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+}
+.header-left {}
+.header-kicker {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5); margin-bottom: 10px;
+}
+.header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700; line-height: 1.1;
+  color: var(--paper);
+  margin-bottom: 8px;
+}
+.header-title span { color: var(--accent2); font-style: italic; }
+.header-sub {
+  font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 300;
+}
+.header-meta {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+}
+.meta-pill {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px; padding: 5px 14px;
+  font-size: 12px; color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; gap: 6px;
+}
+.meta-pill strong { color: var(--paper); font-weight: 500; }
+
+/* NAV */
+.main-nav {
+  background: var(--paper2); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50;
+}
+.nav-inner {
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 32px;
+  display: flex; gap: 0; overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  padding: 14px 20px;
+  font-size: 13px; font-weight: 400;
+  color: var(--ink3); cursor: pointer;
+  border: none; background: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap; transition: all 0.2s;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.nav-btn:hover { color: var(--ink); }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+/* LAYOUT */
+.page { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* DAY NAV */
+.day-strip {
+  display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.day-chip {
+  padding: 7px 16px; border-radius: 4px;
+  border: 1px solid var(--border);
+  background: white; color: var(--ink2);
+  font-size: 12px; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.15s;
+}
+.day-chip:hover { border-color: var(--accent); color: var(--accent); }
+.day-chip.active {
+  background: var(--accent); color: white;
+  border-color: var(--accent);
+}
+
+/* TIMELINE CARD */
+.day-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.day-card-header {
+  background: var(--ink); color: var(--paper);
+  padding: 18px 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.day-card-header .day-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 700; line-height: 1;
+  color: var(--accent2); opacity: 0.9;
+}
+.day-card-header .day-info h3 {
+  font-size: 15px; font-weight: 500; color: var(--paper);
+  margin-bottom: 2px;
+}
+.day-card-header .day-info p {
+  font-size: 12px; color: rgba(255,255,255,0.5);
+}
+.day-card-header .day-theme {
+  margin-left: auto; font-size: 12px;
+  color: rgba(255,255,255,0.45); text-align: right;
+  font-family: 'Noto Serif TC', serif;
+  font-style: italic;
+}
+
+.timeline { padding: 8px 24px 24px; }
+.tl-row {
+  display: flex; gap: 0; padding: 14px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.tl-row:last-child { border-bottom: none; }
+.tl-time {
+  min-width: 52px; padding-top: 2px;
+  font-size: 11px; color: var(--ink3);
+  font-weight: 300; letter-spacing: 0.04em;
+}
+.tl-dot-col {
+  width: 24px; display: flex; flex-direction: column; align-items: center;
+}
+.tl-dot {
+  width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+}
+.tl-line { width: 1px; flex: 1; background: var(--border); margin-top: 5px; }
+.dot-spot { background: var(--teal); }
+.dot-transport { background: var(--blue); }
+.dot-meal { background: var(--accent2); }
+.dot-hotel { background: var(--accent); }
+
+.tl-body { flex: 1; padding-left: 10px; }
+.tl-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+.tl-desc { font-size: 12px; color: var(--ink3); line-height: 1.55; }
+.tl-tag {
+  display: inline-block; margin-top: 5px;
+  font-size: 10px; padding: 2px 8px; border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+.tag-spot { background: var(--teal-lt); color: var(--teal); }
+.tag-transport { background: var(--blue-lt); color: var(--blue); }
+.tag-meal { background: var(--gold-lt); color: var(--gold); }
+.tag-hotel { background: var(--red-lt); color: var(--accent); }
+
+/* SPOTS */
+.spots-filter {
+  display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 14px; border-radius: 4px;
+  border: 1px solid var(--border);
+  background: white; color: var(--ink3);
+  font-size: 12px; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.15s;
+}
+.filter-btn.active { background: var(--teal); color: white; border-color: var(--teal); }
+
+.spots-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
+}
+.spot-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 6px; padding: 18px;
+  cursor: pointer; transition: all 0.2s;
+}
+.spot-card:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+.spot-icon { font-size: 22px; margin-bottom: 10px; }
+.spot-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+.spot-area { font-size: 11px; color: var(--ink3); }
+.spot-cat {
+  display: inline-block; margin-top: 8px;
+  font-size: 10px; padding: 2px 8px; border-radius: 3px;
+}
+.spot-card[data-cat="文化"] .spot-cat { background: var(--teal-lt); color: var(--teal); }
+.spot-card[data-cat="購物"] .spot-cat { background: var(--blue-lt); color: var(--blue); }
+.spot-card[data-cat="美食"] .spot-cat { background: var(--gold-lt); color: var(--gold); }
+.spot-card[data-cat="自然"] .spot-cat { background: #edf7ed; color: #2d6a2d; }
+.spot-card[data-cat="娛樂"] .spot-cat { background: var(--red-lt); color: var(--accent); }
+
+/* TRANSPORT */
+.transport-section { margin-bottom: 32px; }
+.transport-section-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px; font-weight: 600;
+  color: var(--ink); margin-bottom: 14px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.transport-cards { display: flex; flex-direction: column; gap: 10px; }
+.t-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 6px; padding: 16px 18px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.t-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.t-body {}
+.t-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.t-desc { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+.t-chips { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.t-chip {
+  font-size: 11px; padding: 3px 10px;
+  background: var(--paper2); border: 1px solid var(--border);
+  border-radius: 3px; color: var(--ink2);
+}
+
+/* MAP */
+.map-wrap {
+  background: white; border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.map-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+.map-header h3 { font-size: 15px; font-weight: 500; }
+.map-header p { font-size: 12px; color: var(--ink3); }
+.map-body { padding: 20px; }
+.map-body svg { width: 100%; height: auto; display: block; border-radius: 4px; }
+.map-legend {
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* TIPS */
+.tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.tip-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 6px; padding: 18px;
+}
+.tip-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.tip-icon { font-size: 20px; }
+.tip-title { font-size: 13px; font-weight: 500; color: var(--ink); }
+.tip-list { list-style: none; }
+.tip-list li {
+  font-size: 12px; color: var(--ink3); padding: 5px 0;
+  border-bottom: 1px dashed var(--border); line-height: 1.55;
+}
+.tip-list li:last-child { border-bottom: none; }
+.tip-list li::before { content: "·  "; color: var(--accent); font-weight: 700; }
+
+/* NOTICE */
+.notice {
+  background: var(--teal-lt); border: 1px solid rgba(26,122,110,0.2);
+  border-radius: 5px; padding: 11px 16px;
+  font-size: 12px; color: var(--teal); margin-bottom: 24px;
+  line-height: 1.55;
+}
+
+/* SECTION TITLE */
+.section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 700; color: var(--ink);
+  margin-bottom: 6px;
+}
+.section-sub { font-size: 13px; color: var(--ink3); margin-bottom: 28px; }
+
+/* FOOTER */
+footer {
+  background: var(--ink); color: rgba(255,255,255,0.35);
+  text-align: center; padding: 24px;
+  font-size: 12px; margin-top: 60px;
+}
+footer strong { color: rgba(255,255,255,0.6); }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.section.active { animation: fadeUp 0.3s ease both; }
+
+@media (max-width: 600px) {
+  .page { padding: 24px 16px; }
+  .header-inner { padding: 28px 20px 24px; }
+  .nav-inner { padding: 0 16px; }
+  .day-card-header { padding: 14px 18px; }
+  .timeline { padding: 8px 18px 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-bg"></div>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-kicker">Travel Planner · Japan 2025</div>
+      <h1 class="header-title">大阪 <span>Osaka</span></h1>
+      <p class="header-sub">完整旅遊行程規劃 · 景點 · 交通 · 地圖 · 貼士</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill">📅 <strong>8/19 – 8/26</strong></div>
+      <div class="meta-pill">🗓 <strong>8天7夜</strong></div>
+      <div class="meta-pill">✈ 桃園 → 關西KIX</div>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showSection('itinerary',this)">📋 行程總覽</button>
+    <button class="nav-btn" onclick="showSection('spots',this)">🏯 景點列表</button>
+    <button class="nav-btn" onclick="showSection('transport',this)">🚇 交通資訊</button>
+    <button class="nav-btn" onclick="showSection('map',this)">🗺 地圖導覽</button>
+    <button class="nav-btn" onclick="showSection('tips',this)">💡 旅遊貼士</button>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ITINERARY -->
+  <section id="itinerary" class="section active">
+    <h2 class="section-heading">每日行程</h2>
+    <p class="section-sub">點選日期切換，查看每日詳細安排</p>
+    <div class="day-strip" id="day-strip"></div>
+    <div id="day-content"></div>
+  </section>
+
+  <!-- SPOTS -->
+  <section id="spots" class="section">
+    <h2 class="section-heading">精選景點</h2>
+    <p class="section-sub">大阪 16 個必訪景點，依類型篩選</p>
+    <div class="spots-filter">
+      <button class="filter-btn active" onclick="filterSpots('全部',this)">全部</button>
+      <button class="filter-btn" onclick="filterSpots('文化',this)">🏯 文化</button>
+      <button class="filter-btn" onclick="filterSpots('購物',this)">🛍 購物</button>
+      <button class="filter-btn" onclick="filterSpots('美食',this)">🍜 美食</button>
+      <button class="filter-btn" onclick="filterSpots('自然',this)">🌿 自然</button>
+      <button class="filter-btn" onclick="filterSpots('娛樂',this)">🎢 娛樂</button>
+    </div>
+    <div class="spots-grid" id="spots-grid"></div>
+  </section>
+
+  <!-- TRANSPORT -->
+  <section id="transport" class="section">
+    <h2 class="section-heading">交通資訊</h2>
+    <p class="section-sub">機場接送、市區交通、一日遊移動方式</p>
+    <div class="notice">💳 建議在機場或便利商店購買 <strong>ICOCA 卡</strong>（¥2,000起），可乘坐大阪市內幾乎所有大眾交通工具，並享超市、便利商店付款便利。</div>
+    <div id="transport-content"></div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map" class="section">
+    <h2 class="section-heading">地圖導覽</h2>
+    <p class="section-sub">大阪主要景點分佈示意</p>
+    <div class="map-wrap">
+      <div class="map-header">
+        <div>
+          <h3>大阪市區景點地圖</h3>
+          <p>主要景點相對位置示意，實際距離請參考 Google Maps</p>
+        </div>
+      </div>
+      <div class="map-body">
+        <svg viewBox="0 0 700 460" xmlns="http://www.w3.org/2000/svg">
+          <rect width="700" height="460" fill="#f0f7f4" rx="6"/>
+          <!-- Grid -->
+          <line x1="0" y1="115" x2="700" y2="115" stroke="white" stroke-width="1.5" opacity="0.7"/>
+          <line x1="0" y1="230" x2="700" y2="230" stroke="white" stroke-width="1.5" opacity="0.7"/>
+          <line x1="0" y1="345" x2="700" y2="345" stroke="white" stroke-width="1.5" opacity="0.7"/>
+          <line x1="175" y1="0" x2="175" y2="460" stroke="white" stroke-width="1.5" opacity="0.7"/>
+          <line x1="350" y1="0" x2="350" y2="460" stroke="white" stroke-width="1.5" opacity="0.7"/>
+          <line x1="525" y1="0" x2="525" y2="460" stroke="white" stroke-width="1.5" opacity="0.7"/>
+
+          <!-- Rivers -->
+          <path d="M80 0 Q100 80 95 160 Q88 240 100 320 Q112 400 108 460" stroke="#85B7EB" stroke-width="9" fill="none" opacity="0.35"/>
+          <path d="M0 260 Q80 250 160 258 Q240 266 320 255 Q400 244 480 252 Q560 260 700 248" stroke="#85B7EB" stroke-width="7" fill="none" opacity="0.3"/>
+          <path d="M340 0 Q355 60 350 130 Q345 200 355 270 Q365 340 358 460" stroke="#85B7EB" stroke-width="5" fill="none" opacity="0.25"/>
+
+          <!-- Roads -->
+          <path d="M0 185 Q175 182 350 188 Q525 194 700 185" stroke="#d4c9b8" stroke-width="3" fill="none"/>
+          <path d="M0 310 Q175 306 350 312 Q525 318 700 310" stroke="#d4c9b8" stroke-width="3" fill="none"/>
+          <path d="M250 0 L250 460" stroke="#d4c9b8" stroke-width="2.5" fill="none"/>
+          <path d="M460 0 L460 460" stroke="#d4c9b8" stroke-width="2.5" fill="none"/>
+
+          <!-- Metro line -->
+          <path d="M130 50 L130 420" stroke="#e74c3c" stroke-width="3" fill="none" stroke-dasharray="8,5" opacity="0.5"/>
+          <path d="M30 200 Q130 198 250 200 Q370 202 460 200 Q570 198 670 200" stroke="#2980b9" stroke-width="3" fill="none" stroke-dasharray="8,5" opacity="0.5"/>
+
+          <!-- Location blocks -->
+          <!-- 梅田 -->
+          <rect x="50" y="55" width="90" height="58" rx="5" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.5"/>
+          <text x="95" y="80" text-anchor="middle" font-size="13" fill="#3C3489" font-weight="600" font-family="Noto Sans TC, sans-serif">梅田</text>
+          <text x="95" y="97" text-anchor="middle" font-size="10" fill="#534AB7" font-family="Noto Sans TC, sans-serif">JR大阪駅・阪急</text>
+          <circle cx="95" cy="65" r="5" fill="#534AB7"/>
+
+          <!-- 大阪城 -->
+          <rect x="380" y="60" width="100" height="58" rx="5" fill="#C0DD97" stroke="#639922" stroke-width="1.5"/>
+          <text x="430" y="85" text-anchor="middle" font-size="13" fill="#27500A" font-weight="600" font-family="Noto Sans TC, sans-serif">大阪城</text>
+          <text x="430" y="102" text-anchor="middle" font-size="10" fill="#3B6D11" font-family="Noto Sans TC, sans-serif">歷史名城公園</text>
+          <circle cx="430" cy="70" r="5" fill="#3B6D11"/>
+
+          <!-- 心齋橋 -->
+          <rect x="155" y="205" width="100" height="58" rx="5" fill="#9FE1CB" stroke="#1D9E75" stroke-width="1.5"/>
+          <text x="205" y="230" text-anchor="middle" font-size="13" fill="#04342C" font-weight="600" font-family="Noto Sans TC, sans-serif">心齋橋</text>
+          <text x="205" y="247" text-anchor="middle" font-size="10" fill="#085041" font-family="Noto Sans TC, sans-serif">購物・美食街</text>
+          <circle cx="205" cy="215" r="5" fill="#0F6E56"/>
+
+          <!-- 道頓堀 -->
+          <rect x="290" y="270" width="100" height="58" rx="5" fill="#FAC775" stroke="#BA7517" stroke-width="1.5"/>
+          <text x="340" y="295" text-anchor="middle" font-size="13" fill="#412402" font-weight="600" font-family="Noto Sans TC, sans-serif">道頓堀</text>
+          <text x="340" y="312" text-anchor="middle" font-size="10" fill="#633806" font-family="Noto Sans TC, sans-serif">美食・夜生活</text>
+          <circle cx="340" cy="280" r="5" fill="#BA7517"/>
+
+          <!-- 難波 -->
+          <rect x="155" y="330" width="100" height="58" rx="5" fill="#F5C4B3" stroke="#D85A30" stroke-width="1.5"/>
+          <text x="205" y="355" text-anchor="middle" font-size="13" fill="#4A1B0C" font-weight="600" font-family="Noto Sans TC, sans-serif">難波</text>
+          <text x="205" y="372" text-anchor="middle" font-size="10" fill="#712B13" font-family="Noto Sans TC, sans-serif">購物・娛樂</text>
+          <circle cx="205" cy="340" r="5" fill="#D85A30"/>
+
+          <!-- 天王寺 -->
+          <rect x="410" y="200" width="100" height="58" rx="5" fill="#FAEEDA" stroke="#EF9F27" stroke-width="1.5"/>
+          <text x="460" y="225" text-anchor="middle" font-size="13" fill="#412402" font-weight="600" font-family="Noto Sans TC, sans-serif">天王寺</text>
+          <text x="460" y="242" text-anchor="middle" font-size="10" fill="#633806" font-family="Noto Sans TC, sans-serif">通天閣・動物園</text>
+          <circle cx="460" cy="210" r="5" fill="#BA7517"/>
+
+          <!-- USJ -->
+          <rect x="540" y="310" width="110" height="58" rx="5" fill="#F4C0D1" stroke="#D4537E" stroke-width="1.5"/>
+          <text x="595" y="335" text-anchor="middle" font-size="13" fill="#4B1528" font-weight="600" font-family="Noto Sans TC, sans-serif">環球影城</text>
+          <text x="595" y="352" text-anchor="middle" font-size="10" fill="#72243E" font-family="Noto Sans TC, sans-serif">USJ ・主題樂園</text>
+          <circle cx="595" cy="320" r="5" fill="#993556"/>
+
+          <!-- 住吉大社 -->
+          <rect x="50" y="360" width="100" height="58" rx="5" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="1.5"/>
+          <text x="100" y="385" text-anchor="middle" font-size="13" fill="#04342C" font-weight="600" font-family="Noto Sans TC, sans-serif">住吉大社</text>
+          <text x="100" y="402" text-anchor="middle" font-size="10" fill="#085041" font-family="Noto Sans TC, sans-serif">千年古社・參拜</text>
+          <circle cx="100" cy="370" r="5" fill="#1D9E75"/>
+
+          <!-- 黑門市場 -->
+          <rect x="430" y="340" width="90" height="55" rx="5" fill="#E6F1FB" stroke="#378ADD" stroke-width="1.5"/>
+          <text x="475" y="363" text-anchor="middle" font-size="12" fill="#042C53" font-weight="600" font-family="Noto Sans TC, sans-serif">黑門市場</text>
+          <text x="475" y="380" text-anchor="middle" font-size="10" fill="#185FA5" font-family="Noto Sans TC, sans-serif">生鮮・海鮮</text>
+          <circle cx="475" cy="350" r="5" fill="#185FA5"/>
+
+          <!-- Connections -->
+          <line x1="145" y1="84" x2="155" y2="230" stroke="#888" stroke-width="1" stroke-dasharray="5,4" opacity="0.4"/>
+          <line x1="205" y1="263" x2="290" y2="286" stroke="#888" stroke-width="1" stroke-dasharray="5,4" opacity="0.4"/>
+          <line x1="205" y1="263" x2="205" y2="330" stroke="#888" stroke-width="1" stroke-dasharray="5,4" opacity="0.4"/>
+          <line x1="340" y1="270" x2="340" y2="328" stroke="#888" stroke-width="1" stroke-dasharray="5,4" opacity="0.4"/>
+          <line x1="390" y1="84" x2="460" y2="200" stroke="#888" stroke-width="1" stroke-dasharray="5,4" opacity="0.4"/>
+          <line x1="460" y1="258" x2="475" y2="340" stroke="#888" stroke-width="1" stroke-dasharray="5,4" opacity="0.4"/>
+          <line x1="510" y1="222" x2="540" y2="340" stroke="#888" stroke-width="1" stroke-dasharray="5,4" opacity="0.4"/>
+
+          <!-- Compass -->
+          <circle cx="655" cy="42" r="20" fill="white" stroke="#d4c9b8" stroke-width="1.5"/>
+          <text x="655" y="30" text-anchor="middle" font-size="10" fill="#3B6D11" font-weight="700" font-family="sans-serif">N</text>
+          <text x="655" y="58" text-anchor="middle" font-size="9" fill="#888" font-family="sans-serif">S</text>
+          <text x="638" y="46" text-anchor="middle" font-size="9" fill="#888" font-family="sans-serif">W</text>
+          <text x="672" y="46" text-anchor="middle" font-size="9" fill="#888" font-family="sans-serif">E</text>
+          <line x1="655" y1="34" x2="655" y2="54" stroke="#c0392b" stroke-width="1.5"/>
+          <line x1="645" y1="44" x2="665" y2="44" stroke="#888" stroke-width="1"/>
+
+          <!-- Labels -->
+          <text x="16" y="16" font-size="11" fill="#3B6D11" font-weight="600" font-family="Noto Sans TC, sans-serif">大阪市區景點示意圖</text>
+          <text x="16" y="30" font-size="9" fill="#888" font-family="sans-serif">Osaka City · Major Attractions</text>
+
+          <!-- Metro labels -->
+          <text x="133" y="170" font-size="8" fill="#e74c3c" font-family="sans-serif" opacity="0.7">御堂筋線</text>
+          <text x="400" y="195" font-size="8" fill="#2980b9" font-family="sans-serif" opacity="0.7">中央線</text>
+        </svg>
+      </div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>梅田周邊</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#0F6E56"></div>心齋橋</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>道頓堀・天王寺</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3B6D11"></div>大阪城</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#993556"></div>環球影城</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#D85A30"></div>難波</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>住吉大社</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#185FA5"></div>黑門市場</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#8a7a6e;margin-top:12px;line-height:1.6;">
+      虛線為景點間主要移動路徑。大阪地鐵御堂筋線（紅線）貫穿南北，是最常用路線，建議搭配 ICOCA 卡或大阪周遊卡使用。
+    </p>
+  </section>
+
+  <!-- TIPS -->
+  <section id="tips" class="section">
+    <h2 class="section-heading">旅遊貼士</h2>
+    <p class="section-sub">出發前必看的實用資訊</p>
+    <div class="tips-grid" id="tips-grid"></div>
+  </section>
+
+</main>
+
+<footer>
+  大阪旅遊行程規劃 · 2025年8月19日–26日 · <strong>Osaka, Japan</strong> · 僅供參考，請依實際狀況調整行程
+</footer>
+
+<script>
+const days = [
+  {
+    date:"8/19", weekday:"二", theme:"抵達・安頓",
+    events:[
+      {time:"06:00",type:"transport",name:"桃園機場出發",desc:"搭乘直飛班機前往關西國際機場（KIX），飛行約2.5小時"},
+      {time:"09:30",type:"transport",name:"抵達關西空港",desc:"辦理入境、海關手續，於機場購買 ICOCA 卡（¥2,000）"},
+      {time:"10:30",type:"transport",name:"機場→大阪市區",desc:"搭乘 Haruka 特急（55分鐘）或利木津巴士前往市區"},
+      {time:"12:30",type:"hotel",name:"抵達飯店・Check-in",desc:"建議選擇心齋橋或難波周邊，交通便利"},
+      {time:"14:00",type:"spot",name:"心齋橋商店街",desc:"稍作休息後，漫步心齋橋採購伴手禮、藥妝"},
+      {time:"18:00",type:"meal",name:"道頓堀晚餐",desc:"品嚐章魚燒、大阪燒、拉麵，感受大阪飲食文化"},
+      {time:"20:30",type:"spot",name:"道頓堀夜景散步",desc:"欣賞格力高跑步人廣告牌夜景，拍照留念"},
+    ]
+  },
+  {
+    date:"8/20", weekday:"三", theme:"大阪城・歷史文化",
+    events:[
+      {time:"08:30",type:"meal",name:"飯店早餐",desc:"補充體力，準備文化探索之日"},
+      {time:"09:30",type:"spot",name:"大阪城天守閣",desc:"日本三名城之一，登頂眺望大阪全景。門票¥600，建議早到避開人潮"},
+      {time:"11:30",type:"spot",name:"大阪城公園散步",desc:"漫步城郭護城河畔，夏日綠意盎然"},
+      {time:"13:00",type:"meal",name:"城東區午餐",desc:"品嚐當地定食，推薦附近的拉麵或咖哩店"},
+      {time:"14:30",type:"spot",name:"黑門市場",desc:"大阪廚房！品嚐新鮮海鮮、水果串、和牛燒烤"},
+      {time:"16:30",type:"spot",name:"天王寺・通天閣",desc:"大阪歷史象徵，登上通天閣眺望新世界下町風情"},
+      {time:"19:00",type:"meal",name:"新世界串カツ晚餐",desc:"品嚐大阪名物串炸，配大阪當地啤酒"},
+    ]
+  },
+  {
+    date:"8/21", weekday:"四", theme:"環球影城 USJ",
+    events:[
+      {time:"07:00",type:"meal",name:"便利商店早餐",desc:"早起準備，避開入園排隊人龍"},
+      {time:"08:00",type:"transport",name:"前往 USJ",desc:"搭乘JR夢咲線，大阪駅約20分鐘，班次頻繁"},
+      {time:"09:00",type:"spot",name:"USJ 開園",desc:"哈利波特魔法世界、超級任天堂世界為必訪，建議提前購買快速通關券"},
+      {time:"12:00",type:"meal",name:"園內午餐",desc:"三根掃帚餐廳（巫師世界）或翠綠漢堡店，體驗主題美食"},
+      {time:"13:00",type:"spot",name:"下午遊樂設施",desc:"侏羅紀公園、小小兵樂園、好萊塢大道遊行"},
+      {time:"18:00",type:"spot",name:"USJ 夜間特效",desc:"夏季夜間煙火秀、夜間遊行（依季節節目表）"},
+      {time:"20:30",type:"transport",name:"返回市區",desc:"搭JR返回，於難波晚餐或宵夜"},
+    ]
+  },
+  {
+    date:"8/22", weekday:"五", theme:"京都一日遊",
+    events:[
+      {time:"07:30",type:"transport",name:"大阪→京都",desc:"搭阪急或JR，約30–40分鐘即達，班次密集"},
+      {time:"09:00",type:"spot",name:"伏見稻荷大社",desc:"千本鳥居壯觀美景，建議早晨前往避暑避人潮"},
+      {time:"11:30",type:"spot",name:"祇園・花見小路",desc:"京都最具代表的藝妓文化街道，漫步木造町家"},
+      {time:"13:00",type:"meal",name:"錦市場午餐",desc:"「京都廚房」超過100家攤販，品嚐京野菜、湯葉、漬物"},
+      {time:"14:30",type:"spot",name:"金閣寺",desc:"鏡金湖面倒影，世界文化遺產，門票¥500"},
+      {time:"16:30",type:"spot",name:"嵐山・竹林",desc:"翠綠竹林小徑，渡月橋優美景致，乘坐人力車"},
+      {time:"19:00",type:"transport",name:"返回大阪",desc:"阪急嵐山線換乘，約1小時返抵大阪"},
+    ]
+  },
+  {
+    date:"8/23", weekday:"六", theme:"神戶一日遊",
+    events:[
+      {time:"08:30",type:"transport",name:"大阪→神戶",desc:"搭阪神電鐵或JR神戶線，約30分鐘"},
+      {time:"09:30",type:"spot",name:"北野異人館街",desc:"明治時代西洋風洋館群，各國風情建築"},
+      {time:"11:30",type:"spot",name:"南京町（中華街）",desc:"日本三大中華街之一，品嚐神戶豬包、餃子"},
+      {time:"13:00",type:"meal",name:"神戶牛排午餐",desc:"神戶牛是世界頂級和牛，預算¥6,000–15,000"},
+      {time:"15:00",type:"spot",name:"舊居留地",desc:"優雅歐風街道，高級品牌、咖啡廳林立"},
+      {time:"17:00",type:"spot",name:"神戶港・モザイク",desc:"港口夕陽美景，MOSAIC 購物中心，神戶塔夜景"},
+      {time:"19:30",type:"transport",name:"返回大阪",desc:"阪神電鐵直達難波，晚間自由活動"},
+    ]
+  },
+  {
+    date:"8/24", weekday:"日", theme:"大阪深度探索",
+    events:[
+      {time:"09:00",type:"spot",name:"住吉大社",desc:"日本全國2,300座住吉神社總本社，超過1,800年歷史"},
+      {time:"11:00",type:"spot",name:"天神橋筋商店街",desc:"日本最長商店街（2.6公里），在地生活感十足"},
+      {time:"13:00",type:"meal",name:"商店街午餐",desc:"在地食堂定食，感受大阪人的日常飲食"},
+      {time:"14:30",type:"spot",name:"大阪水族館 海遊館",desc:"全球最大級水族館，鯨鯊觸目驚心，門票¥2,700"},
+      {time:"17:00",type:"spot",name:"天保山摩天輪",desc:"乘摩天輪俯瞰大阪灣、明石海峽大橋"},
+      {time:"19:00",type:"meal",name:"港區海鮮晚餐",desc:"天保山市場城新鮮海產，夕陽映照下的港灣晚餐"},
+      {time:"21:00",type:"spot",name:"梅田空中庭園",desc:"梅田Sky Building 空中展望台，大阪夜景絕景"},
+    ]
+  },
+  {
+    date:"8/25", weekday:"一", theme:"自由購物・整理行李",
+    events:[
+      {time:"09:00",type:"spot",name:"梅田購物",desc:"阪急百貨、Grand Front Osaka、HEP Five 紅色摩天輪"},
+      {time:"11:00",type:"spot",name:"難波 CITY・WALK",desc:"難波Parks、NAMBA WALK地下街，最後血拚採購"},
+      {time:"13:00",type:"meal",name:"大阪最後午餐",desc:"品嚐最愛的大阪料理，章魚燒、大阪燒、烏龍麵"},
+      {time:"15:00",type:"spot",name:"藥妝・補貨",desc:"松本清、Sundrug、CosmeKitchen 最後採購"},
+      {time:"18:00",type:"hotel",name:"返回飯店整理行李",desc:"確認護照、ICOCA 卡退費、整理戰利品"},
+      {time:"20:00",type:"meal",name:"告別晚餐",desc:"挑選一間心儀餐廳，為旅程畫下完美句點"},
+    ]
+  },
+  {
+    date:"8/26", weekday:"二", theme:"返回台灣",
+    events:[
+      {time:"06:00",type:"hotel",name:"Check-out・退房",desc:"確認行李齊全，保留 ICOCA 卡餘額退費收據"},
+      {time:"07:00",type:"transport",name:"飯店→關西空港",desc:"搭乘 Haruka 特急（55分鐘）或利木津巴士，至少提前2.5小時抵達"},
+      {time:"09:00",type:"transport",name:"辦理登機・退稅",desc:"辦理報到手續、行李托運、機場退稅（TAX REFUND）"},
+      {time:"10:30",type:"spot",name:"機場免稅購物",desc:"最後採購機場限定商品、伴手禮"},
+      {time:"12:00",type:"transport",name:"搭機返台",desc:"搭乘直飛班機返回台灣桃園機場"},
+      {time:"14:30",type:"transport",name:"抵達桃園",desc:"約飛行2.5小時，結束美好的大阪之旅！"},
+    ]
+  }
+];
+
+const spots = [
+  {icon:"🏯",name:"大阪城天守閣",area:"城東區",cat:"文化",desc:"日本三名城之一"},
+  {icon:"⛩",name:"住吉大社",area:"住吉區",cat:"文化",desc:"千年古社・能量景點"},
+  {icon:"🌿",name:"大阪城公園",area:"城東區",cat:"自然",desc:"護城河與綠地"},
+  {icon:"🛍",name:"心齋橋商店街",area:"中央區",cat:"購物",desc:"大阪最長購物街"},
+  {icon:"🎡",name:"HEP Five 摩天輪",area:"梅田",cat:"娛樂",desc:"紅色地標摩天輪"},
+  {icon:"🍜",name:"道頓堀",area:"中央區",cat:"美食",desc:"大阪美食中心地"},
+  {icon:"🐋",name:"海遊館水族館",area:"港區",cat:"娛樂",desc:"全球最大級水族館"},
+  {icon:"🎢",name:"環球影城 USJ",area:"此花區",cat:"娛樂",desc:"哈利波特・任天堂世界"},
+  {icon:"🗼",name:"通天閣",area:"浪速區",cat:"文化",desc:"大阪象徵・新世界"},
+  {icon:"🌃",name:"梅田空中庭園",area:"北區",cat:"娛樂",desc:"大阪城市夜景"},
+  {icon:"🐟",name:"黑門市場",area:"中央區",cat:"美食",desc:"大阪廚房・海鮮天堂"},
+  {icon:"🛒",name:"天神橋筋商店街",area:"北區",cat:"購物",desc:"日本最長商店街"},
+  {icon:"🌊",name:"天保山摩天輪",area:"港區",cat:"娛樂",desc:"大阪灣絕景俯瞰"},
+  {icon:"🍡",name:"難波 NAMBA",area:"浪速區",cat:"購物",desc:"地下街・購物天堂"},
+  {icon:"🌸",name:"鶴見緑地公園",area:"鶴見區",cat:"自然",desc:"夏日綠地散步"},
+  {icon:"🎭",name:"国立文楽劇場",area:"中央區",cat:"文化",desc:"傳統人形淨琉璃"},
+];
+
+const transportData = [
+  {
+    title:"✈ 機場交通",
+    items:[
+      {icon:"🚄",name:"關空特急 Haruka",desc:"關西空港→大阪（55分）、新大阪（75分）、京都（80分）。自由席¥1,910，指定席¥2,220。可購買 Haruka 優惠票（外國旅客¥1,800）。",chips:["約55分","¥1,910起","JR西日本"]},
+      {icon:"🚌",name:"利木津巴士",desc:"往返關西空港與梅田、心齋橋、難波等主要旅館集中區。路線多，可直達飯店附近，適合行李多的旅客。",chips:["約60分","¥1,550–2,000","無需轉乘"]},
+      {icon:"🚂",name:"南海電鐵 Rapi:t",desc:"關西空港→難波，直達38分鐘。¥1,450（指定席），班次密集，適合住難波附近的旅客。",chips:["38分鐘","¥1,450","難波直達"]},
+    ]
+  },
+  {
+    title:"🚇 大阪市區交通",
+    items:[
+      {icon:"🃏",name:"大阪周遊卡 1日/2日券",desc:"可免費搭乘大阪地鐵全線、大阪市巴士，並免費入場30多個景點（大阪城、海遊館、通天閣等）。1日券¥2,800，2日券¥3,600。強烈推薦！",chips:["¥2,800/1日","景點免費入場","地鐵無限搭"]},
+      {icon:"💳",name:"ICOCA 卡",desc:"關西版IC卡，可搭乘大阪市區幾乎所有地鐵、JR、阪急、阪神電鐵。¥2,000（含¥500押金）。便利商店、超市也可付款。",chips:["¥2,000押金可退","全線通用","超市可用"]},
+      {icon:"🚇",name:"大阪地鐵 Osaka Metro",desc:"共9條路線，御堂筋線（紅線）為主幹，貫穿新大阪↔梅田↔心齋橋↔難波↔天王寺，每日首班05:00至末班24:00。",chips:["9條路線","起步¥180","24小時運行"]},
+      {icon:"🚴",name:"自行車",desc:"大阪市區有 HELLO CYCLING 共享自行車，電動助力，日租¥200起。適合景點間短距離移動，心齋橋→道頓堀→難波一帶步行可達。",chips:["¥200/30分","電動助力","市區隨借隨還"]},
+    ]
+  },
+  {
+    title:"🚅 大阪周邊城市交通",
+    items:[
+      {icon:"🚃",name:"京都（阪急電鐵）",desc:"梅田→河原町（祇園），約45分，¥410。班次密集，5–10分一班，搭特急更快。JR 大阪→京都約30分，¥580。",chips:["約45分","¥410","阪急・JR皆可"]},
+      {icon:"🚃",name:"神戶（阪神電鐵）",desc:"大阪難波→神戶三宮，約45分，¥430。阪神電鐵沿途風景優美，可在大阪梅田上車，終點神戶元町或三宮。",chips:["約45分","¥430","阪神電鐵"]},
+      {icon:"🚄",name:"奈良（近鐵電鐵）",desc:"大阪難波→近鐵奈良，約35分，¥680。近鐵奈良站步行即達奈良公園，可與京都合併一日遊。",chips:["約35分","¥680","近鐵奈良線"]},
+    ]
+  }
+];
+
+const tipsData = [
+  {
+    icon:"🌡",title:"8月大阪氣候",
+    items:["平均氣溫 34–37°C，體感溫度可達40°C以上","午後常有短暫雷陣雨，務必攜帶摺疊傘","防曬、帽子、降溫噴霧為必備","水分補充極重要，隨身攜帶水壺"]
+  },
+  {
+    icon:"💴",title:"金錢・消費",
+    items:["每日預算建議 ¥8,000–15,000（依活動）","日本大多餐廳只收現金，備好日圓","7-Eleven、郵局 ATM 可領外國卡","保留零錢：投幣式置物櫃、神社投錢需用"]
+  },
+  {
+    icon:"📱",title:"網路・通訊",
+    items:["建議購買日本 SIM 卡或 eSIM（IIJmio、Docomo）","機場即可購買，¥2,000–3,000/7日","或租借 WiFi 分享器，一台多人共用","Google Maps 離線地圖建議提前下載"]
+  },
+  {
+    icon:"🛍",title:"購物・退稅",
+    items:["單次消費滿¥5,000可享8%–10%退稅","需出示護照，填寫退稅申請書","機場退稅請於出境前完成手續","藥妝：松本清、Sundrug、Welcia 最划算"]
+  },
+  {
+    icon:"🍱",title:"大阪必吃美食",
+    items:["章魚燒（たこ焼き）：章章本鋪、會津屋","大阪燒（お好み焼き）：福太郎、千房","串炸（串カツ）：だるま、八重勝","河豚料理（ふぐ）：高級但難忘的體驗"]
+  },
+  {
+    icon:"🚿",title:"溫泉・錢湯",
+    items:["大阪市區有多家溫泉錢湯（¥460–800）","推薦：なにわの湯、スパワールド（USJ附近）","毛巾、盥洗用品通常需自備或購買","入場需確認刺青規定（部分禁止）"]
+  },
+  {
+    icon:"⚠️",title:"注意事項",
+    items:["日本禁止邊走路邊吸菸，僅限指定區域","地鐵內請靜音，手機通話避免在車廂內","垃圾務必帶走，街道幾乎無垃圾桶","地震防災：確認飯店緊急出口位置"]
+  },
+  {
+    icon:"📋",title:"出發前確認",
+    items:["護照效期至少6個月以上","台灣護照免簽入境日本（90天）","申報帶入日幣超過100萬¥需申報","海外旅行保險建議出發前投保"]
+  }
+];
+
+function renderDays() {
+  const strip = document.getElementById('day-strip');
+  days.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.className = 'day-chip' + (i === 0 ? ' active' : '');
+    b.textContent = `Day${i+1} ${d.date}`;
+    b.onclick = () => {
+      document.querySelectorAll('.day-chip').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderDay(i);
+    };
+    strip.appendChild(b);
+  });
+  renderDay(0);
+}
+
+function renderDay(i) {
+  const d = days[i];
+  const dotClass = {spot:'dot-spot',transport:'dot-transport',meal:'dot-meal',hotel:'dot-hotel'};
+  const tagClass = {spot:'tag-spot',transport:'tag-transport',meal:'tag-meal',hotel:'tag-hotel'};
+  const tagLabel = {spot:'景點',transport:'交通',meal:'餐飲',hotel:'住宿'};
+  let html = `<div class="day-card">
+    <div class="day-card-header">
+      <div class="day-num">0${i+1}</div>
+      <div class="day-info">
+        <h3>2025年 ${d.date}（${d.weekday}）</h3>
+        <p>Day ${i+1} of 8</p>
+      </div>
+      <div class="day-theme">${d.theme}</div>
+    </div>
+    <div class="timeline">`;
+  d.events.forEach((e, ei) => {
+    html += `<div class="tl-row">
+      <div class="tl-time">${e.time}</div>
+      <div class="tl-dot-col">
+        <div class="tl-dot ${dotClass[e.type]||'dot-spot'}"></div>
+        ${ei < d.events.length-1 ? '<div class="tl-line"></div>' : ''}
+      </div>
+      <div class="tl-body">
+        <div class="tl-name">${e.name}</div>
+        <div class="tl-desc">${e.desc}</div>
+        <span class="tl-tag ${tagClass[e.type]||'tag-spot'}">${tagLabel[e.type]||'景點'}</span>
+      </div>
+    </div>`;
+  });
+  html += '</div></div>';
+  document.getElementById('day-content').innerHTML = html;
+}
+
+function renderSpots() {
+  const grid = document.getElementById('spots-grid');
+  spots.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'spot-card';
+    card.setAttribute('data-cat', s.cat);
+    card.innerHTML = `<div class="spot-icon">${s.icon}</div>
+      <div class="spot-name">${s.name}</div>
+      <div class="spot-area">${s.area}</div>
+      <div class="spot-cat">${s.cat}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+function filterSpots(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.spot-card').forEach(c => {
+    c.style.display = (cat === '全部' || c.dataset.cat === cat) ? 'block' : 'none';
+  });
+}
+
+function renderTransport() {
+  const cont = document.getElementById('transport-content');
+  transportData.forEach(sec => {
+    let html = `<div class="transport-section">
+      <div class="transport-section-title">${sec.title}</div>
+      <div class="transport-cards">`;
+    sec.items.forEach(it => {
+      html += `<div class="t-card">
+        <div class="t-icon">${it.icon}</div>
+        <div class="t-body">
+          <div class="t-name">${it.name}</div>
+          <div class="t-desc">${it.desc}</div>
+          <div class="t-chips">${it.chips.map(c=>`<span class="t-chip">${c}</span>`).join('')}</div>
+        </div>
+      </div>`;
+    });
+    html += '</div></div>';
+    cont.innerHTML += html;
+  });
+}
+
+function renderTips() {
+  const grid = document.getElementById('tips-grid');
+  tipsData.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'tip-card';
+    card.innerHTML = `<div class="tip-header">
+      <div class="tip-icon">${t.icon}</div>
+      <div class="tip-title">${t.title}</div>
+    </div>
+    <ul class="tip-list">${t.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    grid.appendChild(card);
+  });
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+renderDays();
+renderSpots();
+renderTransport();
+renderTips();
+</script>
+</body>
+</html>
