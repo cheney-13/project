@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Refkey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0d0d12; --card:#18181f; --card2:#1f1f2a;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.14);
+  --text:#f0ecfa; --muted:rgba(240,236,250,0.55); --muted2:rgba(240,236,250,0.78);
+  --pine:#d4ff5e; --pine-dim:rgba(212,255,94,0.09); --pine-glow:rgba(212,255,94,0.22);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.11);
+  --teal:#34d399;
+}
+html, body { min-height:100vh; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Noto Sans',sans-serif; font-weight:300; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
+
+/* TOPBAR */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:rgba(13,13,18,0.92); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  height:52px; display:flex; align-items:center; padding:0 28px; gap:12px;
+}
+.logo { display:flex; align-items:center; gap:8px; font-family:'Syne',sans-serif; font-weight:800; font-size:15px; letter-spacing:-0.03em; }
+.logo-gem { width:18px; height:18px; background:var(--pine); clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); flex-shrink:0; }
+.topbar-sep { width:1px; height:16px; background:var(--border); }
+.topbar-sub { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
+.progress-bar { height:2px; background:var(--border); }
+.progress-fill { height:100%; background:var(--pine); box-shadow:0 0 10px var(--pine-glow); transition:width .5s cubic-bezier(.4,0,.2,1); }
+
+/* LAYOUT */
+.wrap { max-width:640px; margin:0 auto; padding:0 24px 80px; }
+
+/* STEP TRACK */
+.step-track { display:flex; align-items:center; padding:24px 0 32px; }
+.step-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; }
+.step-item:not(:last-child)::after { content:''; position:absolute; top:14px; left:calc(50% + 16px); width:calc(100% - 32px); height:1px; background:var(--border); transition:background .4s; }
+.step-item.done:not(:last-child)::after { background:rgba(212,255,94,0.4); }
+.step-dot { width:28px; height:28px; border-radius:50%; border:1px solid var(--border); background:var(--card); color:var(--muted); display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; position:relative; z-index:1; transition:all .3s; }
+.step-item.active .step-dot { border-color:var(--pine); background:var(--pine-dim); color:var(--pine); box-shadow:0 0 14px var(--pine-glow); }
+.step-item.done .step-dot { background:var(--pine); border-color:var(--pine); color:#0d0d12; font-size:13px; }
+.step-label { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; white-space:nowrap; transition:color .3s; }
+.step-item.active .step-label { color:var(--pine); }
+.step-item.done .step-label { color:var(--muted2); }
+
+/* QUESTION CARDS */
+.q-card { display:none; }
+.q-card.active { display:block; animation:slideIn .3s cubic-bezier(.4,0,.2,1); }
+@keyframes slideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.q-step-label { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; letter-spacing:.13em; text-transform:uppercase; margin-bottom:10px; }
+.q-title { font-family:'Syne',sans-serif; font-weight:700; font-size:22px; line-height:1.35; color:var(--text); }
+.q-sub { font-size:13px; color:var(--muted2); margin-top:8px; line-height:1.6; }
+.q-head { margin-bottom:24px; }
+
+.sec-label { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; letter-spacing:.13em; text-transform:uppercase; margin-bottom:10px; }
+
+/* OPT GRID */
+.opt-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
+.opt {
+  cursor:pointer; padding:13px 15px; border-radius:12px;
+  border:1px solid var(--border); background:var(--card);
+  display:flex; align-items:center; gap:12px;
+  transition:all .15s; user-select:none;
+}
+.opt:hover { border-color:var(--border2); background:var(--card2); }
+.opt.on { border-color:rgba(212,255,94,0.4); background:var(--pine-dim); }
+.opt-em { font-size:20px; flex-shrink:0; }
+.opt-name { font-size:13px; font-weight:500; color:var(--text); }
+.opt-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+.opt.on .opt-name { color:var(--pine); }
+.opt-check { width:18px; height:18px; border-radius:50%; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; transition:all .15s; }
+.opt.on .opt-check { background:var(--pine); border-color:var(--pine); color:#0d0d12; }
+
+/* DIR CARDS */
+.dir-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+.dir-card {
+  cursor:pointer; padding:16px 18px; border-radius:12px;
+  border:1px solid var(--border); background:var(--card);
+  display:flex; flex-direction:column; gap:6px;
+  transition:all .15s; user-select:none;
+}
+.dir-card:hover { border-color:var(--border2); background:var(--card2); }
+.dir-card.on { border-color:rgba(167,139,250,0.4); background:var(--purple-dim); }
+.dir-em { font-size:22px; }
+.dir-name { font-size:14px; font-weight:600; color:var(--text); }
+.dir-card.on .dir-name { color:var(--purple); }
+.dir-sub { font-size:11px; color:var(--muted); line-height:1.5; }
+
+/* STYLE CHIPS */
+.chips { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:20px; }
+.chip {
+  cursor:pointer; padding:6px 13px; border-radius:20px;
+  border:1px solid var(--border); background:var(--card);
+  color:var(--muted2); font-size:12px;
+  display:flex; align-items:center; gap:5px;
+  transition:all .15s; user-select:none; white-space:nowrap;
+}
+.chip:hover { border-color:var(--border2); color:var(--text); }
+.chip.on { border-color:rgba(52,211,153,0.4); background:rgba(52,211,153,0.1); color:var(--teal); font-weight:600; }
+
+/* TEXTAREA */
+.freetext {
+  width:100%; background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px; color:var(--text);
+  font-family:'Noto Sans TC',sans-serif; font-size:13px; font-weight:300;
+  outline:none; resize:none; line-height:1.65; transition:border-color .2s;
+  margin-bottom:8px;
+}
+.freetext::placeholder { color:var(--muted); }
+.freetext:focus { border-color:rgba(212,255,94,0.3); }
+
+/* BRIEF SUMMARY */
+.brief-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:24px; }
+.brief-row { padding:13px 16px; border-bottom:1px solid var(--border); display:flex; gap:12px; align-items:flex-start; }
+.brief-row:last-child { border-bottom:none; }
+.brief-label { font-size:10px; font-family:'DM Mono',monospace; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; width:70px; flex-shrink:0; padding-top:2px; }
+.brief-val { font-size:13px; color:var(--text); line-height:1.6; flex:1; }
+.tag { display:inline-block; padding:2px 9px; border-radius:5px; background:var(--pine-dim); border:1px solid rgba(212,255,94,0.2); color:var(--pine); font-size:11px; margin:2px 3px 2px 0; }
+
+/* NAV */
+.nav { display:flex; gap:10px; margin-top:16px; }
+.btn-back { padding:13px 18px; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--muted2); font-size:13px; font-family:inherit; cursor:pointer; transition:all .15s; }
+.btn-back:hover { border-color:var(--border2); color:var(--text); }
+.btn-next { flex:1; padding:14px; background:var(--pine); color:#0d0d12; border:none; border-radius:10px; font-family:'Syne',sans-serif; font-weight:800; font-size:14px; cursor:pointer; transition:all .18s; }
+.btn-next:hover { box-shadow:0 0 24px var(--pine-glow); transform:translateY(-1px); }
+.btn-next:active { transform:translateY(0); }
+
+/* RESULTS */
+.results { display:none; }
+.results.show { display:block; animation:slideIn .35s ease; }
+
+/* Pinterest hero */
+.p-hero {
+  background:linear-gradient(140deg,#130e00,#0d0d12 60%);
+  border:1px solid rgba(212,255,94,0.18); border-radius:16px;
+  overflow:hidden; margin-bottom:20px; position:relative;
+}
+.p-hero::before { content:''; position:absolute; top:-80px; right:-80px; width:280px; height:280px; background:radial-gradient(circle,rgba(212,255,94,0.08),transparent 70%); pointer-events:none; }
+.p-hero-top { padding:24px 24px 16px; display:flex; align-items:center; gap:14px; }
+.p-ico { width:44px; height:44px; border-radius:11px; background:var(--pine-dim); border:1px solid rgba(212,255,94,0.25); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.p-name { font-family:'Syne',sans-serif; font-weight:800; font-size:17px; color:var(--pine); display:flex; align-items:center; gap:8px; }
+.p-badge { font-size:9px; font-family:'DM Mono',monospace; background:var(--pine-dim); border:1px solid rgba(212,255,94,0.25); color:var(--pine); padding:2px 7px; border-radius:4px; letter-spacing:.1em; text-transform:uppercase; }
+.p-desc { font-size:12px; color:var(--muted2); margin-top:3px; }
+
+.kw-section { padding:0 24px 8px; }
+.kw-sec-label { font-size:9px; font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.kw-sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+.kw-list { display:flex; flex-direction:column; gap:7px; }
+.kw-item {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background:rgba(212,255,94,0.05);
+  border:1px solid rgba(212,255,94,0.12); border-radius:10px;
+  text-decoration:none; transition:all .15s; cursor:pointer;
+  animation:fadeUp .3s ease both;
+}
+.kw-item:hover { background:rgba(212,255,94,0.1); border-color:rgba(212,255,94,0.25); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.kw-en { flex:1; font-family:'DM Mono',monospace; font-size:13px; color:var(--pine); font-weight:500; }
+.kw-zh { font-size:11px; color:var(--muted2); white-space:nowrap; }
+.kw-copy { font-size:10px; font-family:'DM Mono',monospace; color:var(--muted); background:none; border:none; cursor:pointer; padding:3px 8px; border-radius:4px; transition:all .15s; flex-shrink:0; }
+.kw-copy:hover { background:rgba(212,255,94,0.1); color:var(--pine); }
+.kw-copy.ok { color:var(--pine); }
+.kw-arr { font-size:12px; color:var(--muted); flex-shrink:0; }
+.kw-item:hover .kw-arr { color:var(--pine); }
+
+.strategy-note { margin:12px 24px 20px; padding:12px 14px; background:var(--purple-dim); border:1px solid rgba(167,139,250,0.18); border-radius:9px; font-size:12px; color:var(--muted2); line-height:1.65; }
+.strategy-note b { color:var(--purple); }
+
+.p-open-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:calc(100% - 48px); margin:0 24px 24px; padding:12px; background:var(--pine); color:#0d0d12; border:none; border-radius:9px; font-family:'Syne',sans-serif; font-weight:800; font-size:13px; cursor:pointer; text-decoration:none; }
+
+/* Platforms */
+.plat-header { font-family:'Syne',sans-serif; font-weight:700; font-size:12px; color:var(--muted2); display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.plat-header::after { content:''; flex:1; height:1px; background:var(--border); }
+.plat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:7px; margin-bottom:32px; }
+.plat-card { display:flex; align-items:center; gap:10px; padding:11px 13px; background:var(--card); border:1px solid var(--border); border-radius:9px; text-decoration:none; transition:all .15s; }
+.plat-card:hover { background:var(--card2); border-color:var(--border2); }
+.plat-name { font-size:11px; font-weight:500; color:var(--muted2); flex:1; }
+.plat-arr { font-size:10px; color:var(--muted); }
+
+.restart-btn { padding:10px 24px; background:transparent; border:1px solid var(--border); border-radius:8px; color:var(--muted2); font-size:12px; font-family:inherit; cursor:pointer; transition:all .15s; display:block; margin:0 auto 40px; }
+.restart-btn:hover { border-color:var(--border2); color:var(--text); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><div class="logo-gem"></div>Design Refkey</div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-sub">Brief → Pinterest 關鍵字生成</div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<div class="wrap">
+
+  <!-- Step Track -->
+  <div class="step-track" id="stepTrack">
+    <div class="step-item active" data-step="1"><div class="step-dot">01</div><div class="step-label">客戶 / 專案</div></div>
+    <div class="step-item" data-step="2"><div class="step-dot">02</div><div class="step-label">設計方向</div></div>
+    <div class="step-item" data-step="3"><div class="step-dot">03</div><div class="step-label">細節補充</div></div>
+    <div class="step-item" data-step="4"><div class="step-dot">04</div><div class="step-label">確認送出</div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="q-card active" id="step1">
+    <div class="q-head">
+      <div class="q-step-label">Step 01 · 客戶與專案</div>
+      <div class="q-title">這個案子是做什麼的？</div>
+      <div class="q-sub">選擇客戶產業與這次要產出的內容</div>
+    </div>
+    <div class="sec-label">客戶 / 品牌名稱（選填）</div>
+    <input id="clientName" placeholder="e.g. Nike、某新創品牌…" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:13px;outline:none;font-family:inherit;margin-bottom:20px;transition:border-color .2s;" onfocus="this.style.borderColor='rgba(212,255,94,0.3)'" onblur="this.style.borderColor='var(--border)'">
+    <div class="sec-label">客戶產業</div>
+    <div class="opt-grid" id="industryGrid"></div>
+    <div class="sec-label">這次要做什麼？</div>
+    <div class="opt-grid" id="outputGrid"></div>
+    <div class="nav"><button class="btn-next" onclick="goStep(2)">下一步 →</button></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="q-card" id="step2">
+    <div class="q-head">
+      <div class="q-step-label">Step 02 · 設計方向</div>
+      <div class="q-title">這個案子要走什麼方向？</div>
+      <div class="q-sub">選一個最接近的整體氣質</div>
+    </div>
+    <div class="dir-grid" id="dirGrid"></div>
+    <div class="nav">
+      <button class="btn-back" onclick="goStep(1)">← 返回</button>
+      <button class="btn-next" onclick="goStep(3)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="q-card" id="step3">
+    <div class="q-head">
+      <div class="q-step-label">Step 03 · 細節補充</div>
+      <div class="q-title">還有什麼想補充的？</div>
+      <div class="q-sub">顏色、質感、想避開的風格…越具體越好</div>
+    </div>
+    <div class="sec-label">視覺風格（可多選）</div>
+    <div class="chips" id="styleChips"></div>
+    <div class="sec-label">自由補充（選填）</div>
+    <textarea class="freetext" id="extraText" rows="3" placeholder="e.g. 主色偏深藍、不要太科幻感、參考 Apple 的簡潔但更有溫度…"></textarea>
+    <div class="nav">
+      <button class="btn-back" onclick="goStep(2)">← 返回</button>
+      <button class="btn-next" onclick="goStep(4)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="q-card" id="step4">
+    <div class="q-head">
+      <div class="q-step-label">Step 04 · 確認 Brief</div>
+      <div class="q-title">確認一下這是你要的嗎？</div>
+      <div class="q-sub">可以返回修改，或直接生成關鍵字</div>
+    </div>
+    <div class="brief-card" id="briefCard"></div>
+    <div class="nav">
+      <button class="btn-back" onclick="goStep(3)">← 返回修改</button>
+      <button class="btn-next" onclick="generate()">📌 生成 Pinterest 關鍵字</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="p-hero">
+      <div class="p-hero-top">
+        <div class="p-ico">📌</div>
+        <div>
+          <div class="p-name">Pinterest <span class="p-badge">主力搜尋</span></div>
+          <div class="p-desc">點擊關鍵字直接搜尋，或複製後貼上</div>
+        </div>
+      </div>
+      <div class="kw-section">
+        <div class="kw-sec-label">關鍵字組合</div>
+        <div class="kw-list" id="kwList"></div>
+      </div>
+      <div class="strategy-note" id="strategyNote"></div>
+      <a class="p-open-btn" href="https://www.pinterest.com" target="_blank" rel="noopener">↗ 開啟 Pinterest 首頁</a>
+    </div>
+    <div class="plat-header">其他參考平台</div>
+    <div class="plat-grid" id="platGrid"></div>
+    <button class="restart-btn" onclick="restart()">↩ 重新填寫 Brief</button>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const INDUSTRY = [
+  { id:"tech",    em:"💻", name:"科技 / 軟體",    sub:"SaaS、AI、硬體" },
+  { id:"fashion", em:"👗", name:"時尚 / 美妝",    sub:"服飾、美妝、精品" },
+  { id:"food",    em:"🍽", name:"餐飲 / 食品",    sub:"餐廳、品牌食品" },
+  { id:"finance", em:"💳", name:"金融 / 保險",    sub:"銀行、Fintech" },
+  { id:"culture", em:"🎭", name:"文化 / 藝術",    sub:"展覽、音樂、電影" },
+  { id:"health",  em:"🏥", name:"醫療 / 健康",    sub:"醫院、保健品牌" },
+  { id:"sport",   em:"⚽", name:"運動 / 戶外",    sub:"運動品牌、活動" },
+  { id:"gov",     em:"🏛", name:"政府 / 公益",    sub:"機關、NGO" },
+  { id:"startup", em:"🚀", name:"新創 / 獨立品牌", sub:"DTC、個人品牌" },
+  { id:"retail",  em:"🏪", name:"零售 / 空間",    sub:"門市、百貨" },
+];
+const OUTPUT = [
+  { id:"website",      em:"🌐", name:"品牌官網",       sub:"企業形象網站" },
+  { id:"campaign",     em:"📣", name:"活動 / 行銷頁",  sub:"Landing page" },
+  { id:"kv",           em:"🎨", name:"主視覺 KV",      sub:"海報、banner" },
+  { id:"branding",     em:"◈",  name:"品牌識別",        sub:"Logo、VI系統" },
+  { id:"app",          em:"📱", name:"App / 數位產品", sub:"UI/UX設計" },
+  { id:"exhibition",   em:"🏛", name:"展覽 / 展示",    sub:"展場、裝置" },
+  { id:"motion",       em:"▶",  name:"動態 / 影片",    sub:"MG、宣傳片" },
+  { id:"installation", em:"🖥", name:"互動裝置",        sub:"XR、體驗設計" },
+  { id:"print",        em:"📄", name:"平面 / 印刷",    sub:"冊子、廣告" },
+  { id:"social",       em:"📲", name:"社群 / 內容",    sub:"素材、貼文設計" },
+];
+const DIRECTIONS = [
+  { id:"hightech",  em:"🔬", name:"高端科技感",    sub:"精密、未來、專業、有質感的科技美學" },
+  { id:"luxury",    em:"💎", name:"頂奢精品感",    sub:"極簡、精緻、冷調、貴氣不張揚" },
+  { id:"warm",      em:"☀",  name:"親切溫暖大眾",  sub:"平易近人、活力、色彩豐富、有親和力" },
+  { id:"editorial", em:"📰", name:"設計感排版",    sub:"字體主導、大膽留白、海報質感" },
+  { id:"minimal",   em:"◻",  name:"純粹極簡",     sub:"去除一切多餘、只留核心、精準克制" },
+  { id:"bold",      em:"⚡", name:"大膽前衛",      sub:"顛覆常規、實驗性強、視覺衝擊" },
+  { id:"cultural",  em:"🏮", name:"文化 / 在地感", sub:"東方美學、日系、韓系、台灣在地" },
+  { id:"playful",   em:"🎨", name:"趣味活潑",      sub:"插畫風、年輕、有個性、不正經的正經" },
+  { id:"dark",      em:"🌑", name:"暗黑神秘",      sub:"深色調、戲劇感、對比強烈" },
+  { id:"organic",   em:"🌿", name:"自然有機",      sub:"永續、溫柔、材質感、手感溫度" },
+];
+const STYLES = [
+  { id:"3d",       em:"⬡",  name:"3D / CGI" },
+  { id:"motion",   em:"▶",  name:"動態感" },
+  { id:"typo",     em:"Aa", name:"字體主導" },
+  { id:"photo",    em:"📷", name:"攝影質感" },
+  { id:"illus",    em:"✏",  name:"插畫風格" },
+  { id:"texture",  em:"◫",  name:"材質感" },
+  { id:"gradient", em:"◐",  name:"漸層色彩" },
+  { id:"mono",     em:"◑",  name:"單色 / 黑白" },
+  { id:"grid",     em:"▦",  name:"格線 / Swiss" },
+  { id:"retro",    em:"📼", name:"復古 / Y2K" },
+];
+const PLATFORMS = [
+  { name:"Awwwards",          url:"https://www.awwwards.com",                 icon:"🏆" },
+  { name:"Dribbble",          url:"https://dribbble.com",                     icon:"🏀" },
+  { name:"Behance",           url:"https://www.behance.net",                  icon:"🅱" },
+  { name:"The FWA",           url:"https://thefwa.com",                       icon:"🔥" },
+  { name:"Siteinspire",       url:"https://www.siteinspire.com",              icon:"✨" },
+  { name:"Codrops",           url:"https://tympanus.net/codrops",             icon:"💧" },
+  { name:"CSS Design Awards", url:"https://www.cssdesignawards.com",          icon:"🎖" },
+  { name:"One Page Love",     url:"https://onepagelove.com",                  icon:"❤" },
+  { name:"Reeoo",             url:"https://reeoo.com",                        icon:"🔷" },
+  { name:"CSS Winner",        url:"https://www.csswinner.com",                icon:"🥇" },
+  { name:"Muuuuu.org",        url:"https://muuuuu.org",                       icon:"🌸" },
+  { name:"81-web",            url:"https://81-web.com",                       icon:"⛩" },
+  { name:"IO3000",            url:"https://io3000.com",                       icon:"🎌" },
+  { name:"Sankou Design",     url:"https://sankoudesign.com",                 icon:"🍡" },
+  { name:"S5-Style",          url:"https://www.s5-style.com",                 icon:"🏮" },
+  { name:"1guu",              url:"https://1guu.jp",                          icon:"🎯" },
+  { name:"Korea Web Design",  url:"https://koreawebdesign.com/site/",         icon:"🇰🇷" },
+  { name:"Ikesai",            url:"https://www.ikesai.com",                   icon:"🌊" },
+  { name:"DB Cut",            url:"https://www.dbcut.com",                    icon:"✂" },
+];
+
+// ── KEYWORD LIBRARY ───────────────────────────────────────────────────────────
+const KW = {
+  industry: {
+    tech:    ["tech startup","software product","SaaS platform","digital product","enterprise technology"],
+    fashion: ["fashion brand","luxury apparel","streetwear","beauty brand","lifestyle aesthetic"],
+    food:    ["restaurant branding","food packaging","cafe aesthetic","artisan food","culinary brand"],
+    finance: ["fintech brand","banking UI","financial services","wealth management","crypto brand"],
+    culture: ["cultural institution","museum visual","arts organization","music festival","film identity"],
+    health:  ["healthcare brand","wellness visual","medical UI","fitness brand","pharma design"],
+    sport:   ["sports brand","athletic identity","outdoor brand","performance wear","sports event"],
+    gov:     ["public sector","nonprofit visual","government campaign","civic design","NGO brand"],
+    startup: ["startup identity","DTC brand","personal brand","indie brand","founder story"],
+    retail:  ["retail brand","store visual","consumer brand","shopping experience","product brand"],
+  },
+  output: {
+    website:      ["brand website","corporate homepage","web design"],
+    campaign:     ["campaign landing page","event microsite","promotional page"],
+    kv:           ["key visual","campaign poster","hero image","graphic design"],
+    branding:     ["brand identity","visual system","logo design","brand guidelines"],
+    app:          ["mobile app UI","product design","iOS app","UX design"],
+    exhibition:   ["exhibition design","museum installation","display design","spatial design"],
+    motion:       ["motion graphics","title sequence","animation","video identity"],
+    installation: ["interactive installation","digital art","immersive experience","XR design"],
+    print:        ["print design","editorial layout","magazine design","brochure"],
+    social:       ["social media design","content design","digital content","post design"],
+  },
+  direction: {
+    hightech:  ["high-tech aesthetic","precision engineering","futuristic minimal","cutting-edge technology","sleek innovation"],
+    luxury:    ["luxury brand","premium minimal","sophisticated elegance","high-end aesthetic","refined quiet luxury"],
+    warm:      ["warm friendly","approachable colorful","vibrant community","joyful brand","inclusive design"],
+    editorial: ["editorial design","typographic layout","bold typography","graphic poster","print inspired"],
+    minimal:   ["minimal clean","pure white space","reductive design","essential minimal","quiet design"],
+    bold:      ["bold experimental","avant-garde","graphic impact","provocative design","visual disruption"],
+    cultural:  ["cultural identity","heritage design","east asian aesthetic","local culture","traditional modern"],
+    playful:   ["playful illustration","fun colorful","youthful brand","quirky design","character design"],
+    dark:      ["dark moody","dramatic black","high contrast","noir aesthetic","dark luxury"],
+    organic:   ["organic natural","earthy texture","sustainable aesthetic","handcrafted feel","nature inspired"],
+  },
+  style: {
+    "3d":      ["3D render","CGI visual","dimensional design","3D typography"],
+    motion:    ["motion design","animated brand","kinetic identity","dynamic visual"],
+    typo:      ["typographic design","type-led","font composition","letter form"],
+    photo:     ["photographic brand","editorial photography","still life","documentary aesthetic"],
+    illus:     ["illustration brand","hand drawn","custom illustration","artist collaboration"],
+    texture:   ["textured surface","material design","tactile visual","paper grain"],
+    gradient:  ["gradient color","aurora palette","color wash","chromatic design"],
+    mono:      ["monochrome design","black white photography","grayscale aesthetic","tonal design"],
+    grid:      ["grid system","swiss design","systematic layout","structured composition"],
+    retro:     ["retro design","vintage aesthetic","Y2K revival","nostalgic visual","throwback style"],
+  },
+};
+
+// ── KEYWORD GENERATION LOGIC ──────────────────────────────────────────────────
+function generateKeywords(industries, outputs, direction, styles, extra) {
+  const pick = (arr, n) => {
+    const shuffled = [...arr].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, n);
+  };
+  const indKws   = industries.flatMap(id => KW.industry[id] || []);
+  const outKws   = outputs.flatMap(id => KW.output[id] || []);
+  const dirKws   = KW.direction[direction] || [];
+  const styleKws = styles.flatMap(id => KW.style[id] || []);
+  const extraKws = extra ? extra.split(/[,，\s]+/).filter(w => w.length > 1 && /[a-zA-Z]/.test(w)) : [];
+
+  const ind  = pick(indKws, 2);
+  const out  = pick(outKws, 2);
+  const dir  = pick(dirKws, 3);
+  const sty  = pick(styleKws, 2);
+  const ext  = pick(extraKws, 1);
+
+  const combos = [
+    // 1. 精準：產業 + 產出
+    ind[0] && out[0]  ? { en:`${ind[0]} ${out[0]}`,      zh:"產業 × 產出直擊" } : null,
+    // 2. 精準：方向 + 產出
+    dir[0] && out[0]  ? { en:`${dir[0]} ${out[0]}`,      zh:"風格 × 產出直擊" } : null,
+    // 3. 方向 + 產業
+    dir[0] && ind[0]  ? { en:`${dir[0]} ${ind[0]}`,      zh:"方向 × 產業" } : null,
+    // 4. 方向 + 風格
+    dir[1] && sty[0]  ? { en:`${dir[1]} ${sty[0]}`,      zh:"方向 × 視覺風格" } : null,
+    // 5. 產業 + 風格 + 方向
+    ind[1] && sty[0] && dir[2] ? { en:`${ind[1]} ${sty[0]} ${dir[2]}`, zh:"產業 × 風格 × 方向" } : null,
+    // 6. 風格單飛
+    sty[1] && dir[0]  ? { en:`${sty[1]} ${dir[0]}`,      zh:"視覺風格延伸" } : null,
+    // 7. 補充詞融合
+    ext[0] && dir[0]  ? { en:`${ext[0]} ${dir[0]} brand`, zh:"自訂關鍵字組合" } : null,
+    // 8. 廣角發散：方向氛圍
+    dir[2]            ? { en:`${dir[2]} visual identity`,  zh:"整體氣質發散" } : null,
+    // fallback
+    { en:`${dirKws[0] || "brand"} design inspiration`,   zh:"靈感發散" },
+    { en:`${indKws[0] || "creative"} brand aesthetic`,   zh:"品牌美學" },
+  ].filter(Boolean);
+
+  // 取前 8 組，去除 null
+  const results = [];
+  for (const c of combos) {
+    if (results.length >= 8) break;
+    if (c && c.en && !results.find(r => r.en === c.en)) results.push(c);
+  }
+  return results;
+}
+
+function generateStrategy(industries, outputs, direction, styles) {
+  const dirObj  = DIRECTIONS.find(d => d.id === direction);
+  const indNames = industries.map(id => INDUSTRY.find(i => i.id === id)?.name).filter(Boolean);
+  const outNames = outputs.map(id => OUTPUT.find(o => o.id === id)?.name).filter(Boolean);
+  const dir = dirObj?.name || "";
+  if (!dir) return "根據選擇條件搜尋視覺參考，從精準到發散逐步探索";
+  return `以「${dir}」為核心調性${indNames.length ? `，針對${indNames[0]}` : ""}${outNames.length ? `的${outNames[0]}` : ""}搜尋參考，從精準到啟發性逐步展開`;
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const sel = { industry: new Set(), output: new Set(), direction: null, styles: new Set() };
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+(function init() {
+  renderOptGrid('industryGrid', INDUSTRY, sel.industry);
+  renderOptGrid('outputGrid',   OUTPUT,   sel.output);
+  renderDirGrid('dirGrid',      DIRECTIONS);
+  renderChips('styleChips',     STYLES,   sel.styles);
+  renderPlatforms();
+})();
+
+function renderOptGrid(id, items, set) {
+  const el = document.getElementById(id);
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'opt'; div.dataset.id = item.id;
+    div.innerHTML = `<div class="opt-em">${item.em}</div><div class="opt-body"><div class="opt-name">${item.name}</div><div class="opt-sub">${item.sub}</div></div><div class="opt-check"></div>`;
+    div.addEventListener('click', () => {
+      if (set.has(item.id)) { set.delete(item.id); div.classList.remove('on'); div.querySelector('.opt-check').textContent = ''; }
+      else { set.add(item.id); div.classList.add('on'); div.querySelector('.opt-check').textContent = '✓'; }
+    });
+    el.appendChild(div);
+  });
+}
+
+function renderDirGrid(id, items) {
+  const el = document.getElementById(id);
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'dir-card'; div.dataset.id = item.id;
+    div.innerHTML = `<div class="dir-em">${item.em}</div><div class="dir-name">${item.name}</div><div class="dir-sub">${item.sub}</div>`;
+    div.addEventListener('click', () => {
+      el.querySelectorAll('.dir-card').forEach(d => d.classList.remove('on'));
+      div.classList.add('on'); sel.direction = item.id;
+    });
+    el.appendChild(div);
+  });
+}
+
+function renderChips(id, items, set) {
+  const el = document.getElementById(id);
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'chip'; div.dataset.id = item.id;
+    div.innerHTML = `<span>${item.em}</span>${item.name}`;
+    div.addEventListener('click', () => {
+      if (set.has(item.id)) { set.delete(item.id); div.classList.remove('on'); }
+      else { set.add(item.id); div.classList.add('on'); }
+    });
+    el.appendChild(div);
+  });
+}
+
+function renderPlatforms() {
+  const el = document.getElementById('platGrid');
+  PLATFORMS.forEach(p => {
+    const a = document.createElement('a');
+    a.className = 'plat-card'; a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = `<span style="font-size:16px">${p.icon}</span><span class="plat-name">${p.name}</span><span class="plat-arr">↗</span>`;
+    el.appendChild(a);
+  });
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function goStep(n) {
+  document.querySelector('.q-card.active').classList.remove('active');
+  document.getElementById(`step${n}`).classList.add('active');
+  document.querySelectorAll('.step-item').forEach(el => {
+    const s = parseInt(el.dataset.step);
+    el.classList.remove('active','done');
+    if (s === n) el.classList.add('active');
+    else if (s < n) { el.classList.add('done'); el.querySelector('.step-dot').textContent = '✓'; }
+    else el.querySelector('.step-dot').textContent = `0${s}`;
+  });
+  document.getElementById('progressFill').style.width = `${((n-1)/3)*100}%`;
+  if (n === 4) buildSummary();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildSummary() {
+  const getName = (list, id) => list.find(i => i.id === id)?.name;
+  const client  = document.getElementById('clientName').value.trim();
+  const indNames = [...sel.industry].map(id => getName(INDUSTRY, id)).filter(Boolean);
+  const outNames = [...sel.output].map(id => getName(OUTPUT, id)).filter(Boolean);
+  const dirName  = getName(DIRECTIONS, sel.direction) || '—';
+  const styNames = [...sel.styles].map(id => getName(STYLES, id)).filter(Boolean);
+  const extra    = document.getElementById('extraText').value.trim();
+
+  const tag = t => `<span class="tag">${t}</span>`;
+  const row = (label, val) => `<div class="brief-row"><div class="brief-label">${label}</div><div class="brief-val">${val}</div></div>`;
+
+  document.getElementById('briefCard').innerHTML = [
+    client    ? row('客戶', client) : '',
+    row('產業',   indNames.length ? indNames.map(tag).join('') : '—'),
+    row('產出物', outNames.length ? outNames.map(tag).join('') : '—'),
+    row('方向',   tag(dirName)),
+    styNames.length ? row('風格', styNames.map(tag).join('')) : '',
+    extra     ? row('補充', `<span style="color:var(--muted2)">${extra}</span>`) : '',
+  ].filter(Boolean).join('');
+}
+
+// ── GENERATE ──────────────────────────────────────────────────────────────────
+function generate() {
+  const extra    = document.getElementById('extraText').value.trim();
+  const keywords = generateKeywords([...sel.industry], [...sel.output], sel.direction, [...sel.styles], extra);
+  const strategy = generateStrategy([...sel.industry], [...sel.output], sel.direction, [...sel.styles]);
+
+  // Render keywords
+  const list = document.getElementById('kwList');
+  list.innerHTML = '';
+  keywords.forEach((item, i) => {
+    const url = `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(item.en)}`;
+    const a = document.createElement('a');
+    a.className = 'kw-item'; a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    a.style.animationDelay = `${i * 55}ms`;
+    a.innerHTML = `<span class="kw-en">${item.en}</span><span class="kw-zh">${item.zh}</span><button class="kw-copy" data-kw="${item.en}" onclick="copyKw(event,this)">複製</button><span class="kw-arr">↗</span>`;
+    list.appendChild(a);
+  });
+
+  document.getElementById('strategyNote').innerHTML = `<b>搜尋策略：</b>${strategy}`;
+
+  // Show results
+  document.querySelector('.q-card.active')?.classList.remove('active');
+  document.getElementById('stepTrack').style.display = 'none';
+  document.getElementById('results').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyKw(e, btn) {
+  e.preventDefault(); e.stopPropagation();
+  navigator.clipboard.writeText(btn.dataset.kw).then(() => {
+    btn.textContent = '✓'; btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = '複製'; btn.classList.remove('ok'); }, 1500);
+  });
+}
+
+function restart() {
+  sel.industry.clear(); sel.output.clear(); sel.direction = null; sel.styles.clear();
+  document.getElementById('clientName').value = '';
+  document.getElementById('extraText').value = '';
+  document.querySelectorAll('.opt.on,.dir-card.on,.chip.on').forEach(el => {
+    el.classList.remove('on');
+    const chk = el.querySelector('.opt-check');
+    if (chk) chk.textContent = '';
+  });
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('stepTrack').style.display = 'flex';
+  document.getElementById('step1').classList.add('active');
+  document.querySelectorAll('.step-item').forEach((el, i) => {
+    el.classList.remove('active','done');
+    if (i === 0) el.classList.add('active');
+    el.querySelector('.step-dot').textContent = `0${i+1}`;
+  });
+  document.getElementById('progressFill').style.width = '0%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
