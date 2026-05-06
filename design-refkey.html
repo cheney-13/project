@@ -88,10 +88,12 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Noto
   transition:all .15s; user-select:none;
 }
 .dir-card:hover { border-color:var(--border2); background:var(--card2); }
-.dir-card.on { border-color:rgba(167,139,250,0.4); background:var(--purple-dim); }
+.dir-card.on { border-color:rgba(212,255,94,0.4); background:var(--pine-dim); }
 .dir-em { font-size:22px; }
-.dir-name { font-size:14px; font-weight:600; color:var(--text); }
-.dir-card.on .dir-name { color:var(--purple); }
+.dir-name { font-size:14px; font-weight:600; color:var(--text); display:flex; align-items:center; justify-content:space-between; }
+.dir-card.on .dir-name { color:var(--pine); }
+.dir-check { width:16px; height:16px; border-radius:50%; border:1px solid var(--border); display:inline-flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; transition:all .15s; }
+.dir-card.on .dir-check { background:var(--pine); border-color:var(--pine); color:#0d0d12; }
 .dir-sub { font-size:11px; color:var(--muted); line-height:1.5; }
 
 /* STYLE CHIPS */
@@ -229,7 +231,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Noto
     <div class="q-head">
       <div class="q-step-label">Step 02 · 設計方向</div>
       <div class="q-title">這個案子要走什麼方向？</div>
-      <div class="q-sub">選一個最接近的整體氣質</div>
+      <div class="q-sub">可以選多個，關鍵字會融合所有方向</div>
     </div>
     <div class="dir-grid" id="dirGrid"></div>
     <div class="nav">
@@ -418,20 +420,20 @@ const KW = {
 };
 
 // ── KEYWORD GENERATION LOGIC ──────────────────────────────────────────────────
-function generateKeywords(industries, outputs, direction, styles, extra) {
+function generateKeywords(industries, outputs, directions, styles, extra) {
   const pick = (arr, n) => {
     const shuffled = [...arr].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, n);
   };
   const indKws   = industries.flatMap(id => KW.industry[id] || []);
   const outKws   = outputs.flatMap(id => KW.output[id] || []);
-  const dirKws   = KW.direction[direction] || [];
+  const dirKws   = directions.flatMap(id => KW.direction[id] || []);
   const styleKws = styles.flatMap(id => KW.style[id] || []);
   const extraKws = extra ? extra.split(/[,，\s]+/).filter(w => w.length > 1 && /[a-zA-Z]/.test(w)) : [];
 
   const ind  = pick(indKws, 2);
   const out  = pick(outKws, 2);
-  const dir  = pick(dirKws, 3);
+  const dir  = pick(dirKws, 4);
   const sty  = pick(styleKws, 2);
   const ext  = pick(extraKws, 1);
 
@@ -466,17 +468,17 @@ function generateKeywords(industries, outputs, direction, styles, extra) {
   return results;
 }
 
-function generateStrategy(industries, outputs, direction, styles) {
-  const dirObj  = DIRECTIONS.find(d => d.id === direction);
+function generateStrategy(industries, outputs, directions, styles) {
+  const dirNames = directions.map(id => DIRECTIONS.find(d => d.id === id)?.name).filter(Boolean);
   const indNames = industries.map(id => INDUSTRY.find(i => i.id === id)?.name).filter(Boolean);
   const outNames = outputs.map(id => OUTPUT.find(o => o.id === id)?.name).filter(Boolean);
-  const dir = dirObj?.name || "";
-  if (!dir) return "根據選擇條件搜尋視覺參考，從精準到發散逐步探索";
-  return `以「${dir}」為核心調性${indNames.length ? `，針對${indNames[0]}` : ""}${outNames.length ? `的${outNames[0]}` : ""}搜尋參考，從精準到啟發性逐步展開`;
+  if (!dirNames.length) return "根據選擇條件搜尋視覺參考，從精準到發散逐步探索";
+  const dirStr = dirNames.length > 1 ? `「${dirNames[0]}」× 「${dirNames[1]}」` : `「${dirNames[0]}」`;
+  return `以${dirStr}為核心調性${indNames.length ? `，針對${indNames[0]}` : ""}${outNames.length ? `的${outNames[0]}` : ""}搜尋參考，從精準到啟發性逐步展開`;
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-const sel = { industry: new Set(), output: new Set(), direction: null, styles: new Set() };
+const sel = { industry: new Set(), output: new Set(), direction: new Set(), styles: new Set() };
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (function init() {
@@ -506,10 +508,17 @@ function renderDirGrid(id, items) {
   items.forEach(item => {
     const div = document.createElement('div');
     div.className = 'dir-card'; div.dataset.id = item.id;
-    div.innerHTML = `<div class="dir-em">${item.em}</div><div class="dir-name">${item.name}</div><div class="dir-sub">${item.sub}</div>`;
+    div.innerHTML = `<div class="dir-em">${item.em}</div><div class="dir-name">${item.name}<span class="dir-check"></span></div><div class="dir-sub">${item.sub}</div>`;
     div.addEventListener('click', () => {
-      el.querySelectorAll('.dir-card').forEach(d => d.classList.remove('on'));
-      div.classList.add('on'); sel.direction = item.id;
+      if (sel.direction.has(item.id)) {
+        sel.direction.delete(item.id);
+        div.classList.remove('on');
+        div.querySelector('.dir-check').textContent = '';
+      } else {
+        sel.direction.add(item.id);
+        div.classList.add('on');
+        div.querySelector('.dir-check').textContent = '✓';
+      }
     });
     el.appendChild(div);
   });
@@ -560,7 +569,7 @@ function buildSummary() {
   const client  = document.getElementById('clientName').value.trim();
   const indNames = [...sel.industry].map(id => getName(INDUSTRY, id)).filter(Boolean);
   const outNames = [...sel.output].map(id => getName(OUTPUT, id)).filter(Boolean);
-  const dirName  = getName(DIRECTIONS, sel.direction) || '—';
+  const dirNames = [...sel.direction].map(id => getName(DIRECTIONS, id)).filter(Boolean);
   const styNames = [...sel.styles].map(id => getName(STYLES, id)).filter(Boolean);
   const extra    = document.getElementById('extraText').value.trim();
 
@@ -571,7 +580,7 @@ function buildSummary() {
     client    ? row('客戶', client) : '',
     row('產業',   indNames.length ? indNames.map(tag).join('') : '—'),
     row('產出物', outNames.length ? outNames.map(tag).join('') : '—'),
-    row('方向',   tag(dirName)),
+    row('方向',   dirNames.length ? dirNames.map(tag).join('') : '—'),
     styNames.length ? row('風格', styNames.map(tag).join('')) : '',
     extra     ? row('補充', `<span style="color:var(--muted2)">${extra}</span>`) : '',
   ].filter(Boolean).join('');
@@ -580,8 +589,8 @@ function buildSummary() {
 // ── GENERATE ──────────────────────────────────────────────────────────────────
 function generate() {
   const extra    = document.getElementById('extraText').value.trim();
-  const keywords = generateKeywords([...sel.industry], [...sel.output], sel.direction, [...sel.styles], extra);
-  const strategy = generateStrategy([...sel.industry], [...sel.output], sel.direction, [...sel.styles]);
+  const keywords = generateKeywords([...sel.industry], [...sel.output], [...sel.direction], [...sel.styles], extra);
+  const strategy = generateStrategy([...sel.industry], [...sel.output], [...sel.direction], [...sel.styles]);
 
   // Render keywords
   const list = document.getElementById('kwList');
@@ -613,12 +622,12 @@ function copyKw(e, btn) {
 }
 
 function restart() {
-  sel.industry.clear(); sel.output.clear(); sel.direction = null; sel.styles.clear();
+  sel.industry.clear(); sel.output.clear(); sel.direction.clear(); sel.styles.clear();
   document.getElementById('clientName').value = '';
   document.getElementById('extraText').value = '';
   document.querySelectorAll('.opt.on,.dir-card.on,.chip.on').forEach(el => {
     el.classList.remove('on');
-    const chk = el.querySelector('.opt-check');
+    const chk = el.querySelector('.opt-check, .dir-check');
     if (chk) chk.textContent = '';
   });
   document.getElementById('results').classList.remove('show');
