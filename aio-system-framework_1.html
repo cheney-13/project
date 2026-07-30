@@ -101,10 +101,21 @@
   .stack-list li{padding:14px 18px; border:1px solid var(--line); background:var(--bg-soft); font-size:14px; color:var(--muted);}
   .stack-list li b{color:var(--ink);}
 
-  .prod-table{width:100%; border-collapse:collapse; margin-top:32px;}
-  .prod-table th{text-align:left; font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); padding:10px 4px; border-bottom:2px solid var(--line-strong);}
-  .prod-table td{padding:15px 4px; border-bottom:1px solid var(--line); font-size:14.5px;}
-  .stars{color:var(--ink); letter-spacing:2px; font-size:13px;}
+  .prod-table{width:100%; border-collapse:collapse; margin-top:32px; table-layout:fixed;}
+  .prod-table th{text-align:left; font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); padding:10px 12px 10px 4px; border-bottom:2px solid var(--line-strong);}
+  .prod-table td{padding:16px 12px 16px 4px; border-bottom:1px solid var(--line); font-size:14.5px; vertical-align:top;}
+  .prod-table th:first-child, .prod-table td:first-child{width:190px; font-weight:700; padding-left:0;}
+  .prod-table th:last-child, .prod-table td:last-child{width:110px; padding-right:0;}
+  .desc-cell{color:var(--muted); font-size:13.5px; line-height:1.7;}
+  .stars{color:var(--ink); letter-spacing:2px; font-size:13px; text-align:right;}
+  @media (max-width:640px){
+    .prod-table, .prod-table tbody, .prod-table tr, .prod-table td{display:block; width:auto;}
+    .prod-table thead{display:none;}
+    .prod-table tr{padding:16px 0; border-bottom:1px solid var(--line);}
+    .prod-table td{border-bottom:none; padding:2px 0;}
+    .prod-table td:first-child{font-size:15px; padding-bottom:6px;}
+    .stars{text-align:left; margin-top:6px; display:inline-block;}
+  }
 
   .okr-box{border:1px solid var(--line); background:var(--bg-soft); padding:32px 34px; margin-top:32px;}
   .okr-obj{font-size:18px; font-weight:800; margin-bottom:22px; padding-bottom:18px; border-bottom:1px dashed var(--line);}
@@ -367,16 +378,56 @@
     <p class="lead">不要一直做專案，而是思考：哪些東西可以變成公司的產品？未來甚至可包裝成 SaaS、內部工具或顧問服務。</p>
 
     <table class="prod-table">
-      <tr><th>產品</th><th>可產品化程度</th></tr>
-      <tr><td>網站體質檢測</td><td class="stars">★★★★★</td></tr>
-      <tr><td>AIO Audit Report</td><td class="stars">★★★★★</td></tr>
-      <tr><td>Schema Generator</td><td class="stars">★★★★★</td></tr>
-      <tr><td>Keyword Research Agent</td><td class="stars">★★★★★</td></tr>
-      <tr><td>Content Planner</td><td class="stars">★★★★★</td></tr>
-      <tr><td>AIO Dashboard</td><td class="stars">★★★★★</td></tr>
-      <tr><td>Prompt Library</td><td class="stars">★★★★☆</td></tr>
-      <tr><td>AIO SOP</td><td class="stars">★★★★☆</td></tr>
-      <tr><td>Design Checklist</td><td class="stars">★★★★☆</td></tr>
+      <thead>
+      <tr><th>產品</th><th>簡介</th><th>可產品化程度</th></tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>網站體質檢測</td>
+        <td class="desc-cell">自動掃描網站技術與收錄問題，快速產出優先處理清單</td>
+        <td class="stars">★★★★★</td>
+      </tr>
+      <tr>
+        <td>AIO Audit Report</td>
+        <td class="desc-cell">整合體質、關鍵字、Schema 檢測結果，一鍵產出診斷報告</td>
+        <td class="stars">★★★★★</td>
+      </tr>
+      <tr>
+        <td>Schema Generator</td>
+        <td class="desc-cell">依頁面類型自動產生對應的 JSON-LD 結構化資料</td>
+        <td class="stars">★★★★★</td>
+      </tr>
+      <tr>
+        <td>Keyword Research Agent</td>
+        <td class="desc-cell">自動彙整搜尋量、意圖分類，並產出關鍵字對應頁面建議</td>
+        <td class="stars">★★★★★</td>
+      </tr>
+      <tr>
+        <td>Content Planner</td>
+        <td class="desc-cell">依關鍵字群組自動規劃內容架構與段落大綱</td>
+        <td class="stars">★★★★★</td>
+      </tr>
+      <tr>
+        <td>AIO Dashboard</td>
+        <td class="desc-cell">整合曝光、排名、CTR 等成效指標的自動化追蹤看板</td>
+        <td class="stars">★★★★★</td>
+      </tr>
+      <tr>
+        <td>Prompt Library</td>
+        <td class="desc-cell">累積各類任務的標準化 Prompt，供全公司共用調用</td>
+        <td class="stars">★★★★☆</td>
+      </tr>
+      <tr>
+        <td>AIO SOP</td>
+        <td class="desc-cell">從接案到迭代的標準化流程文件，確保作業品質一致</td>
+        <td class="stars">★★★★☆</td>
+      </tr>
+      <tr>
+        <td>Design Checklist</td>
+        <td class="desc-cell">前端切版與內容呈現的品質檢核清單</td>
+        <td class="stars">★★★★☆</td>
+      </tr>
+      </tbody>
     </table>
   </div>
 </section>
