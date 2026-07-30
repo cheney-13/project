@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX AIO Framework — AIO 系統架構藍圖</title>
+<style>
+  :root{
+    --bg: #FFFFFF;
+    --bg-soft: #F6F7F9;
+    --ink: #14161A;
+    --muted: #5B6270;
+    --muted-2: #9AA0AC;
+    --line: #E3E5EA;
+    --line-strong: #1A1C20;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', -apple-system, "PingFang TC", "Noto Sans TC", sans-serif;
+    line-height:1.8;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 32px;}
+
+  header.hero{padding:96px 0 56px;}
+  .doc-code{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.18em;
+    color:var(--muted-2); text-transform:uppercase; margin-bottom:34px;
+  }
+  h1.title{
+    font-weight:800; font-size:clamp(32px, 5.2vw, 50px);
+    line-height:1.3; margin:0 0 22px; letter-spacing:-0.01em;
+  }
+  .subtitle{font-size:17px; color:var(--muted); max-width:620px; margin:0 0 40px;}
+  .meta-grid{display:grid; grid-template-columns:repeat(3, auto); gap:40px; margin-bottom:44px;}
+  .meta-grid .k{font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted-2); margin-bottom:8px;}
+  .meta-grid .v{font-size:15px; font-weight:600;}
+  @media (max-width:600px){ .meta-grid{grid-template-columns:1fr; gap:20px;} }
+  .hero-rule{border:none; border-top:2px solid var(--line-strong); margin:0;}
+
+  .toc-band{background:var(--bg-soft); padding:56px 0;}
+  .toc-grid{display:grid; grid-template-columns:1fr 1fr; row-gap:30px; column-gap:40px;}
+  .toc-item{display:flex; align-items:baseline; gap:16px;}
+  .toc-item .n{font-family:var(--mono); font-size:13px; color:var(--muted-2);}
+  .toc-item .t{font-size:16px; font-weight:600; color:var(--ink);}
+  @media (max-width:600px){ .toc-grid{grid-template-columns:1fr;} }
+
+  section{padding:70px 0; border-bottom:1px solid var(--line); scroll-margin-top:40px;}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:var(--mono); font-size:13px; color:var(--muted-2); margin-bottom:16px;}
+  h2.sec-title{font-weight:800; font-size:clamp(22px, 3vw, 28px); margin:0 0 22px;}
+  .sec-rule{border:none; border-top:1px solid var(--line); margin:0 0 32px;}
+  p.lead{color:var(--muted); max-width:680px; font-size:15.5px;}
+
+  .pipeline{display:flex; flex-wrap:wrap; margin-top:36px; border:1px solid var(--line);}
+  .pipe-step{flex:1 1 150px; min-width:140px; padding:20px 16px; border-right:1px solid var(--line); position:relative;}
+  .pipe-step:last-child{border-right:none;}
+  .pipe-step .idx{font-family:var(--mono); font-size:11px; color:var(--muted-2); display:block; margin-bottom:8px;}
+  .pipe-step .label{font-size:14px; font-weight:700;}
+  @media (max-width:760px){
+    .pipe-step{flex:1 1 100%; border-right:none; border-bottom:1px solid var(--line);}
+    .pipe-step:last-child{border-bottom:none;}
+  }
+
+  .phase{display:grid; grid-template-columns:90px 1fr; gap:24px; padding:28px 0; border-top:1px solid var(--line);}
+  .phase:last-child{border-bottom:1px solid var(--line);}
+  .phase .ph-num{font-family:var(--mono); font-size:12px; color:var(--muted-2); padding-top:2px;}
+  .phase .ph-num strong{display:block; color:var(--ink); font-size:22px; font-weight:800;}
+  .phase h3{margin:0 0 8px; font-size:16.5px; font-weight:700;}
+  .phase .desc{font-size:14px; color:var(--muted); margin-bottom:14px;}
+  .phase .out{display:flex; flex-wrap:wrap; gap:8px;}
+  .tag{font-family:var(--mono); font-size:11.5px; padding:4px 11px; border:1px solid var(--line); color:var(--muted); border-radius:2px; white-space:nowrap;}
+  @media (max-width:600px){ .phase{grid-template-columns:1fr; gap:8px;} }
+
+  .op-flow{display:flex; flex-wrap:wrap; gap:8px; margin:28px 0 40px;}
+  .op-node{font-family:var(--mono); font-size:13px; padding:9px 16px; border:1px solid var(--line); background:var(--bg-soft);}
+  .op-arrow{color:var(--muted-2); align-self:center; font-size:13px;}
+
+  .tool-table{width:100%; border-collapse:collapse; margin-top:6px;}
+  .tool-table td{padding:13px 4px; border-bottom:1px solid var(--line); font-size:14.5px;}
+  .tool-table td.k{font-family:var(--mono); font-weight:700; width:180px;}
+
+  .stack-list{list-style:none; padding:0; margin:24px 0 0; display:grid; gap:10px;}
+  .stack-list li{padding:14px 18px; border:1px solid var(--line); background:var(--bg-soft); font-size:14px; color:var(--muted);}
+  .stack-list li b{color:var(--ink);}
+
+  .prod-table{width:100%; border-collapse:collapse; margin-top:32px;}
+  .prod-table th{text-align:left; font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); padding:10px 4px; border-bottom:2px solid var(--line-strong);}
+  .prod-table td{padding:15px 4px; border-bottom:1px solid var(--line); font-size:14.5px;}
+  .stars{color:var(--ink); letter-spacing:2px; font-size:13px;}
+
+  .okr-box{border:1px solid var(--line); background:var(--bg-soft); padding:32px 34px; margin-top:32px;}
+  .okr-obj{font-size:18px; font-weight:800; margin-bottom:22px; padding-bottom:18px; border-bottom:1px dashed var(--line);}
+  .kr-list{list-style:none; margin:0; padding:0; counter-reset:kr; display:grid; gap:14px;}
+  .kr-list li{counter-increment:kr; display:grid; grid-template-columns:44px 1fr; font-size:14.5px;}
+  .kr-list li::before{content:"KR" counter(kr); font-family:var(--mono); font-size:11px; color:var(--muted-2);}
+
+  .pillars{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:0; border-top:1px solid var(--line); border-left:1px solid var(--line); margin-top:32px;}
+  .pillar{padding:26px 22px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .pillar .p-num{font-family:var(--mono); font-size:12px; color:var(--muted-2);}
+  .pillar h4{margin:10px 0 8px; font-size:15px; font-weight:700;}
+  .pillar p{margin:0; font-size:13px; color:var(--muted);}
+
+  footer{padding:50px 0 80px; color:var(--muted-2); font-family:var(--mono); font-size:12px; letter-spacing:0.05em;}
+
+  /* ---------- Anchor nav ---------- */
+  .toc-item a{
+    display:flex; align-items:baseline; gap:16px;
+    text-decoration:none; color:inherit;
+  }
+  .toc-item a:hover .t{color:var(--ink); text-decoration:underline; text-underline-offset:4px;}
+  .toc-item a:hover .n{color:var(--ink);}
+
+  .side-nav{
+    position:fixed;
+    right:28px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:50;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    padding:16px 0;
+  }
+  .side-nav a{
+    display:flex; align-items:center; justify-content:flex-end; gap:10px;
+    text-decoration:none;
+    opacity:0.5;
+    transition:opacity 0.2s ease;
+  }
+  .side-nav a .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--muted-2);
+    transition:background 0.2s ease, transform 0.2s ease;
+    flex-shrink:0;
+  }
+  .side-nav a .label{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.06em;
+    color:var(--muted); white-space:nowrap;
+    max-width:0; overflow:hidden;
+    transition:max-width 0.25s ease, opacity 0.2s ease;
+    opacity:0;
+  }
+  .side-nav a:hover{opacity:1;}
+  .side-nav a:hover .label{max-width:140px; opacity:1;}
+  .side-nav a.active{opacity:1;}
+  .side-nav a.active .dot{background:var(--ink); transform:scale(1.3);}
+  .side-nav a.active .label{max-width:140px; opacity:1; color:var(--ink); font-weight:600;}
+
+  .back-to-top{
+    position:fixed;
+    right:28px;
+    bottom:32px;
+    z-index:50;
+    width:40px; height:40px;
+    border:1px solid var(--line);
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:14px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  .back-to-top.show{opacity:1; pointer-events:auto;}
+  .back-to-top:hover{border-color:var(--line-strong); color:var(--ink);}
+
+  @media (max-width:900px){
+    .side-nav{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="doc-code">內部討論稿 ／ MX AIO FRAMEWORK</div>
+    <h1 class="title">從執行者到<br>系統架構師的藍圖</h1>
+    <p class="subtitle">整理 AIO（AI Overview 優化）計畫中，主管角色應建立的方法論、自動化流程、內部協作與產品化路徑。</p>
+    <div class="meta-grid">
+      <div><div class="k">Version</div><div class="v">v1.0</div></div>
+      <div><div class="k">Status</div><div class="v">規劃草案</div></div>
+      <div><div class="k">Purpose</div><div class="v">定義角色轉型與系統建立方向</div></div>
+    </div>
+  </div>
+  <hr class="hero-rule">
+</header>
+
+<div class="toc-band">
+  <div class="wrap">
+    <div class="toc-grid">
+      <div class="toc-item"><a href="#methodology"><span class="n">01</span><span class="t">方法論建立</span></a></div>
+      <div class="toc-item"><a href="#automation"><span class="n">02</span><span class="t">自動化流程設計</span></a></div>
+      <div class="toc-item"><a href="#operation"><span class="n">03</span><span class="t">內部營運流程</span></a></div>
+      <div class="toc-item"><a href="#product"><span class="n">04</span><span class="t">產品化</span></a></div>
+      <div class="toc-item"><a href="#okr"><span class="n">05</span><span class="t">年度 OKR</span></a></div>
+      <div class="toc-item"><a href="#architect"><span class="n">06</span><span class="t">角色定位</span></a></div>
+    </div>
+  </div>
+</div>
+
+<section id="methodology">
+  <div class="wrap">
+    <div class="eyebrow">01</div>
+    <h2 class="sec-title">方法論建立</h2>
+    <hr class="sec-rule">
+    <p class="lead">工作重點不是逐案執行，而是定義「MX 的 AIO 怎麼做」——建立 MX AIO Framework v1.0，最終落地為公司 SOP。</p>
+
+    <div class="pipeline">
+      <div class="pipe-step"><span class="idx">00</span><span class="label">接案</span></div>
+      <div class="pipe-step"><span class="idx">01</span><span class="label">網站體質檢測</span></div>
+      <div class="pipe-step"><span class="idx">02</span><span class="label">搜尋需求研究</span></div>
+      <div class="pipe-step"><span class="idx">03</span><span class="label">內容規劃</span></div>
+      <div class="pipe-step"><span class="idx">04</span><span class="label">技術優化</span></div>
+      <div class="pipe-step"><span class="idx">05</span><span class="label">GEO 布局</span></div>
+      <div class="pipe-step"><span class="idx">06</span><span class="label">成效追蹤</span></div>
+      <div class="pipe-step"><span class="idx">07</span><span class="label">持續優化</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="automation">
+  <div class="wrap">
+    <div class="eyebrow">02</div>
+    <h2 class="sec-title">自動化流程設計</h2>
+    <hr class="sec-rule">
+    <p class="lead">把每個階段拆解為「輸入 → AI 處理 → 標準化輸出」，減少人工重複判斷。</p>
+
+    <div class="phase">
+      <div class="ph-num"><strong>P1</strong>網站體質</div>
+      <div>
+        <h3>AI 檢測流程</h3>
+        <div class="desc">輸入網址 → AI Crawl → 自動產生評分報告，不用每次人工檢視。</div>
+        <div class="out">
+          <span class="tag">SEO Score</span><span class="tag">AIO Score</span>
+          <span class="tag">Accessibility</span><span class="tag">速度</span>
+          <span class="tag">Schema</span><span class="tag">Heading</span>
+          <span class="tag">Internal Link</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-num"><strong>P2</strong>Intent Research</div>
+      <div>
+        <h3>意圖研究 Prompt 化</h3>
+        <div class="desc">輸入產業 → AI 自動產生，不用每次重新思考。</div>
+        <div class="out">
+          <span class="tag">Persona</span><span class="tag">搜尋情境</span>
+          <span class="tag">FAQ</span><span class="tag">Intent 分類</span>
+          <span class="tag">Conversation Query</span><span class="tag">Zero-click Query</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-num"><strong>P3</strong>Content</div>
+      <div>
+        <h3>內容模板化</h3>
+        <div class="desc">每一種內容類型都有固定架構，直接套用。</div>
+        <div class="out">
+          <span class="tag">Landing Page</span><span class="tag">FAQ</span>
+          <span class="tag">Service</span><span class="tag">Knowledge</span>
+          <span class="tag">Case Study</span><span class="tag">Glossary</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-num"><strong>P4</strong>Schema</div>
+      <div>
+        <h3>Schema Generator</h3>
+        <div class="desc">甚至可由 AI 自動產生 JSON-LD。</div>
+        <div class="out">
+          <span class="tag">FAQ</span><span class="tag">Article</span>
+          <span class="tag">LocalBusiness</span><span class="tag">Organization</span>
+          <span class="tag">Product</span><span class="tag">Service</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-num"><strong>P5</strong>GEO</div>
+      <div>
+        <h3>引用策略建立</h3>
+        <div class="desc">最終轉化為 EEAT Checklist。</div>
+        <div class="out">
+          <span class="tag">Authority Source</span><span class="tag">Cross Reference</span>
+          <span class="tag">Wikipedia</span><span class="tag">政府資料</span>
+          <span class="tag">研究論文</span><span class="tag">品牌資訊</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-num"><strong>P6</strong>Monitor</div>
+      <div>
+        <h3>Dashboard 建立</h3>
+        <div class="desc">每月自動追蹤全部指標。</div>
+        <div class="out">
+          <span class="tag">AI 引用率</span><span class="tag">Search Console</span>
+          <span class="tag">AI Overviews</span><span class="tag">Index</span>
+          <span class="tag">Impression</span><span class="tag">CTR</span><span class="tag">Leads</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="operation">
+  <div class="wrap">
+    <div class="eyebrow">03</div>
+    <h2 class="sec-title">內部營運流程優化</h2>
+    <hr class="sec-rule">
+    <p class="lead">從單一的「企劃共編」擴大為完整的團隊協作系統。</p>
+
+    <div class="op-flow">
+      <div class="op-node">PM</div><div class="op-arrow">→</div>
+      <div class="op-node">企劃</div><div class="op-arrow">→</div>
+      <div class="op-node">AI 產生初稿</div><div class="op-arrow">→</div>
+      <div class="op-node">Designer</div><div class="op-arrow">→</div>
+      <div class="op-node">Developer</div><div class="op-arrow">→</div>
+      <div class="op-node">QA</div><div class="op-arrow">→</div>
+      <div class="op-node">上線</div><div class="op-arrow">→</div>
+      <div class="op-node">Monitor</div>
+    </div>
+
+    <table class="tool-table">
+      <tr><td class="k">Notion</td><td>管理知識</td></tr>
+      <tr><td class="k">Google Docs</td><td>內容共編</td></tr>
+      <tr><td class="k">Claude</td><td>內容生成</td></tr>
+      <tr><td class="k">Gemini</td><td>Research</td></tr>
+      <tr><td class="k">Figma</td><td>UX 內容</td></tr>
+    </table>
+
+    <ul class="stack-list">
+      <li><b>Prompt Library：</b>FAQ / Persona / Intent / Schema / Landing / Meta / Title Prompt，全公司共用。</li>
+      <li><b>Knowledge Base：</b>成功案例、失敗案例、Prompt、產業知識、SEO／Google／AI 更新，新人可直接學習。</li>
+    </ul>
+  </div>
+</section>
+
+<section id="product">
+  <div class="wrap">
+    <div class="eyebrow">04</div>
+    <h2 class="sec-title">產品化 — 主管最大的價值</h2>
+    <hr class="sec-rule">
+    <p class="lead">不要一直做專案，而是思考：哪些東西可以變成公司的產品？未來甚至可包裝成 SaaS、內部工具或顧問服務。</p>
+
+    <table class="prod-table">
+      <tr><th>產品</th><th>可產品化程度</th></tr>
+      <tr><td>網站體質檢測</td><td class="stars">★★★★★</td></tr>
+      <tr><td>AIO Audit Report</td><td class="stars">★★★★★</td></tr>
+      <tr><td>Schema Generator</td><td class="stars">★★★★★</td></tr>
+      <tr><td>Keyword Research Agent</td><td class="stars">★★★★★</td></tr>
+      <tr><td>Content Planner</td><td class="stars">★★★★★</td></tr>
+      <tr><td>AIO Dashboard</td><td class="stars">★★★★★</td></tr>
+      <tr><td>Prompt Library</td><td class="stars">★★★★☆</td></tr>
+      <tr><td>AIO SOP</td><td class="stars">★★★★☆</td></tr>
+      <tr><td>Design Checklist</td><td class="stars">★★★★☆</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="okr">
+  <div class="wrap">
+    <div class="eyebrow">05</div>
+    <h2 class="sec-title">年度 OKR 建議</h2>
+    <hr class="sec-rule">
+
+    <div class="okr-box">
+      <div class="okr-obj">Objective — 建立 MX AIO 的可複製交付系統</div>
+      <ul class="kr-list">
+        <li>建立完整 AIO SOP（v1.0）</li>
+        <li>完成 80% AIO 流程自動化</li>
+        <li>建立 Prompt Library（100+）</li>
+        <li>建立 AIO Dashboard</li>
+        <li>建立知識庫與案例庫</li>
+        <li>建立 Design × Content × Dev 協作流程</li>
+        <li>建立 AIO 品質檢查 Checklist</li>
+        <li>完成第一版 AIO 顧問服務流程</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="architect">
+  <div class="wrap">
+    <div class="eyebrow">06</div>
+    <h2 class="sec-title">角色定位：AIO System Architect</h2>
+    <hr class="sec-rule">
+    <p class="lead">核心工作不再是親自完成每一個網站，而是建立以下五件事。即使團隊人數增加、AI 工具持續演進，價值也不會停留在執行層，而集中在建立整個 AIO 生態系的能力。</p>
+
+    <div class="pillars">
+      <div class="pillar"><div class="p-num">01</div><h4>建立流程</h4><p>Process — 讓每個專案都能依循一致的方法執行。</p></div>
+      <div class="pillar"><div class="p-num">02</div><h4>建立工具</h4><p>Tools — 降低人工重複作業，提高交付效率。</p></div>
+      <div class="pillar"><div class="p-num">03</div><h4>建立標準</h4><p>Standards — 確保不同成員產出的品質一致。</p></div>
+      <div class="pillar"><div class="p-num">04</div><h4>建立知識</h4><p>Knowledge — 把經驗沉澱為公司資產，而非個人。</p></div>
+      <div class="pillar"><div class="p-num">05</div><h4>建立產品</h4><p>Products — 能力轉化為可複製、可銷售的服務與工具。</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">MX AIO FRAMEWORK V1.0 — INTERNAL STRATEGY DOCUMENT</div>
+</footer>
+
+<nav class="side-nav" id="sideNav">
+  <a href="#methodology" data-target="methodology"><span class="label">01 方法論建立</span><span class="dot"></span></a>
+  <a href="#automation" data-target="automation"><span class="label">02 自動化流程</span><span class="dot"></span></a>
+  <a href="#operation" data-target="operation"><span class="label">03 內部營運</span><span class="dot"></span></a>
+  <a href="#product" data-target="product"><span class="label">04 產品化</span><span class="dot"></span></a>
+  <a href="#okr" data-target="okr"><span class="label">05 年度 OKR</span><span class="dot"></span></a>
+  <a href="#architect" data-target="architect"><span class="label">06 角色定位</span><span class="dot"></span></a>
+</nav>
+
+<a href="#top" class="back-to-top" id="backToTop" aria-label="回到頂部">↑</a>
+
+<script>
+  (function(){
+    var sections = document.querySelectorAll('section[id]');
+    var navLinks = document.querySelectorAll('.side-nav a');
+    var backToTop = document.getElementById('backToTop');
+
+    function setActive(id){
+      navLinks.forEach(function(link){
+        link.classList.toggle('active', link.getAttribute('data-target') === id);
+      });
+    }
+
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          setActive(entry.target.id);
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+    sections.forEach(function(sec){ observer.observe(sec); });
+
+    window.addEventListener('scroll', function(){
+      backToTop.classList.toggle('show', window.scrollY > 600);
+    });
+  })();
+</script>
+
+</body>
+</html>
