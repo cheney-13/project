@@ -1,0 +1,524 @@
+<title>0050 / 0056 股數試算</title>
+<style>
+  :root {
+    --bg: #f6f3ec;
+    --surface: #ffffff;
+    --ink: #1c2521;
+    --ink-muted: #5b655f;
+    --teal: #124b43;
+    --teal-soft: #e4eeea;
+    --gold: #a9761f;
+    --gold-soft: #f3e6c9;
+    --line: #ded7c7;
+    --good: #2e7d53;
+    --good-soft: #e3f0e7;
+    --shadow: rgba(28, 37, 33, 0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10161a;
+      --surface: #161f24;
+      --ink: #e9e6dc;
+      --ink-muted: #93a09a;
+      --teal: #5fb3a3;
+      --teal-soft: #1b2c29;
+      --gold: #e3b15c;
+      --gold-soft: #2b2417;
+      --line: #263038;
+      --good: #4fbe83;
+      --good-soft: #17281f;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10161a;
+    --surface: #161f24;
+    --ink: #e9e6dc;
+    --ink-muted: #93a09a;
+    --teal: #5fb3a3;
+    --teal-soft: #1b2c29;
+    --gold: #e3b15c;
+    --gold-soft: #2b2417;
+    --line: #263038;
+    --good: #4fbe83;
+    --good-soft: #17281f;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f3ec;
+    --surface: #ffffff;
+    --ink: #1c2521;
+    --ink-muted: #5b655f;
+    --teal: #124b43;
+    --teal-soft: #e4eeea;
+    --gold: #a9761f;
+    --gold-soft: #f3e6c9;
+    --line: #ded7c7;
+    --good: #2e7d53;
+    --good-soft: #e3f0e7;
+    --shadow: rgba(28, 37, 33, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+    line-height: 1.5;
+  }
+
+  .num {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px 26px 26px;
+    box-shadow: 0 8px 28px var(--shadow);
+  }
+
+  header {
+    margin-bottom: 22px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 6px 0 4px;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .sub {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .label-row label { margin-bottom: 0; }
+
+  .fill-latest {
+    border: none;
+    background: none;
+    padding: 0;
+    color: var(--teal);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .fill-latest:hover {
+    text-decoration: underline;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    transition: border-color 0.15s ease;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--gold);
+  }
+
+  .prefix {
+    padding: 0 0 0 14px;
+    color: var(--ink-muted);
+    font-size: 14px;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  }
+
+  input[type="number"] {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: none;
+    outline: none;
+    padding: 12px 14px 12px 6px;
+    font-size: 17px;
+    color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type="number"]::placeholder {
+    color: var(--ink-muted);
+    opacity: 0.6;
+  }
+
+  .hint {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    margin-top: 5px;
+  }
+
+  .divider {
+    border-top: 1px solid var(--line);
+    margin: 20px 0;
+  }
+
+  .etf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 480px) {
+    .etf-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .etf-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--bg);
+  }
+
+  .etf-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .etf-code {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--teal);
+    letter-spacing: 0.01em;
+  }
+
+  .etf-name {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+  }
+
+  .etf-card .input-wrap {
+    background: var(--surface);
+  }
+
+  .etf-card .field {
+    margin-bottom: 4px;
+  }
+
+  .results {
+    margin-top: 16px;
+    border-top: 1px dashed var(--line);
+    padding-top: 14px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .stat-value {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .stat-value .unit {
+    font-size: 14px;
+    color: var(--ink-muted);
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  .breakdown {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin-top: 3px;
+  }
+
+  .breakdown strong {
+    color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-weight: 600;
+  }
+
+  .chips {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .chip {
+    flex: 1;
+    border-radius: 9px;
+    padding: 8px 10px;
+    background: var(--gold-soft);
+  }
+
+  .chip.good {
+    background: var(--good-soft);
+  }
+
+  .chip-label {
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  .chip-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 1px;
+  }
+
+  .chip.good .chip-value {
+    color: var(--good);
+  }
+
+  .fee-line {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 8px;
+  }
+
+  footer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+</style>
+
+<div class="card">
+  <header>
+    <div class="eyebrow">ETF 定期定額試算</div>
+    <h1>股數回推計算器</h1>
+    <div class="sub">分別輸入 0050、0056 的可投入金額與股價，各自算出能買多少股（已內含手續費估算）</div>
+  </header>
+
+  <div class="label-row">
+    <span class="hint" style="margin-top:0;">股價可各自輸入</span>
+    <button type="button" class="fill-latest" id="use-latest">一鍵帶入最新收盤價</button>
+  </div>
+
+  <div class="divider" style="margin:8px 0 16px;"></div>
+
+  <div class="etf-grid">
+    <div class="etf-card" data-code="0050">
+      <div class="etf-head">
+        <span class="etf-code">0050</span>
+        <span class="etf-name">元大台灣50</span>
+      </div>
+
+      <div class="field">
+        <label for="amount-0050">可投入金額（元）</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="amount-0050" class="amount-input" data-code="0050" placeholder="例如 20000" inputmode="decimal" min="0" step="1" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="price-0050">股價（元）</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="price-0050" class="price-input" data-code="0050" placeholder="例如 100.6" inputmode="decimal" min="0" step="0.01" />
+        </div>
+        <div class="hint" id="hint-0050">請輸入股價，或用上方按鈕帶入收盤價</div>
+      </div>
+
+      <div class="results">
+        <div class="stat-label">預估可購買股數</div>
+        <div class="stat-value"><span class="num" id="shares-0050">0</span><span class="unit">股</span></div>
+        <div class="breakdown" id="breakdown-0050">= 0 張整股 + 0 股零股</div>
+
+        <div class="chips">
+          <div class="chip">
+            <div class="chip-label">總花費</div>
+            <div class="chip-value num" id="cost-0050">$0</div>
+          </div>
+          <div class="chip good">
+            <div class="chip-label">剩餘金額</div>
+            <div class="chip-value num" id="remain-0050">$0</div>
+          </div>
+        </div>
+        <div class="fee-line">已扣估算手續費 <span class="num" id="fee-0050">$0</span></div>
+      </div>
+    </div>
+
+    <div class="etf-card" data-code="0056">
+      <div class="etf-head">
+        <span class="etf-code">0056</span>
+        <span class="etf-name">元大高股息</span>
+      </div>
+
+      <div class="field">
+        <label for="amount-0056">可投入金額（元）</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="amount-0056" class="amount-input" data-code="0056" placeholder="例如 20000" inputmode="decimal" min="0" step="1" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="price-0056">股價（元）</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="price-0056" class="price-input" data-code="0056" placeholder="例如 49.6" inputmode="decimal" min="0" step="0.01" />
+        </div>
+        <div class="hint" id="hint-0056">請輸入股價，或用上方按鈕帶入收盤價</div>
+      </div>
+
+      <div class="results">
+        <div class="stat-label">預估可購買股數</div>
+        <div class="stat-value"><span class="num" id="shares-0056">0</span><span class="unit">股</span></div>
+        <div class="breakdown" id="breakdown-0056">= 0 張整股 + 0 股零股</div>
+
+        <div class="chips">
+          <div class="chip">
+            <div class="chip-label">總花費</div>
+            <div class="chip-value num" id="cost-0056">$0</div>
+          </div>
+          <div class="chip good">
+            <div class="chip-label">剩餘金額</div>
+            <div class="chip-value num" id="remain-0056">$0</div>
+          </div>
+        </div>
+        <div class="fee-line">已扣估算手續費 <span class="num" id="fee-0056">$0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    整股（1 張）以 1,000 股為單位，零股交易最低 1 股起。手續費以牌告費率 0.1425%、單筆最低 $1 估算，實際費率依券商折扣而異。股價為使用者輸入或手動帶入之收盤價快照，非即時報價；試算結果僅供參考，不構成投資建議。
+  </footer>
+</div>
+
+<script>
+  const FEE_RATE = 0.001425;
+  const FEE_MIN = 1;
+
+  // 手動查詢後填入的收盤價快照，非即時報價（此頁無法連線外部市場資料）
+  const LATEST = {
+    '0050': { price: 103.80, time: '2026/08/05 14:30 收盤（Yahoo奇摩股市）' },
+    '0056': { price: 51.45, time: '2026/08/05 14:30 收盤（Yahoo奇摩股市）' }
+  };
+
+  const useLatestBtn = document.getElementById('use-latest');
+  const priceInputs = Array.from(document.querySelectorAll('.price-input'));
+  const amountInputs = Array.from(document.querySelectorAll('.amount-input'));
+
+  function money(n) {
+    return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  }
+
+  function feeFor(shares, price) {
+    if (shares <= 0) return 0;
+    return Math.max(shares * price * FEE_RATE, FEE_MIN);
+  }
+
+  function calcOne(code) {
+    const priceInput = document.getElementById(`price-${code}`);
+    const amountInput = document.getElementById(`amount-${code}`);
+    const price = parseFloat(priceInput.value);
+    const amount = parseFloat(amountInput.value);
+
+    const sharesEl = document.getElementById(`shares-${code}`);
+    const breakdownEl = document.getElementById(`breakdown-${code}`);
+    const costEl = document.getElementById(`cost-${code}`);
+    const remainEl = document.getElementById(`remain-${code}`);
+    const feeEl = document.getElementById(`fee-${code}`);
+
+    if (!price || price <= 0 || !amount || amount <= 0) {
+      sharesEl.textContent = '0';
+      breakdownEl.textContent = '= 0 張整股 + 0 股零股';
+      costEl.textContent = '$0';
+      remainEl.textContent = amount > 0 ? money(amount) : '$0';
+      feeEl.textContent = '$0';
+      return;
+    }
+
+    let shares = Math.floor(amount / price);
+    while (shares > 0) {
+      const cost = shares * price + feeFor(shares, price);
+      if (cost <= amount) break;
+      shares--;
+    }
+
+    const fee = feeFor(shares, price);
+    const cost = shares * price + fee;
+    const remain = amount - cost;
+    const lots = Math.floor(shares / 1000);
+    const odd = shares % 1000;
+
+    sharesEl.textContent = shares.toLocaleString('en-US');
+    breakdownEl.textContent = `= ${lots.toLocaleString('en-US')} 張整股 + ${odd.toLocaleString('en-US')} 股零股`;
+    costEl.textContent = money(cost);
+    remainEl.textContent = money(remain);
+    feeEl.textContent = money(fee);
+  }
+
+  function calcAll() {
+    calcOne('0050');
+    calcOne('0056');
+  }
+
+  useLatestBtn.addEventListener('click', () => {
+    Object.keys(LATEST).forEach(code => {
+      const snap = LATEST[code];
+      document.getElementById(`price-${code}`).value = snap.price;
+      document.getElementById(`hint-${code}`).textContent = `已帶入 ${snap.time}，僅供參考，非即時報價`;
+    });
+    calcAll();
+  });
+
+  [...amountInputs, ...priceInputs].forEach(el => el.addEventListener('input', calcAll));
+
+  calcAll();
+</script>
