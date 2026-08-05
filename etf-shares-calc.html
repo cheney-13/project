@@ -1,4 +1,6 @@
 <title>0050 / 0056 股數試算</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <style>
   :root {
     --bg: #f6f3ec;
@@ -61,6 +63,8 @@
 
   * { box-sizing: border-box; }
 
+  html { -webkit-text-size-adjust: 100%; }
+
   body {
     margin: 0;
     background: var(--bg);
@@ -68,8 +72,12 @@
     font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
     display: flex;
     justify-content: center;
-    padding: 40px 16px;
+    padding: 24px 12px;
     line-height: 1.5;
+  }
+
+  @media (min-width: 560px) {
+    body { padding: 40px 16px; }
   }
 
   .num {
@@ -83,8 +91,12 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 18px;
-    padding: 28px 26px 26px;
+    padding: 20px 16px 18px;
     box-shadow: 0 8px 28px var(--shadow);
+  }
+
+  @media (min-width: 560px) {
+    .card { padding: 28px 26px 26px; }
   }
 
   header {
@@ -100,7 +112,7 @@
   }
 
   h1 {
-    font-size: 24px;
+    font-size: clamp(20px, 6vw, 24px);
     font-weight: 700;
     margin: 6px 0 4px;
     letter-spacing: -0.01em;
@@ -126,24 +138,38 @@
 
   .label-row {
     display: flex;
-    align-items: baseline;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px 8px;
     margin-bottom: 6px;
   }
 
   .label-row label { margin-bottom: 0; }
 
+  @media (max-width: 400px) {
+    .label-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
   .fill-latest {
     border: none;
     background: none;
-    padding: 0;
+    padding: 8px 0;
+    margin: -8px 0;
     color: var(--teal);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     white-space: nowrap;
+    text-align: right;
+  }
+
+  @media (max-width: 400px) {
+    .fill-latest { text-align: left; }
   }
 
   .fill-latest:hover {
@@ -206,9 +232,10 @@
     gap: 14px;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 520px) {
     .etf-grid {
       grid-template-columns: 1fr;
+      gap: 12px;
     }
   }
 
@@ -217,6 +244,7 @@
     border-radius: 14px;
     padding: 16px;
     background: var(--bg);
+    min-width: 0;
   }
 
   .etf-head {
@@ -261,7 +289,7 @@
   }
 
   .stat-value {
-    font-size: 30px;
+    font-size: clamp(26px, 8vw, 30px);
     font-weight: 700;
     color: var(--teal);
     letter-spacing: -0.01em;
@@ -295,6 +323,7 @@
 
   .chip {
     flex: 1;
+    min-width: 0;
     border-radius: 9px;
     padding: 8px 10px;
     background: var(--gold-soft);
@@ -315,6 +344,7 @@
     font-weight: 700;
     color: var(--ink);
     margin-top: 1px;
+    overflow-wrap: break-word;
   }
 
   .chip.good .chip-value {
