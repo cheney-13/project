@@ -46,8 +46,8 @@ python3 -m unittest discover -s tests
 ```
 
 互動原型與規範卡(可直接用瀏覽器開):
-- `ui/qa_console.html` — 切版核對工具(貼連結 → 一鍵批次 → 分眾報告)
-- `ui/handoff_spec.html` — Figma 交付規範卡(設計師照著整理檔案)
+- `index.html` — 切版核對工具(貼連結 → 一鍵批次 → 分眾報告;資料夾主入口)
+- `handoff_spec.html` — Figma 交付規範卡(設計師照著整理檔案)
 
 ---
 
@@ -99,6 +99,8 @@ visual-spec-qc/
 ├── README.md
 ├── CLAUDE.md              # 給 Claude Code 續作的專案指南
 ├── LICENSE
+├── index.html            # 切版核對工具(團隊入口 · 互動原型)
+├── handoff_spec.html     # Figma 交付規範卡(設計師照著整理檔案)
 ├── src/
 │   ├── qa.py             # CLI 入口:批次 + 總覽 index + CI 門檻
 │   ├── qa_engine.py      # 比對 + 責任歸因 + 分數(純標準庫)
@@ -108,9 +110,6 @@ visual-spec-qc/
 │   ├── run_diff.py       # 執行差異(解決/回歸/未解決)
 │   ├── extract_dom.js    # 注入網頁蒐集 [data-figma-id] 的 computed
 │   └── fetch_dom.py      # (選用)Playwright 抓 DOM,無需 MCP
-├── ui/
-│   ├── qa_console.html   # 互動原型:切版核對工具
-│   └── handoff_spec.html # Figma 交付規範卡
 ├── tests/                # 回歸測試(python3 -m unittest discover -s tests)
 └── samples/              # 示範資料(含真實 MX 案例、規範示範、基準線示範)
 ```
@@ -119,7 +118,7 @@ visual-spec-qc/
 
 ## 交付規範(讓核對可自動化)
 
-自動對位需要設計檔遵循約定,詳見 `ui/handoff_spec.html`:
+自動對位需要設計檔遵循約定,詳見 `handoff_spec.html`:
 
 1. **Frame 命名** `/route @width`(如 `/about @1440`)→ 工具推導測試 URL + 瀏覽器寬度。
 2. **單元 key** ↔ 前端 `data-figma-id`(如圖層 `sec:hero` ↔ `data-figma-id="sec:hero"`)。

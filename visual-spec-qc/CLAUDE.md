@@ -45,10 +45,10 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
 
 ## 交付規範(自動對位的前提)
 - Frame 命名 `/route @width`;圖層 key ↔ 前端 `data-figma-id`;標準寬度 1440/768/375。
-- 規範卡原始碼:`ui/handoff_spec.html`。
+- 規範卡原始碼:`handoff_spec.html`。
 
 ## 視覺系統(極簡日式 · 單一亮色)
-所有 HTML 輸出共用同一套 token,改樣式要同步四處(`report_html.py`、`qa.py`、`run_diff.py`、`ui/*.html`):
+所有 HTML 輸出共用同一套 token,改樣式要同步四處(`report_html.py`、`qa.py`、`run_diff.py`、根層 `index.html` / `handoff_spec.html`):
 ```
 和紙暖白 --bg:#f4f2ec / #faf9f6   墨色 --ink:#1f1d1a   髮絲線 --line:#e7e3da
 傳統色  程式=朱紅#b4453a 設計=藍#3f5b7a 通過=苔綠#5e7d5a 警示=山吹#b98a34 待人工#8f887c
