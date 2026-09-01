@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
+<title>Demo About（符合交付規範的切版頁）</title>
+<style>
+  body{margin:0;font-family:"Noto Sans TC",sans-serif;background:#f0f0f0;color:#313334}
+  section{padding:40px}
+  /* hero:title —— 品牌色故意用成 Bootstrap 預設灰,示範「程式問題」 */
+  .hero-title{color:#212529;font-size:48px;font-weight:700;margin:0}
+  /* seo:card —— 白底 + 圓角 20,與設計相符,示範「通過」 */
+  .seo-card{background:#ffffff;border-radius:20px;padding:24px;color:#313334;font-size:16px;font-weight:400}
+  /* footer:title —— 淺灰 #9FA0A0,與設計相符,示範「通過」 */
+  .footer-title{color:#9FA0A0;font-size:16px;font-weight:400}
+  /* promo:banner —— 頁面有、設計沒定義,示範「實作獨有(多餘)」 */
+  .promo{background:#c70067;color:#fff;font-size:14px;padding:12px}
+  /* 註:設計還定義了 iso:quote,但此頁故意不做 → 示範「設計獨有(漏做)」 */
+</style></head><body>
+
+  <section>
+    <h1 class="hero-title" data-figma-id="hero:title">頂級網頁設計團隊 打造上線即領先的 AI SEO 網站</h1>
+  </section>
+
+  <section>
+    <div class="seo-card" data-figma-id="seo:card">AIO 是什麼？跟 SEO 有什麼差別？</div>
+  </section>
+
+  <section>
+    <div class="promo" data-figma-id="promo:banner">限時活動橫幅（設計稿沒有這個單元）</div>
+  </section>
+
+  <footer style="background:#313334;padding:40px">
+    <div class="footer-title" data-figma-id="footer:title">關於我們</div>
+  </footer>
+
+</body></html>

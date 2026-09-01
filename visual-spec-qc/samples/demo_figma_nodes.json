@@ -1,0 +1,45 @@
+{
+  "_note": "設計事實,依『Figma 交付規範』整理:frame 命名 /route @width,節點帶 key。key 對應網頁的 data-figma-id,工具據此自動對位。",
+  "baseURL": "",
+  "frames": [
+    {
+      "name": "/about @1440",
+      "url": "FILE_URL_PLACEHOLDER",
+      "nodes": [
+        {
+          "key": "hero:title",
+          "name": "Hero 主標題",
+          "props": {
+            "color":      {"value": "#313334", "token": "semantic/text-primary"},
+            "fontSize":   {"value": 48,        "token": "Font/T1"},
+            "fontWeight": {"value": 700,       "token": "T1 (Bold)"}
+          }
+        },
+        {
+          "key": "seo:card",
+          "name": "SEO 卡片",
+          "props": {
+            "backgroundColor": {"value": "#FFFFFF", "token": "Brand Base/White"},
+            "borderRadius":    {"value": 20,        "token": "Radius/M（卡片）"}
+          }
+        },
+        {
+          "key": "iso:quote",
+          "name": "ISO 引言(此頁故意漏做)",
+          "props": {
+            "color":    {"value": "#005d91", "token": "brand/primary/blue"},
+            "fontSize": {"value": 16,        "token": "Font/Body"}
+          }
+        },
+        {
+          "key": "footer:title",
+          "name": "Footer 標題",
+          "props": {
+            "color":    {"value": "#9FA0A0", "token": "lightgray"},
+            "fontSize": {"value": 16,        "token": "Font/Body"}
+          }
+        }
+      ]
+    }
+  ]
+}

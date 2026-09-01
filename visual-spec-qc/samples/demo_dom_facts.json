@@ -1,0 +1,10 @@
+{
+  "_note": "由 extract_dom.js 自動蒐集 demo_about.html 的所有 [data-figma-id],零人工選擇器。",
+  "url": "demo_about.html @1440",
+  "nodes": [
+    {"key": "hero:title", "computed": {"color": "rgb(33, 37, 41)", "fontSize": "48px", "fontWeight": "700", "fontFamily": "Noto Sans TC"}},
+    {"key": "seo:card", "computed": {"backgroundColor": "rgb(255, 255, 255)", "borderRadius": "20px", "fontSize": "16px", "fontWeight": "400"}},
+    {"key": "promo:banner", "computed": {"color": "rgb(255, 255, 255)", "backgroundColor": "rgb(199, 0, 103)", "fontSize": "14px"}},
+    {"key": "footer:title", "computed": {"color": "rgb(159, 160, 160)", "fontSize": "16px", "fontWeight": "400"}}
+  ]
+}

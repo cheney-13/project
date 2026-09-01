@@ -1,0 +1,413 @@
+<title>切版核對台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 極簡日式 · 單一亮色主題(和紙暖白 × 墨色 × 傳統色點綴) */
+:root{
+  --bg:#f4f2ec; --surface:#ffffff; --surface-2:#faf8f3; --raise:0 1px 0 rgba(28,27,25,.04);
+  --ink:#1f1d1a; --ink-2:#6f6a61; --ink-3:#a8a298; --line:#e7e3da; --line-2:#f0ece3;
+  --accent:#c70067; --accent-2:#a10054; --on-accent:#ffffff;
+  --info:#3f5b7a; --good:#5e7d5a; --warn:#b98a34; --bad:#b4453a; --human:#8f887c;
+  --good-bg:#eaefe7; --warn-bg:#f5eedd; --bad-bg:#f3e6e3; --human-bg:#efece5; --info-bg:#e9edf1;
+}
+*{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;line-height:1.65;
+  font-feature-settings:"palt" 1;font-weight:400;}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1060px;margin:0 auto;padding:22px 22px 72px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;padding:6px 0 20px;flex-wrap:wrap}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--accent);color:var(--on-accent);
+  display:grid;place-items:center;font-weight:700;font-size:18px;flex-shrink:0;box-shadow:var(--raise)}
+.brand b{font-size:17px;letter-spacing:.5px} .brand span{display:block;color:var(--ink-2);font-size:12px}
+.hist{margin-left:auto;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:7px}
+.hist .n{font-family:"IBM Plex Mono",monospace;background:var(--surface);border:1px solid var(--line);
+  border-radius:99px;padding:2px 9px;font-weight:600;color:var(--ink)}
+
+/* stepper */
+.steps{display:flex;gap:6px;align-items:center;margin-bottom:22px;font-size:12.5px;flex-wrap:wrap}
+.steps .s{display:flex;align-items:center;gap:8px;color:var(--ink-3);padding:5px 4px}
+.steps .s .d{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);
+  display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600}
+.steps .s.on{color:var(--ink)} .steps .s.on .d{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.steps .s.done .d{border-color:var(--good);color:var(--good)}
+.steps .sep{flex:1;max-width:38px;height:1.5px;background:var(--line)}
+
+.screen{display:none;animation:fade .35s ease} .screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--raise)}
+.pad{padding:20px 22px}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-3);font-weight:600;font-family:"IBM Plex Mono",monospace}
+h2.sec{font-size:19px;margin:2px 0 3px;text-wrap:balance} .desc{color:var(--ink-2);font-size:13.5px;margin:0 0 18px}
+
+/* pair rows */
+.pairhead,.pair{display:grid;grid-template-columns:20px 1fr 1fr 118px 30px;gap:10px;align-items:center}
+.pairhead{font-size:11px;color:var(--ink-3);font-weight:600;padding:0 2px 8px;letter-spacing:.5px}
+.pair{margin-bottom:9px}
+.pair .idx{font-family:"IBM Plex Mono",monospace;color:var(--ink-3);font-size:13px;text-align:center}
+.inp{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;
+  padding:9px 11px;font-size:12.5px;color:var(--ink);font-family:"IBM Plex Mono",monospace}
+.inp::placeholder{color:var(--ink-3);font-family:"Noto Sans TC",sans-serif}
+.inp:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent;background:var(--surface)}
+select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px}
+.rm{border:none;background:none;color:var(--ink-3);font-size:16px;cursor:pointer;border-radius:7px;padding:4px}
+.rm:hover{color:var(--bad);background:var(--bad-bg)}
+.addrow{margin-top:6px;width:100%;border:1.5px dashed var(--line);background:none;color:var(--accent);
+  border-radius:10px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.addrow:hover{border-color:var(--accent);background:var(--surface-2)}
+
+.foot{display:flex;gap:12px;align-items:center;margin-top:20px;flex-wrap:wrap}
+.hint{color:var(--ink-3);font-size:12px;flex:1;min-width:200px}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;
+  padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--ink-3)}
+.btn.pri{background:var(--accent);color:var(--on-accent);border-color:var(--accent);box-shadow:var(--raise)}
+.btn.pri:hover{background:var(--accent-2);border-color:var(--accent-2)}
+.btn.ghost{background:none;border-color:transparent;color:var(--ink-2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* running */
+.run{display:flex;flex-direction:column;gap:16px}
+.prog{display:flex;align-items:center;gap:14px}
+.prog .lab{width:270px;font-size:13.5px;color:var(--ink)} .prog .lab small{color:var(--ink-3);display:block;font-size:11.5px;font-family:"IBM Plex Mono",monospace}
+.track{flex:1;height:7px;background:var(--line-2);border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s ease}
+.prog .st{width:64px;text-align:right;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3)}
+.prog.done .st{color:var(--good)}
+
+/* overview cards */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.grid{grid-template-columns:1fr}
+ .pairhead,.pair{grid-template-columns:18px 1fr 84px 26px}
+ .pairhead .h-web,.pair .c-web{display:none}}
+.ov{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;overflow:hidden}
+.ov:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(20,30,40,.1)}
+.ov .stripe{height:5px} .ov-in{padding:16px 18px}
+.ov .name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+.ov .bp{font-size:11px;color:var(--ink-2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-family:"IBM Plex Mono",monospace}
+.ov .scoreline{display:flex;align-items:baseline;gap:8px;margin:12px 0 4px}
+.ov .score{font-family:"IBM Plex Mono",monospace;font-size:34px;font-weight:600;line-height:1}
+.ov .verdict{font-size:12.5px;font-weight:600}
+.meter{height:6px;background:var(--line-2);border-radius:99px;overflow:hidden;margin:8px 0 14px}
+.meter i{display:block;height:100%;border-radius:99px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px;display:inline-flex;gap:5px;align-items:center}
+.chip .mono{font-size:11.5px}
+.open{margin-top:12px;font-size:12px;color:var(--accent);font-weight:600}
+
+/* detail */
+.back{border:none;background:none;color:var(--ink-2);font-size:13px;cursor:pointer;padding:6px 0;font-family:inherit;display:inline-flex;gap:6px;align-items:center}
+.back:hover{color:var(--ink)}
+.tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin:14px 0 18px}
+.tab{border:none;background:none;padding:10px 16px;font-size:14px;font-weight:600;color:var(--ink-3);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;font-family:inherit}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.view{display:none} .view.on{display:block}
+
+/* biz view */
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.kpi{flex:1;min-width:120px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+.kpi b{display:block;font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:600;line-height:1.1}
+.kpi span{color:var(--ink-2);font-size:12px}
+.bizrow{display:flex;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line-2);font-size:14px;align-items:flex-start}
+.bizrow:last-child{border-bottom:none}
+.bizrow .ic{width:22px;flex-shrink:0;text-align:center}
+.legend{font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:12px 14px;margin-top:14px;line-height:1.7}
+
+/* dev table */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:620px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{background:var(--surface-2);font-size:11px;color:var(--ink-3);font-weight:600;letter-spacing:.5px;position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block}
+.assignee{font-size:11px;color:var(--ink-3);margin-top:4px}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.15);vertical-align:-1px;margin-right:5px}
+.node b{font-weight:600} .sel{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);display:block;margin-top:3px;word-break:break-all}
+.tok{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--info);display:block;margin-top:3px}
+.delta{font-family:"IBM Plex Mono",monospace;font-weight:600}
+.passline{padding:12px 14px;background:var(--good-bg);border-radius:10px;font-size:13px;color:var(--good);margin-top:12px;font-weight:500}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:var(--surface);padding:11px 20px;border-radius:11px;font-size:13.5px;font-weight:500;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.proto{font-size:11px;color:var(--ink-3);text-align:center;margin-top:26px;letter-spacing:.3px}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="logo">◎</div>
+    <div class="brand"><b>切版核對台</b><span>Figma 設計稿 × 切版成品 · 自動核對</span></div>
+    <div class="hist">已存紀錄 <span class="n" id="histN">0</span> 筆</div>
+  </div>
+
+  <div class="steps" id="stepper">
+    <div class="s on" data-k="setup"><span class="d">1</span>建立配對</div>
+    <div class="sep"></div>
+    <div class="s" data-k="running"><span class="d">2</span>執行核對</div>
+    <div class="sep"></div>
+    <div class="s" data-k="result"><span class="d">3</span>報告</div>
+  </div>
+
+  <!-- ============ STEP 1 SETUP ============ -->
+  <section class="screen on" id="scr-setup">
+    <div class="card pad">
+      <div class="eyebrow">STEP 01</div>
+      <h2 class="sec">建立比對配對</h2>
+      <p class="desc">一組配對 = 一個 Figma frame ↔ 一個測試網頁 ＋ 對應螢幕斷點。可加多組,一次批次核對多頁、多裝置。</p>
+
+      <div class="pairhead">
+        <span></span><span>🎨 Figma frame 連結</span><span class="h-web">🌐 測試網頁連結</span><span>斷點</span><span></span>
+      </div>
+      <div id="pairs"></div>
+      <button class="addrow" onclick="addPair()">＋ 新增比對配對</button>
+
+      <div class="foot">
+        <span class="hint">連結僅供讀取結構;不會送出任何帳密或個資。</span>
+        <button class="btn pri" id="runBtn" onclick="startRun()">▶　進行核對測試</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STEP 2 RUNNING ============ -->
+  <section class="screen" id="scr-running">
+    <div class="card pad">
+      <div class="eyebrow">STEP 02</div>
+      <h2 class="sec">正在核對 <span id="runCount" class="mono"></span></h2>
+      <p class="desc">兩邊都抓「結構化事實」再逐屬性比對,不是比像素。</p>
+      <div class="run" id="runBars"></div>
+    </div>
+  </section>
+
+  <!-- ============ STEP 3 RESULT ============ -->
+  <section class="screen" id="scr-result">
+    <!-- overview -->
+    <div id="overview">
+      <div class="card pad">
+        <div class="eyebrow">STEP 03 · 總覽</div>
+        <h2 class="sec">核對結果</h2>
+        <p class="desc">每組一張卡:還原度、燈號、與「誰要修幾項」。點卡片看逐項明細。</p>
+        <div class="grid" id="ovCards"></div>
+        <div class="foot">
+          <span class="hint" id="ovSummary"></span>
+          <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
+          <button class="btn ghost" onclick="goto('setup')">↩ 回上一步</button>
+        </div>
+      </div>
+    </div>
+    <!-- detail -->
+    <div id="detail" style="display:none">
+      <button class="back" onclick="closeDetail()">← 回總覽</button>
+      <div class="card pad" style="margin-top:10px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div><div class="eyebrow">逐項報告</div><h2 class="sec" id="dName" style="margin-bottom:0"></h2></div>
+          <div style="margin-left:auto;text-align:right">
+            <div class="mono" id="dScore" style="font-size:30px;font-weight:600;line-height:1"></div>
+            <div id="dVerdict" style="font-size:12px;font-weight:600"></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab on" onclick="setTab(0)">👔 業務摘要</button>
+          <button class="tab" onclick="setTab(1)">🛠 工程 / 設計明細</button>
+        </div>
+        <div class="view on" id="v-biz"></div>
+        <div class="view" id="v-dev"></div>
+        <div class="foot">
+          <span class="hint">此報告可下載留存,或存為版本紀錄以追蹤還原度趨勢。</span>
+          <button class="btn pri" onclick="downloadReport()">⬇ 下載報告</button>
+          <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="proto">互動原型 · 比對邏輯正式版接 Figma MCP + Browser MCP 即時抓取</div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ---------- 真實資料(桌機版取自實際核對) + 批次示範(手機版) ----------
+const SEV={code:{t:"程式問題",c:"var(--bad)",bg:"var(--bad-bg)",who:"前端工程師"},
+  design:{t:"設計問題",c:"var(--info)",bg:"var(--info-bg)",who:"設計師"},
+  human:{t:"待人工",c:"var(--human)",bg:"var(--human-bg)",who:"人工確認"}};
+const DATA=[
+ {id:"d", name:"about 桌機版", bp:"桌機 1440",
+  figma:"figma.com/…?node-id=10830-3249", web:"bizdev…/#/about",
+  score:80, status:"warn", verdict:"建議修正後上線",
+  counts:{code:3,design:0,human:1,pass:20},
+  biz:[
+   {ic:"🔴",h:"3 項「程式沒照設計做」",t:"H1 主標與兩個區塊標題的品牌色沒套上——用了框架預設灰 <b class='mono'>#212529</b>,設計要的是品牌色 <b class='mono'>#313334</b>(ΔE 7.0,肉眼可辨)。已分派 <b>前端</b>。"},
+   {ic:"⚪",h:"1 項待人工確認",t:"卡片標題「AIO是什麼？」是漸層文字,工具無法用單一顏色比對,交人工看一眼即可。"},
+   {ic:"✅",h:"亮點",t:"品牌 magenta、ISO 藍字、Footer 灰字、卡片圓角、所有字級/字重/字型 全數命中設計 token。"}],
+  rows:[
+   {j:"code",node:"主標題 H1",sel:"section.sec-title h1.d-none.d-lg-block",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"設計規格明確,實作未對齊"},
+   {j:"code",node:"區塊標題「結合搜尋優化與UX設計」",sel:"section.sec-subtitle h2.new-t2",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"同上,品牌主色未套用"},
+   {j:"code",node:"區塊標題「打造高效SEO的關鍵概念」",sel:"section.sec-seo h2.new-t2.text-center",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"同上,建議統一改用 token 變數"},
+   {j:"human",node:"卡片標題「AIO是什麼？」",sel:"section.sec-seo .border-radius-20px h3.new-t3",prop:"color",tok:"Brand Gradient/Warm",spec:"漸層",act:"transparent",d:"—",msg:"漸層文字,需人工確認"}],
+  pass:"20 項通過:麵包屑 #c70067(ΔE 0)、ISO 藍字 #005d91(ΔE 0)、Footer #9FA0A0、卡片圓角 20px、白底、字級 48/36/28/16、字重、Noto Sans TC 字型…"},
+
+ {id:"m", name:"about 手機版", bp:"手機 375",
+  figma:"figma.com/…?node-id=10503-4932", web:"bizdev…/#/about",
+  score:97, status:"good", verdict:"可上線",
+  counts:{code:0,design:1,human:0,pass:22},
+  biz:[
+   {ic:"🔵",h:"1 項「設計稿規格待補」",t:"手機版主標字級實作為 <b class='mono'>32px</b>,但設計稿此處是 hardcode、沒綁字級 token,無法判定對錯。已通知 <b>設計師</b> 補上 token。"},
+   {ic:"✅",h:"其餘一致",t:"色彩、間距、字重、圓角與設計稿相符,還原度 97%,可上線。"}],
+  rows:[
+   {j:"design",node:"手機版主標 H1",sel:"section.sec-title h1.d-block.d-lg-none",prop:"fontSize",tok:"(未綁定)",spec:"未定義",act:"32px",d:"—",msg:"設計稿此屬性未使用字級 token,規格待補"}],
+  pass:"22 項通過:品牌色、間距、字重、圓角、字型與設計稿一致。"}
+];
+
+const STATUS={good:{c:"var(--good)",bg:"var(--good-bg)",light:"🟢"},warn:{c:"var(--warn)",bg:"var(--warn-bg)",light:"🟡"},bad:{c:"var(--bad)",bg:"var(--bad-bg)",light:"🔴"}};
+let history=0, curDetail=null;
+
+// ---------- STEP 1 ----------
+const seed=[
+ {figma:"figma.com/…?node-id=10830-3249",web:"bizdev.medialand.com.tw/…/#/about",bp:"桌機 1440"},
+ {figma:"figma.com/…?node-id=10503-4932",web:"bizdev.medialand.com.tw/…/#/about",bp:"手機 375"}];
+function bpOptions(sel){return ["桌機 1440","平板 768","手機 375"].map(o=>`<option ${o===sel?"selected":""}>${o}</option>`).join("")}
+function renderPairs(){
+  document.getElementById("pairs").innerHTML=seed.map((p,i)=>`
+   <div class="pair">
+     <span class="idx">${i+1}</span>
+     <input class="inp" value="${p.figma}" placeholder="貼上 Figma frame 連結…" oninput="seed[${i}].figma=this.value;refreshRun()">
+     <input class="inp c-web" value="${p.web}" placeholder="貼上測試網頁連結…" oninput="seed[${i}].web=this.value;refreshRun()">
+     <select class="inp" onchange="seed[${i}].bp=this.value">${bpOptions(p.bp)}</select>
+     <button class="rm" title="移除" onclick="rmPair(${i})">✕</button>
+   </div>`).join("");
+  refreshRun();
+}
+function addPair(){seed.push({figma:"",web:"",bp:"桌機 1440"});renderPairs()}
+function rmPair(i){seed.splice(i,1);renderPairs()}
+function refreshRun(){
+  const ok=seed.some(p=>p.figma.trim()&&p.web.trim());
+  document.getElementById("runBtn").disabled=!ok;
+}
+
+// ---------- STEP 2 ----------
+const STAGES=[
+ {lab:"讀取設計事實",sub:"Figma MCP · get_variable_defs / metadata"},
+ {lab:"讀取實作事實",sub:"Browser MCP · 調斷點寬度 → getComputedStyle"},
+ {lab:"節點對位",sub:"data-figma-id / 文字·位置 模糊配對"},
+ {lab:"逐屬性比對 + 責任歸因",sub:"顏色 ΔE · 字級 · 間距 · token 對照"}];
+function startRun(){
+  goto("running");
+  const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
+  document.getElementById("runCount").textContent=`（${active.length} 組配對）`;
+  const box=document.getElementById("runBars");
+  box.innerHTML=STAGES.map((s,i)=>`
+    <div class="prog" id="pg${i}">
+      <div class="lab">${s.lab}<small>${s.sub}</small></div>
+      <div class="track"><i id="bar${i}"></i></div>
+      <div class="st">等待</div>
+    </div>`).join("");
+  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const step=(i)=>{
+    if(i>=STAGES.length){setTimeout(showResult,reduce?0:350);return;}
+    const pg=document.getElementById("pg"+i);
+    pg.querySelector(".st").textContent="進行中";
+    requestAnimationFrame(()=>document.getElementById("bar"+i).style.width="100%");
+    setTimeout(()=>{pg.classList.add("done");pg.querySelector(".st").textContent="✓ 完成";step(i+1)}, reduce?60:560);
+  };
+  step(0);
+}
+
+// ---------- STEP 3 overview ----------
+function showResult(){
+  goto("result");
+  document.getElementById("overview").style.display="block";
+  document.getElementById("detail").style.display="none";
+  const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
+  const items=DATA.slice(0,Math.max(1,active.length));
+  document.getElementById("ovCards").innerHTML=items.map(d=>{
+    const s=STATUS[d.status];
+    return `<div class="card ov" onclick="openDetail('${d.id}')">
+      <div class="stripe" style="background:${s.c}"></div>
+      <div class="ov-in">
+        <div class="name">${s.light} ${d.name} <span class="bp">${d.bp}</span></div>
+        <div class="scoreline"><span class="score" style="color:${s.c}">${d.score}<span style="font-size:16px">%</span></span>
+          <span class="verdict" style="color:${s.c}">${d.verdict}</span></div>
+        <div class="meter"><i style="width:${d.score}%;background:${s.c}"></i></div>
+        <div class="chips">
+          ${d.counts.code?chip("code",d.counts.code):""}
+          ${d.counts.design?chip("design",d.counts.design):""}
+          ${d.counts.human?chip("human",d.counts.human):""}
+          <span class="chip" style="color:var(--good);background:var(--good-bg)">✓ 通過 <span class="mono">${d.counts.pass}</span></span>
+        </div>
+        <div class="open">查看逐項明細 →</div>
+      </div></div>`;
+  }).join("");
+  const tc=items.reduce((a,d)=>a+d.counts.code,0), td=items.reduce((a,d)=>a+d.counts.design,0);
+  document.getElementById("ovSummary").innerHTML=`共 ${items.length} 組 · 程式待修 <b style="color:var(--bad)">${tc}</b> · 設計待補 <b style="color:var(--info)">${td}</b>`;
+}
+function chip(k,n){return `<span class="chip" style="color:${SEV[k].c};background:${SEV[k].bg}">${SEV[k].t} <span class="mono">${n}</span></span>`}
+
+// ---------- detail ----------
+function openDetail(id){
+  const d=DATA.find(x=>x.id===id); curDetail=d;
+  const s=STATUS[d.status];
+  document.getElementById("overview").style.display="none";
+  document.getElementById("detail").style.display="block";
+  document.getElementById("dName").textContent=d.name+" · "+d.bp;
+  document.getElementById("dScore").textContent=d.score+"%";
+  document.getElementById("dScore").style.color=s.c;
+  const v=document.getElementById("dVerdict"); v.textContent=d.verdict; v.style.color=s.c;
+  // biz
+  document.getElementById("v-biz").innerHTML=`
+   <div class="kpis">
+     <div class="kpi"><b style="color:${s.c}">${d.score}%</b><span>整體還原度</span></div>
+     <div class="kpi"><b style="color:var(--bad)">${d.counts.code}</b><span>程式要修</span></div>
+     <div class="kpi"><b style="color:var(--info)">${d.counts.design}</b><span>設計要補</span></div>
+     <div class="kpi"><b style="color:var(--human)">${d.counts.human}</b><span>待人工</span></div>
+   </div>
+   ${d.biz.map(b=>`<div class="bizrow"><span class="ic">${b.ic}</span><div><b>${b.h}</b><div style="color:var(--ink-2);font-size:13px;margin-top:2px">${b.t}</div></div></div>`).join("")}
+   <div class="legend"><b>怎麼看:</b>還原度 = 這頁與設計稿的吻合程度。🟢95%↑且無程式問題可上線,🟡80–95%修一修,🔴80%↓先別上。每項差異已自動分派「設計的事」或「程式的事」。</div>`;
+  setTab(0);
+  // dev
+  const isColor=p=>p==="color"||p==="backgroundColor";
+  document.getElementById("v-dev").innerHTML=`
+   <div class="tbl-wrap"><table>
+   <thead><tr><th>判定</th><th>元件 / 選擇器</th><th>屬性</th><th>設計規格</th><th>實際渲染</th><th>差異 / 說明</th></tr></thead>
+   <tbody>${d.rows.map(r=>{const sv=SEV[r.j];return `<tr>
+     <td class="judge"><span class="badge" style="color:${sv.c};background:${sv.bg}">${sv.t}</span><div class="assignee">→ ${sv.who}</div></td>
+     <td class="node"><b>${r.node}</b><span class="sel">${r.sel}</span></td>
+     <td>${r.prop}<span class="tok">${r.tok}</span></td>
+     <td>${swatch(r.spec)}</td><td>${swatch(r.act)}</td>
+     <td><span class="delta" style="color:${sv.c}">${r.d}</span><div style="color:var(--ink-2);font-size:12px;margin-top:3px">${r.msg}</div></td>
+   </tr>`}).join("")}</tbody></table></div>
+   <div class="passline">✓ ${d.pass}</div>`;
+}
+function swatch(v){const hex=/^#([0-9a-f]{6})$/i.test(v);
+  return `${hex?`<span class="sw" style="background:${v}"></span>`:""}<span class="mono">${v}</span>`}
+function closeDetail(){document.getElementById("detail").style.display="none";document.getElementById("overview").style.display="block"}
+function setTab(i){document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("on",j===i));
+  document.querySelectorAll(".view").forEach((v,j)=>v.classList.toggle("on",j===i))}
+
+// ---------- actions ----------
+function saveRecord(){history++;document.getElementById("histN").textContent=history;
+  toast(`已存為版本紀錄 #${history} · 可追蹤還原度趨勢`)}
+function downloadReport(){toast("原型示意:正式版會輸出獨立 HTML / PDF 報告檔")}
+let tT;
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");
+  clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),2600)}
+
+// ---------- nav ----------
+function goto(k){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  document.getElementById("scr-"+k).classList.add("on");
+  const order=["setup","running","result"], idx=order.indexOf(k);
+  document.querySelectorAll("#stepper .s").forEach(s=>{
+    const si=order.indexOf(s.dataset.k);
+    s.classList.toggle("on",si===idx); s.classList.toggle("done",si<idx);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+renderPairs();
+</script>

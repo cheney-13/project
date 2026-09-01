@@ -1,0 +1,10 @@
+{
+  "_note": "第 2 輪 DOM(前端修完後)。hero:title 顏色已修正為品牌色;但 seo:card 圓角不小心從 20 改成 12(回歸)。",
+  "url": "demo_about.html @1440 (round 2)",
+  "nodes": [
+    {"key": "hero:title", "computed": {"color": "rgb(49, 51, 52)", "fontSize": "48px", "fontWeight": "700"}},
+    {"key": "seo:card", "computed": {"backgroundColor": "rgb(255, 255, 255)", "borderRadius": "12px", "fontSize": "16px", "fontWeight": "400"}},
+    {"key": "promo:banner", "computed": {"color": "rgb(255, 255, 255)", "backgroundColor": "rgb(199, 0, 103)", "fontSize": "14px"}},
+    {"key": "footer:title", "computed": {"color": "rgb(159, 160, 160)", "fontSize": "16px", "fontWeight": "400"}}
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "_note": "由 Figma MCP (get_variable_defs + get_metadata + get_design_context) 抽出的『設計事實』。value=設計稿的值,token=綁定的設計系統變數(沒綁=hardcode)。",
+  "figmaFile": "https://figma.com/file/XXXX/DemoDesign",
+  "nodes": [
+    {
+      "frame": "首頁 Hero",
+      "name": "Button / Primary",
+      "selector": "[data-figma-id='btn-primary']",
+      "props": {
+        "color":           {"value": "#FFFFFF", "token": "color/on-primary"},
+        "backgroundColor": {"value": "#1A73E8", "token": "color/primary"},
+        "fontSize":        {"value": 16,        "token": "font/size/label"},
+        "fontWeight":      {"value": 600,       "token": "font/weight/semibold"},
+        "borderRadius":    {"value": 8,         "token": "radius/md"}
+      }
+    },
+    {
+      "frame": "首頁 Hero",
+      "name": "Hero Title",
+      "selector": "[data-figma-id='hero-title']",
+      "props": {
+        "color":      {"value": "#202124", "token": null},
+        "fontSize":   {"value": 32,        "token": "font/size/display"},
+        "fontWeight": {"value": 700,       "token": "font/weight/bold"},
+        "fontFamily": {"value": "Inter",   "token": "font/family/base"}
+      }
+    },
+    {
+      "frame": "產品頁 / 定價卡",
+      "name": "Price Tag",
+      "selector": "[data-figma-id='price-tag']",
+      "props": {
+        "color":    {"value": "#FF5722", "token": null},
+        "fontSize": {"value": 24,        "token": "font/size/title"},
+        "gap":      {"value": 8,         "token": "space/2"}
+      }
+    },
+    {
+      "frame": "產品頁 / 定價卡",
+      "name": "Product CTA",
+      "selector": "[data-figma-id='product-cta']",
+      "props": {
+        "backgroundColor": {"value": "#1A73E8", "token": "color/primary"},
+        "fontSize":        {"value": 16,        "token": "font/size/label"},
+        "borderRadius":    {"value": 8,         "token": "radius/md"}
+      }
+    }
+  ]
+}

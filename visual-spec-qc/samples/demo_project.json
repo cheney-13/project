@@ -1,0 +1,20 @@
+{
+  "_note": "批次核對設定。pairs 可多組;figmaContext=自動抽設計事實,或 figmaNodes=直接給預抽好的。",
+  "outDir": "../out/run_demo",
+  "failUnder": 80,
+  "pairs": [
+    {
+      "name": "about 桌機(自動抽設計)",
+      "frame": "/about @1440",
+      "url": "https://bizdev.medialand.com.tw/demo/2021_02_MX_website/#/about",
+      "figmaContext": "about_design_context.txt",
+      "dom": "demo_dom_facts.json"
+    },
+    {
+      "name": "about(預抽設計事實)",
+      "frame": "/about @1440",
+      "figmaNodes": "demo_figma_nodes.json",
+      "dom": "demo_dom_facts.json"
+    }
+  ]
+}

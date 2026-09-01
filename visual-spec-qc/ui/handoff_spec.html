@@ -1,0 +1,219 @@
+<title>Figma 交付規範</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 極簡日式 · 單一亮色主題(和紙暖白 × 墨色 × 傳統色點綴) */
+:root{
+  --bg:#f4f2ec; --surface:#ffffff; --surface-2:#faf8f3; --raise:0 1px 0 rgba(28,27,25,.04);
+  --ink:#1f1d1a; --ink-2:#6f6a61; --ink-3:#a8a298; --line:#e7e3da; --line-2:#f0ece3;
+  --accent:#c70067; --accent-2:#a10054; --on-accent:#ffffff;
+  --info:#3f5b7a; --good:#5e7d5a; --bad:#b4453a;
+  --good-bg:#eaefe7; --bad-bg:#f3e6e3; --info-bg:#e9edf1; --accent-bg:#f7e9f0;
+}
+*{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;line-height:1.75;font-feature-settings:"palt" 1;font-weight:400}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:860px;margin:0 auto;padding:34px 22px 80px}
+
+/* header */
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-size:30px;margin:8px 0 6px;letter-spacing:.5px;text-wrap:balance}
+.lede{color:var(--ink-2);font-size:15px;max-width:58ch;margin:0}
+.meta{margin-top:14px;font-size:12px;color:var(--ink-3);display:flex;gap:14px;flex-wrap:wrap}
+.meta b{color:var(--ink-2);font-weight:600}
+
+/* principle banner */
+.principle{margin:26px 0 34px;background:linear-gradient(100deg,var(--accent-bg),transparent 70%);
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:20px 22px}
+.principle .k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:1.5px;color:var(--accent);font-weight:600;text-transform:uppercase}
+.principle p{margin:8px 0 0;font-size:18px;font-weight:700;line-height:1.5;text-wrap:balance}
+.principle .mono{color:var(--info)}
+
+/* section */
+section.rule{margin:0 0 30px}
+.rhead{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.rnum{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;color:var(--ink-2);
+  background:none;border:1px solid var(--line);border-radius:4px;padding:2px 8px;flex-shrink:0}
+.rhead h2{font-size:19px;margin:0;letter-spacing:.3px;font-weight:500}
+.rhead .sub{color:var(--ink-3);font-size:13px;margin-left:auto;text-align:right}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--raise)}
+.pad{padding:18px 20px}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2)}
+th{font-size:11px;letter-spacing:.5px;color:var(--ink-3);font-weight:600;background:var(--surface-2)}
+tr:last-child td{border-bottom:none}
+td .w{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;color:var(--info)}
+td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--ink)}
+
+/* tree */
+.tree{font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.85;white-space:pre;overflow-x:auto;color:var(--ink-2)}
+.tree .pg{color:var(--accent);font-weight:600}
+.tree .fr{color:var(--info);font-weight:600}
+.tree .sec{color:var(--ink)}
+.tree .cm{color:var(--ink-3)}
+.tree .scratch{color:var(--ink-3)}
+
+/* mapping diagram */
+.map{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:center;text-align:center}
+@media(max-width:640px){.map{grid-template-columns:1fr;gap:8px}.map .arw{transform:rotate(90deg)}}
+.mapbox{border:1px solid var(--line);border-radius:11px;padding:14px 12px;background:var(--surface-2)}
+.mapbox .t{font-size:11px;color:var(--ink-3);margin-bottom:7px;letter-spacing:.5px}
+.mapbox .v{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:500;color:var(--ink);word-break:break-all}
+.mapbox.a{border-color:var(--accent)} .mapbox.a .v{color:var(--accent)}
+.mapbox.b{border-color:var(--info)} .mapbox.b .v{color:var(--info)}
+.arw{color:var(--ink-3);font-size:20px;font-weight:700}
+.mapnote{margin-top:14px;text-align:center;font-size:13px;color:var(--ink-2)}
+.mapnote b{color:var(--good)}
+
+/* do / dont */
+.dd{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.dd{grid-template-columns:1fr}}
+.ddcol{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ddcol .h{padding:9px 14px;font-size:12.5px;font-weight:700;letter-spacing:.5px}
+.ddcol.no .h{background:var(--bad-bg);color:var(--bad)}
+.ddcol.yes .h{background:var(--good-bg);color:var(--good)}
+.ddcol ul{margin:0;padding:12px 14px 14px;list-style:none;display:flex;flex-direction:column;gap:11px}
+.ddcol li{font-size:13px;line-height:1.5;color:var(--ink-2)}
+.ddcol li .mono{font-size:12px;color:var(--ink);display:inline-block}
+.ddcol.no li::before{content:"✕ ";color:var(--bad);font-weight:700}
+.ddcol.yes li::before{content:"✓ ";color:var(--good);font-weight:700}
+
+/* checklist */
+.check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:11px 6px;border-bottom:1px solid var(--line-2);cursor:pointer;font-size:14px}
+.check li:last-child{border-bottom:none}
+.check .box{width:20px;height:20px;border:1.8px solid var(--line);border-radius:6px;flex-shrink:0;margin-top:1px;
+  display:grid;place-items:center;color:transparent;font-size:13px;font-weight:700;transition:.15s}
+.check li.on .box{background:var(--good);border-color:var(--good);color:#fff}
+.check li.on .txt{color:var(--ink-3);text-decoration:line-through}
+.check .txt b{font-weight:600;color:var(--ink)}
+.check li.on .txt b{color:var(--ink-3)}
+
+.tip{font-size:12.5px;color:var(--ink-2);background:var(--info-bg);border-radius:10px;padding:12px 14px;margin-top:14px;line-height:1.65}
+.foot{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);text-align:center}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">設計交付規範 · Design Handoff</div>
+    <h1>Figma 交付檔案整理規範</h1>
+    <p class="lede">讓設計稿能被「切版核對台」自動比對的檔案整理方式。照這份整理,QC 工具就能一鍵核對設計與網站,並自動分辨差異是設計還是程式的責任。</p>
+    <div class="meta"><span><b>適用</b>　網站頁面設計交付</span><span><b>對象</b>　設計師</span><span><b>搭配工具</b>　Visual &amp; Spec QC</span></div>
+  </header>
+
+  <div class="principle">
+    <div class="k">核心原則 · The One Rule</div>
+    <p>一個可定址的 Frame ＝ 一頁 × 一個尺寸 ＝ 對應 <span class="mono">一個 URL @ 一個瀏覽器寬度</span></p>
+  </div>
+
+  <!-- 01 命名 -->
+  <section class="rule">
+    <div class="rhead"><span class="rnum">01</span><h2>Frame 命名 = 路由 ＋ 寬度</h2></div>
+    <div class="card">
+      <table>
+        <thead><tr><th>尺寸</th><th>標準測試寬度</th><th>Frame 命名範例</th></tr></thead>
+        <tbody>
+          <tr><td>桌機 Desktop</td><td><span class="w">1440</span></td><td><code>/about @1440</code></td></tr>
+          <tr><td>平板 Tablet</td><td><span class="w">768</span></td><td><code>/about @768</code></td></tr>
+          <tr><td>手機 Mobile</td><td><span class="w">375</span></td><td><code>/about @375</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip">🎯 <b>為什麼固定這三個寬度?</b>　工具會把瀏覽器設成 frame 名稱裡的寬度再抓網頁。用 <span class="mono">768 / 375</span> 這種範圍內的代表值,而不是斷點邊緣值(如 576),可避免剛好卡在臨界點造成的抖動。Frame 畫布寬度請 = 命名的寬度。</div>
+  </section>
+
+  <!-- 02 結構 -->
+  <section class="rule">
+    <div class="rhead"><span class="rnum">02</span><h2>檔案結構:一頁一 Page,三尺寸並列</h2></div>
+    <div class="card pad">
+<div class="tree"><span class="pg">▚ Page：About</span>            <span class="cm"># 一個網站頁面 = 一個 Figma Page</span>
+ ├─ <span class="fr">🖼 /about @1440</span>          <span class="cm"># 交付 frame(桌機)</span>
+ │   ├─ <span class="sec">sec:hero</span>
+ │   ├─ <span class="sec">sec:seo-cards</span>
+ │   ├─ <span class="sec">sec:iso</span>
+ │   └─ <span class="sec">sec:footer</span>
+ ├─ <span class="fr">🖼 /about @768</span>           <span class="cm"># 平板:用同一組 sec:key</span>
+ │   └─ <span class="sec">sec:hero / sec:seo-cards / …</span>
+ └─ <span class="fr">🖼 /about @375</span>           <span class="cm"># 手機:用同一組 sec:key</span>
+     └─ <span class="sec">sec:hero / sec:seo-cards / …</span>
+
+<span class="scratch">▚ Page：_工作區</span>           <span class="cm"># 草稿 / popup / FAQ schema 文字 → 放這,不交付</span></div>
+    </div>
+    <div class="tip">📁 三個尺寸都是 <b>top-level frame</b>(不要巢狀在難定址的 instance 裡),尺寸靠<b>命名</b>區分,不要靠旁邊另畫的文字標籤。</div>
+  </section>
+
+  <!-- 03 mapping -->
+  <section class="rule">
+    <div class="rhead"><span class="rnum">03</span><h2>單元 Key ↔ 前端對照(最關鍵)</h2><span class="sub">在源頭解決「節點對位」</span></div>
+    <div class="card pad">
+      <div class="map">
+        <div class="mapbox a"><div class="t">Figma 圖層命名</div><div class="v">sec:hero</div></div>
+        <div class="arw">→</div>
+        <div class="mapbox b"><div class="t">前端 HTML 標註</div><div class="v">data-figma-id="sec:hero"</div></div>
+        <div class="arw">→</div>
+        <div class="mapbox"><div class="t">QC 工具</div><div class="v">自動對位<br>無需人工</div></div>
+      </div>
+      <div class="mapnote">三個尺寸的同一單元都叫 <span class="mono">sec:hero</span> → 工具就懂「這是手機版的 hero」。<br><b>設計命名 + 前端標註對齊,對位就在源頭完成,QC 才能真正一鍵跑完。</b></div>
+    </div>
+    <div class="tip">🤝 這需要設計與前端<b>約定同一組 key</b>。key 用小寫、語意化、跨尺寸一致:<span class="mono">sec:hero</span>、<span class="mono">sec:seo-cards</span>、<span class="mono">sec:iso</span>、<span class="mono">sec:footer</span>…(或改用 Figma Code Connect 綁定,效果相同)。</div>
+  </section>
+
+  <!-- 04 現在改成 -->
+  <section class="rule">
+    <div class="rhead"><span class="rnum">04</span><h2>現在 → 改成(依實際檔案)</h2></div>
+    <div class="dd">
+      <div class="ddcol no"><div class="h">現在的做法</div><ul>
+        <li>命名不一致 <span class="mono">index_1440 / index / index_380</span>,寬度與斷點標籤對不上</li>
+        <li>尺寸靠旁邊另畫的<b>文字標籤</b>區分</li>
+        <li>隱藏 FAQ 文字、popup 混在交付 section 裡</li>
+        <li>部分顏色/字級直接填色碼(hardcode)</li>
+      </ul></div>
+      <div class="ddcol yes"><div class="h">建議改成</div><ul>
+        <li>統一 <span class="mono">/about @1440 · @768 · @375</span></li>
+        <li>尺寸靠 <b>frame 命名</b>區分,標籤免了</li>
+        <li>草稿/隱藏內容移到 <span class="mono">_工作區</span> Page</li>
+        <li>顏色/間距/字級全綁 Variable(token)</li>
+      </ul></div>
+    </div>
+    <div class="tip">🎨 <b>為什麼要綁 Variable?</b>　凡是綁了 token 的屬性,實作沒對齊 → 工具判「<b style="color:var(--bad)">程式要修</b>」;沒綁、hardcode 的 → 判「<b style="color:var(--info)">設計稿規格待補</b>」丟回設計端。綁好 token,責任歸屬才準。</div>
+  </section>
+
+  <!-- 05 checklist -->
+  <section class="rule">
+    <div class="rhead"><span class="rnum">05</span><h2>交付前 Checklist</h2><span class="sub">點一下打勾</span></div>
+    <div class="card pad">
+      <ul class="check" id="check">
+        <li><span class="box">✓</span><span class="txt">每個交付頁 = 一個 <b>Figma Page</b></span></li>
+        <li><span class="box">✓</span><span class="txt">每頁含 <b>3 個尺寸 frame</b>,命名 <span class="mono">/route @width</span></span></li>
+        <li><span class="box">✓</span><span class="txt">三個尺寸使用<b>同一組 sec:key</b></span></li>
+        <li><span class="box">✓</span><span class="txt">已與前端約定 <b>data-figma-id</b> 對照</span></li>
+        <li><span class="box">✓</span><span class="txt">顏色 / 間距 / 字級皆<b>綁 Variable</b>,無 hardcode</span></li>
+        <li><span class="box">✓</span><span class="txt">草稿 / 隱藏內容已移出交付 section</span></li>
+        <li><span class="box">✓</span><span class="txt">交付時提供 <b>prototype 連結</b> ＋ 對應網站 base URL</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="foot">Visual &amp; Spec QC · 設計交付規範 v1 · 與「切版核對台」搭配使用</div>
+</div>
+
+<script>
+// checklist:點擊打勾,per-viewer 記憶(容錯)
+const KEY="mx-handoff-check-v1";
+const items=[...document.querySelectorAll("#check li")];
+let saved={};
+try{saved=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){saved={}}
+items.forEach((li,i)=>{
+  if(saved[i]) li.classList.add("on");
+  li.addEventListener("click",()=>{
+    li.classList.toggle("on");
+    saved[i]=li.classList.contains("on");
+    try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}
+  });
+});
+</script>

@@ -1,0 +1,86 @@
+{
+  "_note": "真實案例:MX 官網 about 頁 桌機版(index_1440)。設計事實取自 Figma MCP get_variable_defs 的 token 系統,對應到各元素應有的值。",
+  "figmaFile": "https://www.figma.com/design/nKPnENddbezQMZ5AVAKs7c/?node-id=10830-3249",
+  "nodes": [
+    {
+      "frame": "標題區 Hero",
+      "name": "主標題 H1",
+      "selector": "section.sec-title h1.d-none.d-lg-block",
+      "props": {
+        "color":      {"value": "#313334", "token": "semantic/text-primary"},
+        "fontSize":   {"value": 48,        "token": "Font/T1"},
+        "fontWeight": {"value": 700,       "token": "T1 (Bold)"},
+        "fontFamily": {"value": "Noto Sans TC", "token": "font/family"}
+      }
+    },
+    {
+      "frame": "標題區 Hero",
+      "name": "麵包屑 / About",
+      "selector": "section.sec-title .breadcrumbs",
+      "props": {
+        "color":      {"value": "#c70067", "token": "semantic/cta"},
+        "fontSize":   {"value": 14,        "token": "Caption"},
+        "fontWeight": {"value": 400,       "token": "Caption (Regular)"}
+      }
+    },
+    {
+      "frame": "內容區塊標題",
+      "name": "區塊標題「結合搜尋優化與UX設計」",
+      "selector": "section.sec-subtitle h2.new-t2",
+      "props": {
+        "color":      {"value": "#313334", "token": "semantic/text-primary"},
+        "fontSize":   {"value": 36,        "token": "Font/T2"},
+        "fontWeight": {"value": 700,       "token": "T2 (Bold)"}
+      }
+    },
+    {
+      "frame": "內容區塊標題",
+      "name": "區塊標題「打造高效SEO的關鍵概念」",
+      "selector": "section.sec-seo h2.new-t2.text-center",
+      "props": {
+        "color":      {"value": "#313334", "token": "semantic/text-primary"},
+        "fontSize":   {"value": 36,        "token": "Font/T2"},
+        "fontWeight": {"value": 700,       "token": "T2 (Bold)"}
+      }
+    },
+    {
+      "frame": "SEO 卡片",
+      "name": "卡片標題「AIO是什麼？」",
+      "selector": "section.sec-seo .border-radius-20px.bg-white h3.new-t3",
+      "props": {
+        "color":      {"value": "linear-gradient", "token": "Brand Gradient/Warm — Orange → Magenta"},
+        "fontSize":   {"value": 28,        "token": "Font/T3"},
+        "fontWeight": {"value": 700,       "token": "T3 (Bold)"}
+      }
+    },
+    {
+      "frame": "SEO 卡片",
+      "name": "SEO 卡片容器",
+      "selector": "section.sec-seo .border-radius-20px.bg-white",
+      "props": {
+        "backgroundColor": {"value": "#FFFFFF", "token": "Brand Base/White"},
+        "borderRadius":    {"value": 20,        "token": "Radius/M（卡片）"}
+      }
+    },
+    {
+      "frame": "ISO / Footer",
+      "name": "ISO 引言(藍字)",
+      "selector": "span.iso-quote",
+      "props": {
+        "color":      {"value": "#005d91", "token": "brand/primary/blue"},
+        "fontSize":   {"value": 16,        "token": "Font/Body"},
+        "fontWeight": {"value": 400,       "token": "body (Regular)"}
+      }
+    },
+    {
+      "frame": "ISO / Footer",
+      "name": "Footer 區塊標題",
+      "selector": ".footer-item-title",
+      "props": {
+        "color":      {"value": "#9FA0A0", "token": "lightgray"},
+        "fontSize":   {"value": 16,        "token": "Font/Body"},
+        "fontWeight": {"value": 400,       "token": "body (Regular)"}
+      }
+    }
+  ]
+}

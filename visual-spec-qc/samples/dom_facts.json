@@ -1,0 +1,33 @@
+{
+  "_note": "由 Browser MCP 注入 extract_dom.js 後,對真實網頁 getComputedStyle 抽出的『實作事實』。刻意植入幾個差異來示範歸因。",
+  "url": "https://staging.example.com/",
+  "nodes": [
+    {
+      "selector": "[data-figma-id='btn-primary']",
+      "computed": {
+        "color": "rgb(255, 255, 255)",
+        "backgroundColor": "rgb(66, 133, 244)",
+        "fontSize": "16px",
+        "fontWeight": "600",
+        "borderRadius": "6px"
+      }
+    },
+    {
+      "selector": "[data-figma-id='hero-title']",
+      "computed": {
+        "color": "rgb(32, 33, 36)",
+        "fontSize": "32px",
+        "fontWeight": "700",
+        "fontFamily": "Inter, sans-serif"
+      }
+    },
+    {
+      "selector": "[data-figma-id='price-tag']",
+      "computed": {
+        "color": "rgb(244, 67, 54)",
+        "fontSize": "20px",
+        "gap": "12px"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+const imgImage153 = "http://localhost:3845/assets/b950a6ac0556ed7ec07cac03b9566c154a962eb0.png";
+
+export default function Popup() {
+  return (
+    <div className="bg-[rgba(0,0,0,0.2)] relative size-full" data-node-id="10787:1995" data-name="popup">
+      <div className="-translate-x-1/2 -translate-y-1/2 absolute h-[600px] left-1/2 rounded-[var(--radius\/xl（段落）,60px)] top-1/2 w-[494px]" data-node-id="10750:2048" data-name="image 153">
+        <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[var(--radius\/xl（段落）,60px)]">
+          <div className="absolute bg-white inset-0 rounded-[var(--radius\/xl（段落）,60px)]" />
+          <div className="absolute inset-0 overflow-hidden rounded-[var(--radius\/xl（段落）,60px)]">
+            <img alt="" className="absolute h-[92.11%] left-[-0.01%] max-w-none top-[3.95%] w-[100.02%]" src={imgImage153} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
