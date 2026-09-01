@@ -63,14 +63,18 @@ def _size_out(out, width):
     root, ext = os.path.splitext(out)
     return f"{root}_{width}{ext or '.json'}"
 
-def fetch(url, widths, out, selmap=None, one_file=False):
+class PlaywrightMissing(RuntimeError):
+    """Playwright 未安裝(後端可據此回報明確訊息)。"""
+
+def capture(url, widths, selmap=None):
+    """在各寬度載入 url,回傳 [(width, data_dict)];data_dict = {url, nodes, width, ...}。
+    給後端服務(server.py)在記憶體中用,不落地。缺 Playwright 時丟 PlaywrightMissing。"""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        print("需要 Playwright:  pip install playwright"
-              "(本專案雲端環境已預裝 Chromium,無需 playwright install)")
-        sys.exit(2)
-    written = []
+        raise PlaywrightMissing(
+            "需要 Playwright:pip install playwright(本專案雲端環境已預裝 Chromium)")
+    results = []
     with sync_playwright() as p:
         browser = p.chromium.launch()
         for width in widths:
@@ -79,10 +83,20 @@ def fetch(url, widths, out, selmap=None, one_file=False):
             data = page.evaluate(JS, {"PROPS": PROPS, "SELMAP": selmap})
             page.close()
             data["width"] = width
-            target = out if one_file else _size_out(out, width)
-            open(target, "w", encoding="utf-8").write(json.dumps(data, ensure_ascii=False, indent=2))
-            written.append((width, target, len(data["nodes"])))
+            results.append((width, data))
         browser.close()
+    return results
+
+def fetch(url, widths, out, selmap=None, one_file=False):
+    try:
+        captured = capture(url, widths, selmap)
+    except PlaywrightMissing as e:
+        print(str(e)); sys.exit(2)
+    written = []
+    for width, data in captured:
+        target = out if one_file else _size_out(out, width)
+        open(target, "w", encoding="utf-8").write(json.dumps(data, ensure_ascii=False, indent=2))
+        written.append((width, target, len(data["nodes"])))
     for width, target, n in written:
         print(f"抓到 {n} 個節點 @ {width}px → {target}")
     return written

@@ -37,6 +37,11 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
   `coverage()`=配對成功 / 設計獨有(漏做)/ 實作獨有(多餘)。
 - `run_section.py` — 多尺寸核對總管:把 section 各尺寸展成 `qa.build_qa_cfg` 的 pairs,
   `--live` 先用 `fetch_dom.py` 逐寬度即時抓 DOM,再呼叫 `qa.run_config_dict` 出逐尺寸報告 + 合併總覽。
+- `figma_rest.py` — 後端真實運作用。純標準庫 urllib 打 Figma REST。`node_facts()`=節點→設計事實
+  (色/字/間距/圓角,`boundVariables` 有鍵=有綁 token);`section_size_docs()`=section→各尺寸設計事實。
+- `server.py` — 後端服務(stdlib http.server)。`/`=提供 index.html;`/api/health`;`/api/run`=真實比對
+  (figma_rest × fetch_dom.capture × auto_qa)。網頁工具填「後端 API 網址」即走真實比對,否則示範模式。
+  無法測 REST/Playwright 之處以 fixture(`samples/figma_rest_section.json`)測抽取邏輯。
 - `fetch_dom.py` — 即時抓 DOM(Playwright)。多寬度 `--widths`;`--selectors` 給 key→CSS 選擇器
   (未標 data-figma-id 的正式站)。與 `extract_dom.js` 屬性集對齊。
 - `report_html.py` / `qa.py`(index,`run_config_dict` 可被重用)/ `run_diff.py` — HTML 輸出,共用視覺系統。

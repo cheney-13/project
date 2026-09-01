@@ -111,7 +111,9 @@ visual-spec-qc/
 │   ├── report_html.py    # 明細報告(前端 / 設計師;含空間距離)
 │   ├── auto_qa.py        # 依交付規範自動對位 + 覆蓋率
 │   ├── figma_extract.py  # 從 get_design_context 抽設計事實(含 token 綁定)
+│   ├── figma_rest.py     # 用 Figma REST 抽設計事實(後端真實運作用,需 token)
 │   ├── figma_section.py  # 一個 section 放多 RWD 尺寸 → 自動列出各尺寸 + 展開批次
+│   ├── server.py         # 後端服務:網頁真實比對(Figma REST × 網站 DOM × 引擎)
 │   ├── run_section.py    # 多尺寸核對:逐尺寸抓+比對 → 合併總覽(串起整條鏈)
 │   ├── run_diff.py       # 執行差異(解決/回歸/未解決)
 │   ├── extract_dom.js    # 注入網頁蒐集 [data-figma-id] 的 computed
@@ -162,6 +164,31 @@ visual-spec-qc/
 - **Figma 側(剩餘邊界)**:各尺寸 frame 的設計事實目前由 `get_design_context`(session 內 Figma MCP,
   由代理人取)或預抽好的 `figmaNodes` 提供;獨立程序要全自動需 Figma REST API + token。
   `figma_section.py` 已能從 `get_metadata` 自動列出各尺寸並產出批次骨架,填入各尺寸來源即可跑。
+
+---
+
+## 真實運作(後端服務,讓網頁不只是原型)
+
+網頁工具(`index.html`)在瀏覽器裡受同源安全限制,**無法**跨站讀網站 DOM、直接呼叫 Figma、
+或跑 Python 引擎——所以純靜態頁只能是示範。要「貼連結就得到真實、因專案而異的結果」,
+用 `server.py` 這支純標準庫後端:它替瀏覽器做那三件事,網頁只顯示回傳的真實結果。
+
+```bash
+export FIGMA_TOKEN=figd_xxx      # Figma personal access token(唯讀即可)
+pip install playwright           # 抓網站各寬度 DOM(雲端環境已預裝 Chromium)
+python3 src/server.py            # → http://127.0.0.1:8787(工具頁與 API 同源)
+```
+
+在工具頁「STEP 01」最下方的 **🔌 後端 API 網址** 填入 `http://127.0.0.1:8787`,即進入**真實比對**:
+
+```
+① 設計  figma_rest.py  Figma REST 讀 section 各尺寸 frame → 設計事實(色/字/間距/圓角 + token 綁定)
+② 實作  fetch_dom.py   Playwright 把網站在各 @寬度 載入 → getComputedStyle
+③ 比對  auto_qa/引擎    逐屬性比 + 責任歸因 → 逐尺寸真實報告(對不到元素標「待人工/無法比對」)
+```
+
+留空後端網址則維持示範模式(結果頁會明確標示為固定示範資料)。
+CLI 也可獨立跑:`python3 src/figma_rest.py <fileKey> <nodeId> <token> --out nodes.json`。
 
 ---
 

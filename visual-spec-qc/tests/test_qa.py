@@ -28,6 +28,8 @@ import figma_section as fs      # noqa: E402
 import run_diff                 # noqa: E402
 import run_section              # noqa: E402
 import report_html              # noqa: E402
+import figma_rest as frest      # noqa: E402
+import server                   # noqa: E402
 
 
 def load(name):
@@ -388,6 +390,75 @@ class TestRunSection(unittest.TestCase):
         self.assertEqual(len(qa_cfg["pairs"]), 2)
         self.assertEqual(qa_cfg["pairs"][0]["frame"], "about @1440")
         self.assertTrue(all(p["url"] == cfg["baseURL"] for p in qa_cfg["pairs"]))
+
+
+# ------------------------------------------------------------------ #
+class TestFigmaRest(unittest.TestCase):
+    """後端真實運作:Figma REST 節點 JSON → 設計事實(用 fixture 測,不需 token)。"""
+
+    def _doc(self):
+        return load("figma_rest_section.json")
+
+    def test_color_from_figma_float_rgb(self):
+        self.assertEqual(frest._hex({"r": 0.78, "g": 0, "b": 0.404}), "#C70067")
+
+    def test_section_sizes_skip_annotation(self):
+        varmap = {"VariableID:1:10": "color/brand", "VariableID:1:20": "fs/h1"}
+        sizes = frest.section_size_docs(self._doc(), varmap)
+        self.assertEqual([s["width"] for s in sizes], [1440, 375])   # 只有兩個尺寸,注記框略過
+
+    def test_extract_props_and_token_binding(self):
+        varmap = {"VariableID:1:10": "color/brand", "VariableID:1:20": "fs/h1"}
+        sizes = frest.section_size_docs(self._doc(), varmap)
+        big = sizes[0]["doc"]["frames"][0]["nodes"]
+        title = next(n for n in big if n["key"] == "hero:title")["props"]
+        self.assertEqual(title["color"]["value"], "#C70067")
+        self.assertEqual(title["color"]["token"], "color/brand")     # 有綁 token → 之後判程式問題
+        self.assertEqual(title["fontSize"]["token"], "fs/h1")
+        self.assertIsNone(title["fontWeight"]["token"])              # 未綁 → hardcode
+        cta = next(n for n in big if n["key"] == "sec:cta")["props"]
+        self.assertEqual(cta["gap"]["value"], 12)                    # 空間距離:gap
+        self.assertEqual(cta["paddingLeft"]["value"], 24)           # 空間距離:padding
+        self.assertEqual(cta["borderRadius"]["value"], 8)
+
+    def test_rest_facts_feed_engine(self):
+        """REST 抽出的設計事實可直接餵引擎,對不上就標非通過。"""
+        sizes = frest.section_size_docs(self._doc(), {"VariableID:1:10": "color/brand"})
+        doc = sizes[0]["doc"]
+        dom = {"nodes": [{"selector": "[data-figma-id='hero:title']",
+                          "computed": {"color": "rgb(0,0,0)"}}]}   # 明顯不符
+        report, cov, plan = auto_qa.run(doc, dom)
+        self.assertEqual(report["totals"]["CODE"], 1)               # 綁 token 不符 → 程式問題
+
+
+# ------------------------------------------------------------------ #
+class TestServer(unittest.TestCase):
+    def test_web_rows_maps_and_drops_pass(self):
+        figma = {"nodes": [
+            {"frame": "F", "name": "主標", "selector": "[data-figma-id='a']",
+             "props": {"color": {"value": "#c70067", "token": "t"}}},   # 不符 → CODE
+            {"frame": "F", "name": "副標", "selector": "[data-figma-id='b']",
+             "props": {"color": {"value": "#c70067", "token": "t"}}},   # 符 → PASS(應被丟掉)
+        ]}
+        dom = {"nodes": [
+            {"selector": "[data-figma-id='a']", "computed": {"color": "rgb(0,0,0)"}},
+            {"selector": "[data-figma-id='b']", "computed": {"color": "rgb(199,0,103)"}},
+        ]}
+        rep = qe.run(figma, dom)
+        rows = server._web_rows(rep)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["j"], "code")
+        self.assertEqual(rows[0]["key"], "a")
+
+    def test_run_real_requires_token(self):
+        old = os.environ.pop("FIGMA_TOKEN", None)
+        try:
+            payload, code = server.run_real({"fileKey": "x", "nodeId": "1-2", "siteUrl": "http://a"})
+            self.assertEqual(code, 400)
+            self.assertIn("FIGMA_TOKEN", payload["error"])
+        finally:
+            if old is not None:
+                os.environ["FIGMA_TOKEN"] = old
 
 
 # ------------------------------------------------------------------ #

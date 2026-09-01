@@ -1,0 +1,40 @@
+{
+  "_note": "模擬 Figma REST /v1/files/:key/nodes 回傳的 document(一個 section 內兩尺寸),用來測試 figma_rest 的抽取邏輯,無需 token。",
+  "type": "SECTION",
+  "name": "about",
+  "children": [
+    {
+      "type": "FRAME", "name": "about @1440", "layoutMode": "VERTICAL",
+      "children": [
+        {
+          "type": "TEXT", "name": "hero:title",
+          "style": { "fontFamily": "Noto Sans TC", "fontWeight": 700, "fontSize": 48 },
+          "fills": [ { "type": "SOLID", "visible": true, "color": { "r": 0.78, "g": 0, "b": 0.404 } } ],
+          "boundVariables": { "fills": [ { "type": "VARIABLE_ALIAS", "id": "VariableID:1:10" } ],
+                              "fontSize": { "type": "VARIABLE_ALIAS", "id": "VariableID:1:20" } }
+        },
+        {
+          "type": "FRAME", "name": "sec:cta", "layoutMode": "HORIZONTAL",
+          "cornerRadius": 8, "itemSpacing": 12,
+          "paddingTop": 16, "paddingBottom": 16, "paddingLeft": 24, "paddingRight": 24,
+          "fills": [ { "type": "SOLID", "visible": true, "color": { "r": 0.78, "g": 0, "b": 0.404 } } ],
+          "boundVariables": { "fills": [ { "type": "VARIABLE_ALIAS", "id": "VariableID:1:10" } ] }
+        }
+      ]
+    },
+    {
+      "type": "FRAME", "name": "about @375", "layoutMode": "VERTICAL",
+      "children": [
+        {
+          "type": "TEXT", "name": "hero:title",
+          "style": { "fontFamily": "Noto Sans TC", "fontWeight": 700, "fontSize": 32 },
+          "fills": [ { "type": "SOLID", "visible": true, "color": { "r": 0.78, "g": 0, "b": 0.404 } } ]
+        }
+      ]
+    },
+    {
+      "type": "FRAME", "name": "Frame 5448",
+      "children": [ { "type": "TEXT", "name": "1440以上" } ]
+    }
+  ]
+}

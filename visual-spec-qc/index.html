@@ -151,10 +151,16 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
   box-shadow:0 8px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .proto{font-size:11px;color:var(--ink-3);text-align:center;margin-top:26px;letter-spacing:.3px}
+.backend{margin-top:16px;padding:14px 16px;border:1px dashed var(--line);border-radius:11px;background:var(--surface-2)}
+.backend label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+.backend .bhint{font-size:11.5px;color:var(--ink-3);margin-top:8px;line-height:1.6}
 .demoNote{background:var(--warn-bg);border:1px solid #e6d3a6;border-radius:11px;padding:12px 15px;
   margin-bottom:16px;font-size:13px;line-height:1.7;color:#7a5a1e}
 .demoNote b{color:#6b4e12}
 .demoNote code{font-family:"IBM Plex Mono",monospace;background:#fff;border:1px solid #e6d3a6;border-radius:5px;padding:1px 6px;font-size:12px}
+.demoNote.real{background:var(--good-bg);border-color:#bcd0b4;color:#3e5a38}
+.demoNote.real b{color:#2f4a2a}
+.demoNote.real code{border-color:#bcd0b4}
 </style>
 
 <div class="wrap">
@@ -185,6 +191,12 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
       </div>
       <div id="pairs"></div>
       <button class="addrow" onclick="addPair()">＋ 新增比對配對</button>
+
+      <div class="backend">
+        <label>🔌 後端 API 網址(選填)</label>
+        <input class="inp" id="apiUrl" placeholder="留空 = 示範模式；填 http://127.0.0.1:8787 = 真實比對" oninput="edited=true">
+        <div class="bhint">填入後端網址即進入<b>真實比對</b>:後端用 Figma REST 讀設計、Playwright 抓網站 DOM、跑引擎回傳真結果(啟動見 <span class="mono">src/server.py</span>)。留空則為示範資料。</div>
+      </div>
 
       <div class="foot">
         <span class="hint">連結僅供讀取結構;不會送出任何帳密或個資。</span>
@@ -316,8 +328,13 @@ const STAGES=[
  {lab:"讀取實作事實",sub:"Browser MCP · 調斷點寬度 → getComputedStyle"},
  {lab:"節點對位",sub:"data-figma-id / 文字·位置 模糊配對"},
  {lab:"逐屬性比對 + 責任歸因",sub:"顏色 ΔE · 字級 · 間距 · token 對照"}];
+let RESULTS=null;   // 真實比對結果(來自後端);null = 示範模式
 function startRun(){
-  goto("running");
+  const api=document.getElementById("apiUrl").value.trim();
+  RESULTS=null;
+  if(api) startRealRun(api); else startDemoRun();
+}
+function playStages(done){
   const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
   document.getElementById("runCount").textContent=`（${active.length} 組配對）`;
   const box=document.getElementById("runBars");
@@ -329,13 +346,41 @@ function startRun(){
     </div>`).join("");
   const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
   const step=(i)=>{
-    if(i>=STAGES.length){setTimeout(showResult,reduce?0:350);return;}
+    if(i>=STAGES.length){ if(done) setTimeout(done,reduce?0:350); return; }
     const pg=document.getElementById("pg"+i);
     pg.querySelector(".st").textContent="進行中";
     requestAnimationFrame(()=>document.getElementById("bar"+i).style.width="100%");
     setTimeout(()=>{pg.classList.add("done");pg.querySelector(".st").textContent="✓ 完成";step(i+1)}, reduce?60:560);
   };
   step(0);
+}
+function startDemoRun(){ goto("running"); playStages(showResult); }
+
+// ---- 真實比對(後端)----
+function parseFigma(u){
+  const fk=(u.match(/\/(?:design|file)\/([0-9A-Za-z]{10,})/)||[])[1]||null;
+  let nid=(u.match(/node-id=([^&]+)/)||[])[1]||null;
+  if(nid) nid=decodeURIComponent(nid);
+  return {fileKey:fk, nodeId:nid};
+}
+function startRealRun(api){
+  const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
+  if(!active.length){toast("請至少填一組 Figma 連結 + 測試網頁");return;}
+  const p0=active[0], {fileKey,nodeId}=parseFigma(p0.figma);
+  if(!fileKey||!nodeId){toast("Figma 連結需含 node-id(貼含 ?node-id= 的連結)");return;}
+  goto("running"); playStages(null);
+  fetch(api.replace(/\/+$/,"")+"/api/run",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({fileKey,nodeId,siteUrl:p0.web,selectors:p0.selectors||null})})
+   .then(r=>r.json().then(j=>({ok:r.ok,j})))
+   .then(({ok,j})=>{ if(!ok||j.error){ showError(j.error||("後端回應 "+(ok?"":"錯誤"))); return; }
+      RESULTS=(j.results||[]).map((r,i)=>({id:"sz"+i, name:r.name, bp:(r.width?r.width+"px":""),
+        score:r.score, status:r.status, counts:r.counts, rows:r.rows||[], coverage:r.coverage||{}}));
+      showResult(); })
+   .catch(e=>showError("無法連線後端("+api+"):"+e.message));
+}
+function showError(msg){
+  goto("setup");
+  toast("❌ "+msg);
 }
 
 // ---------- STEP 3 overview ----------
@@ -344,10 +389,15 @@ function showResult(){
   goto("result");
   document.getElementById("overview").style.display="block";
   document.getElementById("detail").style.display="none";
-  const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
-  // 「多尺寸」= 一次核對此頁 section 內的所有 RWD 尺寸(依各 frame 的 @寬度自動拆分)
-  const multi=active.some(p=>/多尺寸/.test(p.bp));
-  const items=multi?DATA:DATA.slice(0,Math.max(1,active.length));
+  const VERDICT={good:"可上線",warn:"建議修正後上線",bad:"不建議上線"};
+  let items;
+  if(RESULTS){ items=RESULTS; }
+  else {
+    const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
+    // 「多尺寸」= 一次核對此頁 section 內的所有 RWD 尺寸(依各 frame 的 @寬度自動拆分)
+    const multi=active.some(p=>/多尺寸/.test(p.bp));
+    items=multi?DATA:DATA.slice(0,Math.max(1,active.length));
+  }
   document.getElementById("ovCards").innerHTML=items.map(d=>{
     const s=STATUS[d.status];
     return `<div class="card ov" onclick="openDetail('${d.id}')">
@@ -355,7 +405,7 @@ function showResult(){
       <div class="ov-in">
         <div class="name">${s.light} ${d.name} <span class="bp">${d.bp}</span></div>
         <div class="scoreline"><span class="score" style="color:${s.c}">${d.score}<span style="font-size:16px">%</span></span>
-          <span class="verdict" style="color:${s.c}">${d.verdict}</span></div>
+          <span class="verdict" style="color:${s.c}">${d.verdict||VERDICT[d.status]}</span></div>
         <div class="meter"><i style="width:${d.score}%;background:${s.c}"></i></div>
         <div class="chips">
           ${d.counts.code?chip("code",d.counts.code):""}
@@ -368,26 +418,32 @@ function showResult(){
   }).join("");
   const tc=items.reduce((a,d)=>a+d.counts.code,0), td=items.reduce((a,d)=>a+d.counts.design,0);
   document.getElementById("ovSummary").innerHTML=`共 ${items.length} 組 · 程式待修 <b style="color:var(--bad)">${tc}</b> · 設計待補 <b style="color:var(--info)">${td}</b>`;
-  // 誠實提示:此網頁為互動原型,顯示的是固定示範資料,並非即時比對貼上的連結
-  const base=`⚠ <b>這是互動原型</b>:下方為<b>固定示範資料</b>,用來展示流程與報告樣貌,<b>不是</b>對你貼上連結的即時比對。`;
-  const extra=edited
-    ? `<br>你已更動連結,但網頁版<b>不會因此改變下方數字</b>——瀏覽器基於安全無法跨站讀取別的網站 DOM、也不能直接呼叫 Figma。`
-    : ``;
-  const how=`<br>要得到你自己專案的<b>真實結果</b>(不同專案不同、對不到元素會標「待人工/無法比對」),請用後端 CLI:<code>python3 src/run_section.py &lt;section.json&gt;</code> 或 <code>qa.py</code>。`;
-  document.getElementById("demoNote").innerHTML=base+extra+how;
+  const note=document.getElementById("demoNote");
+  if(RESULTS){
+    // 真實比對結果(來自後端:Figma REST × 網站 DOM × 引擎)
+    note.className="demoNote real";
+    note.innerHTML=`✅ <b>真實比對結果</b>:由後端用 Figma REST 讀設計、Playwright 抓網站各寬度 DOM、跑引擎產生;不同專案會得到不同結果。`;
+  }else{
+    note.className="demoNote";
+    const base=`⚠ <b>這是互動原型</b>:下方為<b>固定示範資料</b>,用來展示流程與報告樣貌,<b>不是</b>對你貼上連結的即時比對。`;
+    const extra=edited?`<br>你已更動連結,但示範模式<b>不會因此改變下方數字</b>——要真的比對請在上一步填「後端 API 網址」。`:``;
+    const how=`<br>真實比對走後端(<code>src/server.py</code>),或用 CLI:<code>python3 src/run_section.py &lt;section.json&gt;</code>。`;
+    note.innerHTML=base+extra+how;
+  }
 }
 function chip(k,n){return `<span class="chip" style="color:${SEV[k].c};background:${SEV[k].bg}">${SEV[k].t} <span class="mono">${n}</span></span>`}
 
 // ---------- detail ----------
 function openDetail(id){
-  const d=DATA.find(x=>x.id===id); curDetail=d;
+  const d=(RESULTS||DATA).find(x=>x.id===id); curDetail=d;
   const s=STATUS[d.status];
+  const VERDICT={good:"可上線",warn:"建議修正後上線",bad:"不建議上線"};
   document.getElementById("overview").style.display="none";
   document.getElementById("detail").style.display="block";
-  document.getElementById("dName").textContent=d.name+" · "+d.bp;
+  document.getElementById("dName").textContent=d.name+(d.bp?" · "+d.bp:"");
   document.getElementById("dScore").textContent=d.score+"%";
   document.getElementById("dScore").style.color=s.c;
-  const v=document.getElementById("dVerdict"); v.textContent=d.verdict; v.style.color=s.c;
+  const v=document.getElementById("dVerdict"); v.textContent=d.verdict||VERDICT[d.status]; v.style.color=s.c;
   // 頂部數字摘要(前端 / 設計師都看)
   document.getElementById("v-kpi").innerHTML=`
    <div class="kpis">
@@ -398,18 +454,19 @@ function openDetail(id){
    </div>
    <div class="legend">🔴 <b>程式問題</b>(前端):設計已綁 token,實作未對齊　·　🔵 <b>設計問題</b>(設計師):設計稿 hardcode、規格待補　·　檢視涵蓋 <b>顏色 / 字型 / 字級字重 / 圓角</b> 與 <b>空間距離(間距 gap、內距 padding、外距 margin、寬高)</b>。</div>`;
   // dev
-  const isColor=p=>p==="color"||p==="backgroundColor";
-  document.getElementById("v-dev").innerHTML=`
+  const rows=(d.rows||[]).filter(r=>SEV[r.j]);
+  const table = rows.length ? `
    <div class="tbl-wrap"><table>
    <thead><tr><th>判定</th><th>元件 / 選擇器</th><th>屬性</th><th>設計規格</th><th>實際渲染</th><th>差異 / 說明</th></tr></thead>
-   <tbody>${d.rows.map(r=>{const sv=SEV[r.j];return `<tr>
+   <tbody>${rows.map(r=>{const sv=SEV[r.j];return `<tr>
      <td class="judge"><span class="badge" style="color:${sv.c};background:${sv.bg}">${sv.t}</span><div class="assignee">→ ${sv.who}</div></td>
      <td class="node"><b>${r.node}</b><span class="sel">${r.sel}</span></td>
      <td>${r.prop}<span class="tok">${r.tok}</span></td>
      <td>${swatch(r.spec)}</td><td>${swatch(r.act)}</td>
      <td><span class="delta" style="color:${sv.c}">${r.d}</span><div style="color:var(--ink-2);font-size:12px;margin-top:3px">${r.msg}</div></td>
-   </tr>`}).join("")}</tbody></table></div>
-   <div class="passline">✓ ${d.pass}</div>`;
+   </tr>`}).join("")}</tbody></table></div>` : "";
+  const pass = d.pass ? d.pass : `${d.counts.pass} 項通過`;
+  document.getElementById("v-dev").innerHTML = table + `<div class="passline">✓ ${rows.length?pass:("全數通過,無差異("+d.counts.pass+" 項)")}</div>`;
 }
 function swatch(v){const hex=/^#([0-9a-f]{6})$/i.test(v);
   return `${hex?`<span class="sw" style="background:${v}"></span>`:""}<span class="mono">${v}</span>`}
