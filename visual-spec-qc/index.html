@@ -226,12 +226,9 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
             <div id="dVerdict" style="font-size:12px;font-weight:600"></div>
           </div>
         </div>
-        <div class="tabs">
-          <button class="tab on" onclick="setTab(0)">👔 業務摘要</button>
-          <button class="tab" onclick="setTab(1)">🛠 工程 / 設計明細</button>
-        </div>
-        <div class="view on" id="v-biz"></div>
-        <div class="view" id="v-dev"></div>
+        <div class="eyebrow" style="margin:16px 0 10px">🛠 前端 / 設計師逐項明細</div>
+        <div id="v-kpi"></div>
+        <div id="v-dev"></div>
         <div class="foot">
           <span class="hint">此報告可下載留存,或存為版本紀錄以追蹤還原度趨勢。</span>
           <button class="btn pri" onclick="downloadReport()">⬇ 下載報告</button>
@@ -255,7 +252,7 @@ const DATA=[
  {id:"d", name:"about 桌機版", bp:"桌機 1440",
   figma:"figma.com/…?node-id=10830-3249", web:"bizdev…/#/about",
   score:80, status:"warn", verdict:"建議修正後上線",
-  counts:{code:3,design:0,human:1,pass:20},
+  counts:{code:5,design:1,human:1,pass:20},
   biz:[
    {ic:"🔴",h:"3 項「程式沒照設計做」",t:"H1 主標與兩個區塊標題的品牌色沒套上——用了框架預設灰 <b class='mono'>#212529</b>,設計要的是品牌色 <b class='mono'>#313334</b>(ΔE 7.0,肉眼可辨)。已分派 <b>前端</b>。"},
    {ic:"⚪",h:"1 項待人工確認",t:"卡片標題「AIO是什麼？」是漸層文字,工具無法用單一顏色比對,交人工看一眼即可。"},
@@ -264,6 +261,9 @@ const DATA=[
    {j:"code",node:"主標題 H1",sel:"section.sec-title h1.d-none.d-lg-block",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"設計規格明確,實作未對齊"},
    {j:"code",node:"區塊標題「結合搜尋優化與UX設計」",sel:"section.sec-subtitle h2.new-t2",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"同上,品牌主色未套用"},
    {j:"code",node:"區塊標題「打造高效SEO的關鍵概念」",sel:"section.sec-seo h2.new-t2.text-center",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"同上,建議統一改用 token 變數"},
+   {j:"code",node:"客戶 logo 牆 row",sel:"section.sec-client .logo-row",prop:"gap",tok:"space/xl",spec:"48px",act:"32px",d:"差 16px",msg:"空間距離:區塊內元素間距(gap)小於設計"},
+   {j:"code",node:"resource 卡片列 card-row",sel:"section.sec-resource .card-row",prop:"paddingTop",tok:"space/lg",spec:"40px",act:"24px",d:"差 16px",msg:"空間距離:卡片內距(padding-top)未對齊設計 token"},
+   {j:"design",node:"KV 主標區 text",sel:"section.sec-title .text",prop:"marginBottom",tok:"(未綁定)",spec:"未定義",act:"24px",d:"—",msg:"空間距離:外距(margin-bottom)在設計稿為 hardcode,未綁間距 token"},
    {j:"human",node:"卡片標題「AIO是什麼？」",sel:"section.sec-seo .border-radius-20px h3.new-t3",prop:"color",tok:"Brand Gradient/Warm",spec:"漸層",act:"transparent",d:"—",msg:"漸層文字,需人工確認"}],
   pass:"20 項通過:麵包屑 #c70067(ΔE 0)、ISO 藍字 #005d91(ΔE 0)、Footer #9FA0A0、卡片圓角 20px、白底、字級 48/36/28/16、字重、Noto Sans TC 字型…"},
 
@@ -376,17 +376,15 @@ function openDetail(id){
   document.getElementById("dScore").textContent=d.score+"%";
   document.getElementById("dScore").style.color=s.c;
   const v=document.getElementById("dVerdict"); v.textContent=d.verdict; v.style.color=s.c;
-  // biz
-  document.getElementById("v-biz").innerHTML=`
+  // 頂部數字摘要(前端 / 設計師都看)
+  document.getElementById("v-kpi").innerHTML=`
    <div class="kpis">
      <div class="kpi"><b style="color:${s.c}">${d.score}%</b><span>整體還原度</span></div>
-     <div class="kpi"><b style="color:var(--bad)">${d.counts.code}</b><span>程式要修</span></div>
-     <div class="kpi"><b style="color:var(--info)">${d.counts.design}</b><span>設計要補</span></div>
+     <div class="kpi"><b style="color:var(--bad)">${d.counts.code}</b><span>程式要修(前端)</span></div>
+     <div class="kpi"><b style="color:var(--info)">${d.counts.design}</b><span>設計要補(設計師)</span></div>
      <div class="kpi"><b style="color:var(--human)">${d.counts.human}</b><span>待人工</span></div>
    </div>
-   ${d.biz.map(b=>`<div class="bizrow"><span class="ic">${b.ic}</span><div><b>${b.h}</b><div style="color:var(--ink-2);font-size:13px;margin-top:2px">${b.t}</div></div></div>`).join("")}
-   <div class="legend"><b>怎麼看:</b>還原度 = 這頁與設計稿的吻合程度。🟢95%↑且無程式問題可上線,🟡80–95%修一修,🔴80%↓先別上。每項差異已自動分派「設計的事」或「程式的事」。</div>`;
-  setTab(0);
+   <div class="legend">🔴 <b>程式問題</b>(前端):設計已綁 token,實作未對齊　·　🔵 <b>設計問題</b>(設計師):設計稿 hardcode、規格待補　·　檢視涵蓋 <b>顏色 / 字型 / 字級字重 / 圓角</b> 與 <b>空間距離(間距 gap、內距 padding、外距 margin、寬高)</b>。</div>`;
   // dev
   const isColor=p=>p==="color"||p==="backgroundColor";
   document.getElementById("v-dev").innerHTML=`
@@ -404,8 +402,6 @@ function openDetail(id){
 function swatch(v){const hex=/^#([0-9a-f]{6})$/i.test(v);
   return `${hex?`<span class="sw" style="background:${v}"></span>`:""}<span class="mono">${v}</span>`}
 function closeDetail(){document.getElementById("detail").style.display="none";document.getElementById("overview").style.display="block"}
-function setTab(i){document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("on",j===i));
-  document.querySelectorAll(".view").forEach((v,j)=>v.classList.toggle("on",j===i))}
 
 // ---------- actions ----------
 function saveRecord(){history++;document.getElementById("histN").textContent=history;

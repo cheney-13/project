@@ -23,6 +23,10 @@
     paddingRight: "padding-right",
     paddingBottom: "padding-bottom",
     paddingLeft: "padding-left",
+    marginTop: "margin-top",
+    marginRight: "margin-right",
+    marginBottom: "margin-bottom",
+    marginLeft: "margin-left",
     width: "width",
     height: "height",
   };

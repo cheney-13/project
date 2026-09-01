@@ -32,11 +32,14 @@ WEIGHT = {
     "fontSize": 3, "fontWeight": 2, "fontFamily": 2,
     "borderRadius": 1, "gap": 2,
     "paddingTop": 1, "paddingRight": 1, "paddingBottom": 1, "paddingLeft": 1,
+    "marginTop": 1, "marginRight": 1, "marginBottom": 1, "marginLeft": 1,
     "width": 1, "height": 1,
 }
 COLOR_PROPS  = {"color", "backgroundColor", "borderColor"}
+# 空間距離:間距 gap、內距 padding、外距 margin、寬高,皆帶 ±1px 容差比對
 LENGTH_PROPS = {"fontSize", "borderRadius", "gap", "width", "height", "lineHeight",
-                "letterSpacing", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft"}
+                "letterSpacing", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+                "marginTop", "marginRight", "marginBottom", "marginLeft"}
 
 # ------------------------------------------------------------------ #
 # 2. 值的正規化 (normalize)

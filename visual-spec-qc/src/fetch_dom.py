@@ -28,6 +28,8 @@ PROPS = {
     "lineHeight": "line-height", "letterSpacing": "letter-spacing",
     "paddingTop": "padding-top", "paddingRight": "padding-right",
     "paddingBottom": "padding-bottom", "paddingLeft": "padding-left",
+    "marginTop": "margin-top", "marginRight": "margin-right",
+    "marginBottom": "margin-bottom", "marginLeft": "margin-left",
 }
 
 # selmap 為 None → 抓 [data-figma-id];否則抓 selmap 指定的每個選擇器

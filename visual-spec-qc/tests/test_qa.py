@@ -27,6 +27,7 @@ import figma_extract as fx      # noqa: E402
 import figma_section as fs      # noqa: E402
 import run_diff                 # noqa: E402
 import run_section              # noqa: E402
+import report_html              # noqa: E402
 
 
 def load(name):
@@ -200,6 +201,66 @@ class TestAcceptedBaseline(unittest.TestCase):
         rep = qe.run(figma, dom, {"accepted": [{"key": "k", "prop": "*"}]})
         self.assertEqual(rep["frames"][0]["rows"][0]["responsibility"], "PASS")
         self.assertEqual(rep["totals"]["ACCEPTED"], 0)
+
+
+# ------------------------------------------------------------------ #
+class TestSpacing(unittest.TestCase):
+    """空間距離:間距 gap、內距 padding、外距 margin、寬高皆納入比對。"""
+
+    def test_spacing_props_in_length_set(self):
+        for p in ("gap", "paddingTop", "paddingLeft",
+                  "marginTop", "marginRight", "marginBottom", "marginLeft",
+                  "width", "height"):
+            self.assertIn(p, qe.LENGTH_PROPS)
+            self.assertIn(p, qe.WEIGHT)
+
+    def test_margin_compared_with_tolerance(self):
+        self.assertTrue(qe.compare_prop("marginBottom", "24px", "24.4px")[0])   # 差 0.4 < 1
+        self.assertFalse(qe.compare_prop("marginBottom", "24px", "32px")[0])    # 差 8 → 不符
+
+    def test_margin_mismatch_with_token_is_code(self):
+        figma = {"nodes": [{
+            "frame": "F", "name": "區塊", "selector": "[data-figma-id='sec']",
+            "props": {"marginBottom": {"value": 40, "token": "space/lg"}},
+        }]}
+        dom = {"nodes": [{"selector": "[data-figma-id='sec']",
+                          "computed": {"marginBottom": "24px"}}]}
+        rep = qe.run(figma, dom)
+        self.assertEqual(rep["frames"][0]["rows"][0]["responsibility"], "CODE")
+
+    def test_figma_extract_tailwind_margin(self):
+        code = '<div data-name="sec:x" className="mt-[var(--space\\/lg,40px)] mb-[24px]"></div>'
+        nodes = fx.parse(code, keys_only=True)
+        props = nodes[0]["props"]
+        self.assertEqual(props["marginTop"]["value"], 40)
+        self.assertEqual(props["marginTop"]["token"], "space/lg")
+        self.assertEqual(props["marginBottom"]["value"], 24)
+        self.assertIsNone(props["marginBottom"]["token"])
+
+
+# ------------------------------------------------------------------ #
+class TestReportView(unittest.TestCase):
+    """報告只給前端 / 設計師看:不再有業務摘要分頁。"""
+
+    def _report(self):
+        figma = {"nodes": [{
+            "frame": "F", "name": "n", "selector": "[data-figma-id='k']",
+            "props": {"color": {"value": "#c70067", "token": "color/brand"}},
+        }]}
+        dom = {"nodes": [{"selector": "[data-figma-id='k']",
+                          "computed": {"color": "rgb(33,37,41)"}}]}
+        return report_html.render(qe.run(figma, dom))
+
+    def test_no_business_summary_tab(self):
+        html_out = self._report()
+        self.assertNotIn("業務摘要", html_out)
+        self.assertNotIn("onclick=\"sw(", html_out)
+
+    def test_has_dev_audience_and_spacing_note(self):
+        html_out = self._report()
+        self.assertIn("前端", html_out)
+        self.assertIn("設計師", html_out)
+        self.assertIn("空間距離", html_out)   # 報告說明有列出間距/margin 等維度
 
 
 # ------------------------------------------------------------------ #

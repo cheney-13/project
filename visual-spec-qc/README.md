@@ -4,7 +4,7 @@
 
 不是比像素,而是透過 MCP 同時取得 Figma 的底層 token/結構與網頁的真實
 DOM/Computed Style,**逐屬性語意對位**,並自動判斷每個差異是**設計問題**還是**程式問題**,
-輸出給工程/設計看的明細與給業務看的白話摘要。
+輸出給前端工程師與設計師的逐項明細,並自動分派責任。
 
 ---
 
@@ -50,7 +50,7 @@ python3 -m unittest discover -s tests
 ```
 
 互動原型與規範卡(可直接用瀏覽器開):
-- `index.html` — 切版核對工具(貼連結 → 一鍵批次 → 分眾報告;資料夾主入口)
+- `index.html` — 切版核對工具(貼連結 → 一鍵批次 → 前端/設計師明細報告;資料夾主入口)
 - `guide.html` — Figma 交付規範卡(設計師照著整理檔案)
 
 ---
@@ -64,7 +64,7 @@ python3 -m unittest discover -s tests
              (或 fetch_dom.py 用 Playwright,無 MCP)
 ③ 對位比對   auto_qa.py:frame 命名 /route @width → URL+寬度;data-figma-id 自動配對
              qa_engine.py:逐屬性比 + 責任歸因(程式/設計/待人工/通過)
-④ 產出       report_html.py(分眾報告) · qa.py(總覽) · run_diff.py(執行差異)
+④ 產出       report_html.py(前端/設計師明細) · qa.py(總覽) · run_diff.py(執行差異)
 ```
 
 **責任歸因規則(核心)**
@@ -108,7 +108,7 @@ visual-spec-qc/
 ├── src/
 │   ├── qa.py             # CLI 入口:批次 + 總覽 index + CI 門檻
 │   ├── qa_engine.py      # 比對 + 責任歸因 + 分數(純標準庫)
-│   ├── report_html.py    # 分眾報告(業務摘要 / 工程明細)
+│   ├── report_html.py    # 明細報告(前端 / 設計師;含空間距離)
 │   ├── auto_qa.py        # 依交付規範自動對位 + 覆蓋率
 │   ├── figma_extract.py  # 從 get_design_context 抽設計事實(含 token 綁定)
 │   ├── figma_section.py  # 一個 section 放多 RWD 尺寸 → 自動列出各尺寸 + 展開批次
@@ -135,7 +135,7 @@ visual-spec-qc/
 ## 現況與路線圖
 
 **已完成**
-- 核心比對引擎 + 責任歸因 + 分眾報告
+- 核心比對引擎 + 責任歸因 + 明細報告(前端 / 設計師)
 - 依規範自動對位(零人工選擇器)+ 覆蓋率(漏做 / 多餘)
 - 從 `get_design_context` 自動抽設計事實(含 token 綁定)
 - 單一 CLI(批次 + 總覽 + CI 門檻)

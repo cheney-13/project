@@ -58,7 +58,8 @@ def classify(cls):
     pfx, val = m.group(1), m.group(2)
     inner,_ = unwrap(val)
     table = {"rounded":"borderRadius","gap":"gap","leading":"lineHeight","tracking":"letterSpacing",
-             "pt":"paddingTop","pr":"paddingRight","pb":"paddingBottom","pl":"paddingLeft"}
+             "pt":"paddingTop","pr":"paddingRight","pb":"paddingBottom","pl":"paddingLeft",
+             "mt":"marginTop","mr":"marginRight","mb":"marginBottom","ml":"marginLeft"}
     if pfx == "bg":   return ("backgroundColor", val)
     if pfx == "text": return ("color" if looks_color(inner) else "fontSize", val)
     if pfx == "font": return ("fontWeight", val)
@@ -67,7 +68,8 @@ def classify(cls):
 
 COLOR_PROPS = {"color","backgroundColor","borderColor"}
 LEN_PROPS = {"fontSize","borderRadius","gap","lineHeight","letterSpacing",
-             "paddingTop","paddingRight","paddingBottom","paddingLeft"}
+             "paddingTop","paddingRight","paddingBottom","paddingLeft",
+             "marginTop","marginRight","marginBottom","marginLeft"}
 
 def to_prop(prop, raw):
     val, token = unwrap(raw)
