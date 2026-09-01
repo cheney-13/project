@@ -92,21 +92,27 @@ def coverage(plan, dom_keys):
     return rows
 
 # ------------------------------------------------------------------ #
-def run(figma, dom):
+def run(figma, dom, accepted=None):
     plan, spec = build_plan_and_spec(figma)
     dom_norm, dom_keys = normalize_dom(dom)
-    report = qe.run(spec, dom_norm)
+    report = qe.run(spec, dom_norm, accepted)
     cov = coverage(plan, dom_keys)
     return report, cov, plan
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print("用法: python3 auto_qa.py <figma_nodes.json> <dom_facts.json> <out.html>")
+    args = sys.argv[1:]
+    accepted = None
+    if "--accepted" in args:
+        i = args.index("--accepted")
+        accepted = json.load(open(args[i+1], encoding="utf-8"))
+        del args[i:i+2]
+    if len(args) < 3:
+        print("用法: python3 auto_qa.py <figma_nodes.json> <dom_facts.json> <out.html> [--accepted accepted.json]")
         sys.exit(1)
-    figma = json.load(open(sys.argv[1], encoding="utf-8"))
-    dom = json.load(open(sys.argv[2], encoding="utf-8"))
-    report, cov, plan = run(figma, dom)
-    open(sys.argv[3], "w", encoding="utf-8").write(render(report))
+    figma = json.load(open(args[0], encoding="utf-8"))
+    dom = json.load(open(args[1], encoding="utf-8"))
+    report, cov, plan = run(figma, dom, accepted)
+    open(args[2], "w", encoding="utf-8").write(render(report))
 
     t = report["totals"]
     print("=" * 60)
@@ -115,12 +121,13 @@ if __name__ == "__main__":
     for p in plan:
         print(f"◆ {p['frame']}  →  {p['url'] or '(未設定URL)'} @ {p['width']}px")
     print("-" * 60)
+    acc = f" | 已接受 {t['ACCEPTED']}" if t.get("ACCEPTED") else ""
     print(f"整體還原度 {t['score']}% | 通過 {t['pass']}/{t['checks']} | "
-          f"程式 {t['CODE']} | 設計 {t['DESIGN']} | 待確認 {t['NEEDS_HUMAN']}")
+          f"程式 {t['CODE']} | 設計 {t['DESIGN']} | 待確認 {t['NEEDS_HUMAN']}{acc}")
     print("-" * 60)
     print("【對位覆蓋率】")
     for c in cov:
         print(f"  {c['frame']}: 配對成功 {len(c['matched'])} | "
               f"設計獨有(實作漏做) {c['design_only'] or '—'} | "
               f"實作獨有(設計未定義) {c['dom_only'] or '—'}")
-    print("報告已輸出:", sys.argv[3])
+    print("報告已輸出:", args[2])

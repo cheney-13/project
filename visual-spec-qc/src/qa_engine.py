@@ -84,7 +84,7 @@ def parse_len(v):
         return None
     if isinstance(v, (int, float)):
         return float(v)
-    m = re.match(r'(-?[\d.]+)\s*px?$', str(v).strip())
+    m = re.match(r'(-?[\d.]+)\s*(?:px)?$', str(v).strip())
     return float(m.group(1)) if m else None
 
 def norm_family(v):
@@ -152,15 +152,71 @@ def attribute(match, spec_meta, dom_present):
 def severity_of(prop, responsibility):
     if responsibility == "PASS":
         return "pass"
+    if responsibility == "ACCEPTED":
+        return "accepted"
     w = WEIGHT.get(prop, 1)
     if responsibility == "NEEDS_HUMAN":
         return "info"
     return "high" if w >= 3 else ("medium" if w >= 2 else "low")
 
 # ------------------------------------------------------------------ #
+# 4b. 接受清單 / 基準線 (accepted baseline) — Roadmap B
+#     把「已人工確認、可接受」的差異靜音:不再阻擋還原度分數,
+#     但仍完整列出並標記為「已接受」,每輪不再當雜訊。
+# ------------------------------------------------------------------ #
+def _key_from_selector(selector):
+    """[data-figma-id='hero:title'] → hero:title;非此形式回傳原字串。"""
+    m = re.search(r"data-figma-id=['\"]([^'\"]+)['\"]", selector or "")
+    return m.group(1) if m else (selector or "")
+
+class AcceptedIndex:
+    """
+    可接受差異的索引。來源可為:
+      · {"accepted": [{key|selector, prop, reason?}, ...]}
+      · 直接的 list[dict]
+    prop 可用 "*" 代表整個節點所有屬性都豁免。
+    比對時同時支援用 data-figma-id 的 key 或完整 selector 命中。
+    """
+    def __init__(self, data=None):
+        self.entries = []
+        rows = []
+        if isinstance(data, dict):
+            rows = data.get("accepted", [])
+        elif isinstance(data, list):
+            rows = data
+        for e in rows or []:
+            if not isinstance(e, dict):
+                continue
+            key = e.get("key")
+            sel = e.get("selector")
+            if key is None and sel is not None:
+                key = _key_from_selector(sel)
+            self.entries.append({
+                "key": key, "selector": sel,
+                "prop": e.get("prop", "*"),
+                "reason": e.get("reason", "已接受(基準線)"),
+            })
+
+    def __bool__(self):
+        return bool(self.entries)
+
+    def match(self, selector, prop):
+        """命中則回傳 reason 字串,否則 None。"""
+        row_key = _key_from_selector(selector)
+        for e in self.entries:
+            if e["prop"] not in ("*", prop):
+                continue
+            if e["key"] is not None and e["key"] == row_key:
+                return e["reason"]
+            if e["selector"] is not None and e["selector"] == selector:
+                return e["reason"]
+        return None
+
+# ------------------------------------------------------------------ #
 # 5. 主流程
 # ------------------------------------------------------------------ #
-def run(figma_spec, dom_facts):
+def run(figma_spec, dom_facts, accepted=None):
+    acc = accepted if isinstance(accepted, AcceptedIndex) else AcceptedIndex(accepted)
     dom_by_sel = {d["selector"]: d for d in dom_facts.get("nodes", [])}
     frames = {}
     for node in figma_spec.get("nodes", []):
@@ -182,25 +238,36 @@ def run(figma_spec, dom_facts):
             else:
                 match, detail, actual, spec_disp = compare_prop(prop, spec_val, dom_val)
             resp, resp_msg, assignee = attribute(match, spec_meta, dom_present)
-            frames[frame].append({
+            row = {
                 "node": node.get("name", sel), "selector": sel, "prop": prop,
                 "spec": spec_disp, "actual": actual, "detail": detail,
                 "token": spec_meta.get("token"),
                 "responsibility": resp, "resp_msg": resp_msg,
                 "assignee": assignee, "weight": WEIGHT.get(prop, 1),
-                "severity": severity_of(prop, resp),
-            })
+            }
+            # 基準線:非通過項若在接受清單內 → 靜音為「已接受」,不阻擋分數
+            if resp != "PASS":
+                reason = acc.match(sel, prop)
+                if reason is not None:
+                    row["orig_responsibility"] = resp
+                    row["responsibility"] = "ACCEPTED"
+                    row["resp_msg"] = f"已接受(基準線):{reason}"
+                    row["assignee"] = "—"
+            row["severity"] = severity_of(prop, row["responsibility"])
+            frames[frame].append(row)
     return summarize(frames)
 
 def summarize(frames):
     report = {"frames": [], "totals": {}}
     tot = {"checks": 0, "pass": 0, "CODE": 0, "DESIGN": 0, "NEEDS_HUMAN": 0,
-           "high": 0, "medium": 0, "low": 0}
+           "ACCEPTED": 0, "high": 0, "medium": 0, "low": 0}
     for fname, rows in frames.items():
         w_total = sum(r["weight"] for r in rows)
-        w_pass  = sum(r["weight"] for r in rows if r["responsibility"] == "PASS")
-        score   = round(100 * w_pass / w_total) if w_total else 100
-        counts  = {k: 0 for k in ("CODE", "DESIGN", "NEEDS_HUMAN", "PASS")}
+        # 通過與「已接受」都不阻擋還原度分數
+        w_ok    = sum(r["weight"] for r in rows
+                      if r["responsibility"] in ("PASS", "ACCEPTED"))
+        score   = round(100 * w_ok / w_total) if w_total else 100
+        counts  = {k: 0 for k in ("CODE", "DESIGN", "NEEDS_HUMAN", "PASS", "ACCEPTED")}
         for r in rows:
             counts[r["responsibility"]] += 1
             tot["checks"] += 1
@@ -224,15 +291,22 @@ def summarize(frames):
     return report
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print("用法: python3 qa_engine.py <figma_spec.json> <dom_facts.json> <out.html>")
+    args = sys.argv[1:]
+    accepted = None
+    if "--accepted" in args:
+        i = args.index("--accepted")
+        accepted = json.load(open(args[i+1], encoding="utf-8"))
+        del args[i:i+2]
+    if len(args) < 3:
+        print("用法: python3 qa_engine.py <figma_spec.json> <dom_facts.json> <out.html> [--accepted accepted.json]")
         sys.exit(1)
-    figma = json.load(open(sys.argv[1], encoding="utf-8"))
-    dom   = json.load(open(sys.argv[2], encoding="utf-8"))
-    rep   = run(figma, dom)
+    figma = json.load(open(args[0], encoding="utf-8"))
+    dom   = json.load(open(args[1], encoding="utf-8"))
+    rep   = run(figma, dom, accepted)
     from report_html import render
-    open(sys.argv[3], "w", encoding="utf-8").write(render(rep))
+    open(args[2], "w", encoding="utf-8").write(render(rep))
     t = rep["totals"]
+    acc = f" | 已接受 {t['ACCEPTED']}" if t.get("ACCEPTED") else ""
     print(f"整體還原度 {t['score']}% | 通過 {t['pass']}/{t['checks']} | "
-          f"程式問題 {t['CODE']} | 設計問題 {t['DESIGN']} | 待確認 {t['NEEDS_HUMAN']}")
-    print("報告已輸出:", sys.argv[3])
+          f"程式問題 {t['CODE']} | 設計問題 {t['DESIGN']} | 待確認 {t['NEEDS_HUMAN']}{acc}")
+    print("報告已輸出:", args[2])

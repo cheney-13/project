@@ -58,11 +58,15 @@ def run_config(cfg_path, fail_under=None):
     os.makedirs(out_dir, exist_ok=True)
     threshold = fail_under if fail_under is not None else cfg.get("failUnder", 0)
 
+    default_accepted = cfg.get("accepted")   # 專案層級基準線(可被 pair 覆蓋)
+
     results = []
     for i, pair in enumerate(cfg["pairs"], 1):
         figma = load_figma_doc(pair, base_dir)
         dom = json.load(open(os.path.join(base_dir, pair["dom"]), encoding="utf-8"))
-        report, cov, plan = auto_qa.run(figma, dom)
+        acc_path = pair.get("accepted", default_accepted)
+        accepted = json.load(open(os.path.join(base_dir, acc_path), encoding="utf-8")) if acc_path else None
+        report, cov, plan = auto_qa.run(figma, dom, accepted)
         t = report["totals"]
         st = status_of(t["score"], t["CODE"])
         fname = f"report_{i:02d}_{slug(pair['name'])}.html"
@@ -90,6 +94,7 @@ def render_index(cfg, results):
         if t["CODE"]:  chips.append(f'<span class="chip" style="color:#b4453a;background:#f3e6e3">程式 {t["CODE"]}</span>')
         if t["DESIGN"]:chips.append(f'<span class="chip" style="color:#3f5b7a;background:#e9edf1">設計 {t["DESIGN"]}</span>')
         if t["NEEDS_HUMAN"]:chips.append(f'<span class="chip" style="color:#8f887c;background:#efece5">待確認 {t["NEEDS_HUMAN"]}</span>')
+        if t.get("ACCEPTED"):chips.append(f'<span class="chip" style="color:#7c8a76;background:#eef1ea">已接受 {t["ACCEPTED"]}</span>')
         chips.append(f'<span class="chip" style="color:#5e7d5a;background:#eaefe7">通過 {t["pass"]}</span>')
         covline = ""
         if cov.get("design_only"): covline += f'<div class="cov">⚠ 實作漏做:{", ".join(esc(k) for k in cov["design_only"])}</div>'
@@ -143,8 +148,9 @@ def print_summary(results, idx, threshold):
     print("=" * 64)
     for r in results:
         t = r["totals"]; light = STATUS[r["status"]][0]
+        acc = f" 已接受{t['ACCEPTED']}" if t.get("ACCEPTED") else ""
         print(f"{light} {r['name']:22} {r['score']:3}%  "
-              f"程式{t['CODE']} 設計{t['DESIGN']} 待確認{t['NEEDS_HUMAN']} 通過{t['pass']}/{t['checks']}")
+              f"程式{t['CODE']} 設計{t['DESIGN']} 待確認{t['NEEDS_HUMAN']}{acc} 通過{t['pass']}/{t['checks']}")
         cov = r["coverage"][0] if r["coverage"] else {}
         if cov.get("design_only"): print(f"     ⚠ 實作漏做: {cov['design_only']}")
         if cov.get("dom_only"):    print(f"     ＋ 設計未定義: {cov['dom_only']}")

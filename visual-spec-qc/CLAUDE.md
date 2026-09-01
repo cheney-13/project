@@ -17,13 +17,18 @@ python3 src/auto_qa.py samples/demo_figma_nodes.json samples/demo_dom_facts.json
 python3 src/run_diff.py samples/demo_figma_nodes.json \
         samples/demo_dom_facts.json samples/demo_dom_facts_v2.json out/diff.html
 ```
-改動後的回歸檢查:上面三條都應正常產出;MX 真實案例
-`python3 src/qa_engine.py samples/mx_figma_spec.json samples/mx_dom_facts.json out/mx.html`
-應穩定得到 **80%**。
+改動後的回歸檢查:**先跑測試套件**(純標準庫,無外部依賴,秒級):
+```bash
+python3 -m unittest discover -s tests           # 全綠才算沒改壞
+```
+測試已鎖定關鍵行為(值正規化 / 比對容差 / 責任歸因 / DOM 未擷取防護 /
+接受清單靜音 / figma_extract token 判定 / run_diff 分類 / **MX 案例 = 80%**)。
+新增比對維度或改容差時,務必同步補測試。上面三條 CLI 也都應正常產出。
 
 ## 模組地圖(改動時看這裡)
 - `qa_engine.py` — 比對核心。`TOL`=容差、`WEIGHT`=屬性權重、`compare_prop()`=逐屬性比、
-  `attribute()`=責任歸因、`run()`=主流程。**改比對邏輯只動這支。**
+  `attribute()`=責任歸因、`AcceptedIndex`=接受清單索引、`run(figma,dom,accepted=None)`=主流程。
+  **改比對邏輯只動這支。**
 - `figma_extract.py` — 解析 `get_design_context` 的 React+Tailwind。關鍵:`var(--token,值)`=有綁 token、
   原始值=hardcode;`classify()`=Tailwind class→CSS 屬性;`parse()`=把樣式併入最近的具鍵節點。
 - `auto_qa.py` — 依規範自動對位:`parse_frame_name()` 解析 `/route @width`;以 `data-figma-id` 為 key 配對;
@@ -34,6 +39,8 @@ python3 src/run_diff.py samples/demo_figma_nodes.json \
 ## 資料契約
 - **figma_nodes**:`{baseURL, frames:[{name, url?, nodes:[{key, name, props:{prop:{value, token}}}]}]}`
 - **dom_facts**:`{url, nodes:[{key, computed:{prop:value}}]}`(key = data-figma-id 值)
+- **accepted(基準線)**:`{accepted:[{key|selector, prop, reason?}]}`;`prop="*"` 豁免整個節點。
+  命中的非通過項會被靜音為 `ACCEPTED`(不阻擋分數、仍列出),原判定存於 `orig_responsibility`。
 - 比對以 `(frame, [data-figma-id='key'], prop)` 為鍵。`token=None` 代表 hardcode。
 
 ## 交付規範(自動對位的前提)
@@ -57,8 +64,12 @@ python3 src/run_diff.py samples/demo_figma_nodes.json \
 - **唯一整合縫**:URL → context/dom 檔的即時抓取要透過 MCP(代理人)或 `fetch_dom.py`;
   獨立 Python 程序無法直接呼叫 session 的 MCP 工具。
 
-## 路線圖(待做)
-- B. 接受清單 / 基準線(靜音可接受差異) — 建議做成 `accepted.json` per 專案,`(key,prop)` 清單,
-  引擎過濾出「阻擋分數」但仍列「已接受」。
-- C. 趨勢紀錄(同頁還原度曲線) — 每輪存快照,畫 62%→…→100%。
-- 擴充維度(陰影 / 狀態 / 多斷點)、設計稿自身一致性檢查。
+## 路線圖
+- ✅ B. 接受清單 / 基準線(靜音可接受差異) — 已完成。`accepted.json` 走 `(key|selector, prop)`,
+  `AcceptedIndex` 索引;命中即靜音為 `ACCEPTED`(不阻擋分數、仍列出)。四支 CLI 皆吃 `--accepted`,
+  `qa.py` 另支援 config 專案層級 / pair 層級。示範:`samples/demo_accepted.json`。
+- ⬜ C. 趨勢紀錄(同頁還原度曲線) — 每輪存快照,畫 62%→…→100%。建議 `history/<pair>.jsonl`
+  每行一輪 `{ts, score, CODE, DESIGN, NEEDS_HUMAN, ACCEPTED}`,在 index 畫 sparkline。
+- ⬜ 擴充維度(陰影 boxShadow / 狀態 hover·disabled / 多斷點)、設計稿自身一致性檢查。
+  新增比對維度時:`qa_engine` 的 `COLOR_PROPS`/`LENGTH_PROPS`/`WEIGHT` + `extract_dom.js` 的 `PROPS`
+  + `figma_extract.classify` 的對照表,四處要同步,並補 `tests/`。

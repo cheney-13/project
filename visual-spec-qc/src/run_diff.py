@@ -44,9 +44,9 @@ def diff(prev, curr):
             cats["REMOVED"].append((k, p, None))
     return cats
 
-def run(figma, dom_prev, dom_curr):
-    rep_prev, _, _ = auto_qa.run(figma, dom_prev)
-    rep_curr, _, _ = auto_qa.run(figma, dom_curr)
+def run(figma, dom_prev, dom_curr, accepted=None):
+    rep_prev, _, _ = auto_qa.run(figma, dom_prev, accepted)
+    rep_curr, _, _ = auto_qa.run(figma, dom_curr, accepted)
     cats = diff(flatten(rep_prev), flatten(rep_curr))
     return rep_prev, rep_curr, cats
 
@@ -130,13 +130,19 @@ td b{{font-weight:600}} .k{{font-family:"IBM Plex Mono",monospace;font-size:11px
 </div></body></html>"""
 
 if __name__ == "__main__":
-    if len(sys.argv) < 5:
+    args = sys.argv[1:]
+    accepted = None
+    if "--accepted" in args:
+        i = args.index("--accepted")
+        accepted = json.load(open(args[i+1], encoding="utf-8"))
+        del args[i:i+2]
+    if len(args) < 4:
         print(__doc__); sys.exit(1)
-    figma = json.load(open(sys.argv[1], encoding="utf-8"))
-    dom_prev = json.load(open(sys.argv[2], encoding="utf-8"))
-    dom_curr = json.load(open(sys.argv[3], encoding="utf-8"))
-    rep_prev, rep_curr, cats = run(figma, dom_prev, dom_curr)
-    open(sys.argv[4], "w", encoding="utf-8").write(render(rep_prev, rep_curr, cats))
+    figma = json.load(open(args[0], encoding="utf-8"))
+    dom_prev = json.load(open(args[1], encoding="utf-8"))
+    dom_curr = json.load(open(args[2], encoding="utf-8"))
+    rep_prev, rep_curr, cats = run(figma, dom_prev, dom_curr, accepted)
+    open(args[3], "w", encoding="utf-8").write(render(rep_prev, rep_curr, cats))
     sp, sc = rep_prev["totals"]["score"], rep_curr["totals"]["score"]
     print("=" * 56)
     print(f"執行差異  還原度 {sp}% → {sc}%  ({'+' if sc>=sp else ''}{sc-sp})")
@@ -147,4 +153,4 @@ if __name__ == "__main__":
         for (k, p, c) in cats[kind]:
             key = k[1].replace("[data-figma-id='", "").replace("']", "")
             print(f"  {label[kind]:10} {key} · {k[2]}")
-    print("報告已輸出:", sys.argv[4])
+    print("報告已輸出:", args[3])

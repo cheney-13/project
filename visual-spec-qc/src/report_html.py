@@ -3,9 +3,11 @@
 import html
 
 RESP_LABEL = {"CODE": "程式問題", "DESIGN": "設計問題",
-              "NEEDS_HUMAN": "待人工確認", "PASS": "通過"}
+              "NEEDS_HUMAN": "待人工確認", "PASS": "通過", "ACCEPTED": "已接受"}
+RESP_COLOR = {"CODE": "#b4453a", "DESIGN": "#3f5b7a",
+              "NEEDS_HUMAN": "#8f887c", "ACCEPTED": "#7c8a76"}
 SEV_COLOR = {"high": "#b4453a", "medium": "#b98a34", "low": "#c9a13b",
-             "info": "#8f887c", "pass": "#5e7d5a"}
+             "info": "#8f887c", "pass": "#5e7d5a", "accepted": "#7c8a76"}
 STATUS_LIGHT = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
 STATUS_VERDICT = {"green": "可上線", "yellow": "建議修正後上線", "red": "不建議上線"}
 
@@ -65,11 +67,14 @@ def render(rep):
 
 def _biz_view(rep):
     t = rep["totals"]
+    acc_kpi = (f'<div class="kpi"><b style="color:#7c8a76">{t["ACCEPTED"]}</b>'
+               f'<span>已接受(基準線)</span></div>') if t.get("ACCEPTED") else ""
     kpis = f"""<div class="kpis">
       <div class="kpi"><b>{t['score']}%</b><span>整體還原度</span></div>
       <div class="kpi"><b style="color:#b4453a">{t['CODE']}</b><span>程式要修(前端)</span></div>
       <div class="kpi"><b style="color:#3f5b7a">{t['DESIGN']}</b><span>設計要補(設計師)</span></div>
       <div class="kpi"><b style="color:#8f887c">{t['NEEDS_HUMAN']}</b><span>待人工確認</span></div>
+      {acc_kpi}
     </div>"""
     cards = []
     for f in rep["frames"]:
@@ -82,6 +87,8 @@ def _biz_view(rep):
             bullets.append(f"<li>🔵 <b>{c['DESIGN']} 項</b>屬「設計稿規格未定義清楚」→ 已標記給 <b>設計師</b></li>")
         if c["NEEDS_HUMAN"]:
             bullets.append(f"<li>⚪ <b>{c['NEEDS_HUMAN']} 項</b>需人工確認(可能是對位或環境差異)</li>")
+        if c.get("ACCEPTED"):
+            bullets.append(f"<li>🟢 <b>{c['ACCEPTED']} 項</b>為已核准的可接受差異(基準線),不影響上線判定</li>")
         if not bullets:
             bullets.append("<li>✅ 沒有發現需處理的差異,與設計稿一致</li>")
         cards.append(f"""<div class="frame">
@@ -104,15 +111,15 @@ def _dev_view(rep):
     blocks = []
     for f in rep["frames"]:
         rows = [r for r in f["rows"] if r["responsibility"] != "PASS"]
-        rows.sort(key=lambda r: {"high": 0, "medium": 1, "low": 2, "info": 3}[r["severity"]])
+        rows.sort(key=lambda r: {"high": 0, "medium": 1, "low": 2,
+                                 "info": 3, "accepted": 4}[r["severity"]])
         if not rows:
             body = '<div class="plain">✅ 全數通過,無差異。</div>'
         else:
             trs = []
             for r in rows:
                 sc = SEV_COLOR[r["severity"]]
-                resp_col = {"CODE": "#b4453a", "DESIGN": "#3f5b7a",
-                            "NEEDS_HUMAN": "#8f887c"}[r["responsibility"]]
+                resp_col = RESP_COLOR[r["responsibility"]]
                 spec_cell = _val_cell(r["prop"], r["spec"])
                 act_cell = _val_cell(r["prop"], r["actual"])
                 tok = f'<br><code>{esc(r["token"])}</code>' if r["token"] else ""

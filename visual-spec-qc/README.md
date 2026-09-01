@@ -36,6 +36,13 @@ python3 src/run_diff.py samples/demo_figma_nodes.json \
 
 # 3) 單頁核對(手動指定設計事實 + DOM 事實)
 python3 src/auto_qa.py samples/demo_figma_nodes.json samples/demo_dom_facts.json out/report.html
+
+# 4) 套用基準線 / 接受清單(把已核准的可接受差異靜音,不阻擋分數)
+python3 src/auto_qa.py samples/demo_figma_nodes.json samples/demo_dom_facts.json \
+        out/report.html --accepted samples/demo_accepted.json
+
+# 5) 回歸測試(純標準庫 unittest,無外部依賴)
+python3 -m unittest discover -s tests
 ```
 
 互動原型與規範卡(可直接用瀏覽器開):
@@ -67,6 +74,22 @@ python3 src/auto_qa.py samples/demo_figma_nodes.json samples/demo_dom_facts.json
 
 容差:顏色 ΔE < 2、間距/圓角 ±1px、字級 ±0.5px、字重需完全一致(見 `qa_engine.py` 頂部 `TOL`)。
 
+**基準線 / 接受清單(靜音可接受差異)**
+
+已人工確認、可接受的差異可寫入 `accepted.json`,核對時命中即標記為 **🟢 已接受**,
+不再阻擋還原度分數、每輪不再當雜訊,但仍完整列在報告中(附核准理由)。
+
+```jsonc
+// accepted.json —— (key, prop) 命中即靜音;prop 用 "*" 豁免整個節點
+{ "accepted": [
+  { "key": "hero:title", "prop": "color", "reason": "主標色差 ΔE≈3,已與設計確認可接受" },
+  { "key": "seo:card",   "prop": "*",     "reason": "此卡片為暫時性 A/B 版,整節點豁免" }
+]}
+```
+
+用法:各 CLI 加 `--accepted accepted.json`;批次 `qa.py` 可在 `config.json` 設
+專案層級 `"accepted": "accepted.json"`,或在單一 `pair` 內覆蓋。
+
 ---
 
 ## 檔案結構
@@ -88,7 +111,8 @@ visual-spec-qc/
 ├── ui/
 │   ├── qa_console.html   # 互動原型:切版核對台
 │   └── handoff_spec.html # Figma 交付規範卡
-└── samples/              # 示範資料(含真實 MX 案例與規範示範)
+├── tests/                # 回歸測試(python3 -m unittest discover -s tests)
+└── samples/              # 示範資料(含真實 MX 案例、規範示範、基準線示範)
 ```
 
 ---
@@ -111,10 +135,11 @@ visual-spec-qc/
 - 從 `get_design_context` 自動抽設計事實(含 token 綁定)
 - 單一 CLI(批次 + 總覽 + CI 門檻)
 - 執行差異 A(修→驗→修:解決 / 回歸 / 未解決)
+- **B. 接受清單 / 基準線**(把已核准的可接受差異靜音,不阻擋分數、每輪不再當雜訊)
+- **回歸測試套件**(`tests/`,純標準庫 unittest,鎖定 MX 案例 80% 等關鍵行為)
 - 視覺:極簡日式亮色主題
 
 **待做**
-- B. 接受清單 / 基準線(把可接受差異靜音,每輪不再當雜訊)
 - C. 趨勢紀錄(同一頁還原度曲線)
 - 擴充比對維度(陰影、狀態 hover/disabled、多斷點)
 - 設計稿自身一致性檢查(同 token 跨節點值不一致)
