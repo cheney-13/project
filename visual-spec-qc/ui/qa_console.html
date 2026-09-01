@@ -23,6 +23,10 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .logo{width:34px;height:34px;border-radius:9px;background:var(--accent);color:var(--on-accent);
   display:grid;place-items:center;font-weight:700;font-size:18px;flex-shrink:0;box-shadow:var(--raise)}
 .brand b{font-size:17px;letter-spacing:.5px} .brand span{display:block;color:var(--ink-2);font-size:12px}
+.brand-link{display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;font-weight:600;
+  color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .15s}
+.brand-link:hover{border-bottom-color:var(--accent)}
+.brand-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
 .hist{margin-left:auto;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:7px}
 .hist .n{font-family:"IBM Plex Mono",monospace;background:var(--surface);border:1px solid var(--line);
   border-radius:99px;padding:2px 9px;font-weight:600;color:var(--ink)}
@@ -35,6 +39,11 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .steps .s.on{color:var(--ink)} .steps .s.on .d{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
 .steps .s.done .d{border-color:var(--good);color:var(--good)}
 .steps .sep{flex:1;max-width:38px;height:1.5px;background:var(--line)}
+.steps .s.nav{cursor:pointer;border-radius:8px;transition:background .15s}
+.steps .s.nav:hover{background:var(--surface-2)}
+.steps .s.nav:hover .d{border-color:var(--accent);color:var(--accent)}
+.steps .s.done.nav:hover .d{background:var(--good);border-color:var(--good);color:#fff}
+.steps .s.nav:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .screen{display:none;animation:fade .35s ease} .screen.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -101,8 +110,11 @@ select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px
 .open{margin-top:12px;font-size:12px;color:var(--accent);font-weight:600}
 
 /* detail */
-.back{border:none;background:none;color:var(--ink-2);font-size:13px;cursor:pointer;padding:6px 0;font-family:inherit;display:inline-flex;gap:6px;align-items:center}
-.back:hover{color:var(--ink)}
+.back{border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13.5px;font-weight:600;
+  cursor:pointer;padding:9px 15px;border-radius:10px;font-family:inherit;display:inline-flex;gap:7px;align-items:center;
+  box-shadow:var(--raise);transition:border-color .15s,background .15s}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin:14px 0 18px}
 .tab{border:none;background:none;padding:10px 16px;font-size:14px;font-weight:600;color:var(--ink-3);
   cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;font-family:inherit}
@@ -144,7 +156,8 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
 <div class="wrap">
   <div class="top">
     <div class="logo">◎</div>
-    <div class="brand"><b>切版核對工具</b><span>Figma 設計稿 × 切版成品 · 自動核對</span></div>
+    <div class="brand"><b>切版核對工具</b><span>Figma 設計稿 × 切版成品 · 自動核對</span>
+      <a class="brand-link" href="handoff_spec.html">📐 設計檔案規範 →</a></div>
     <div class="hist">已存紀錄 <span class="n" id="histN">0</span> 筆</div>
   </div>
 
@@ -198,7 +211,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
         <div class="foot">
           <span class="hint" id="ovSummary"></span>
           <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
-          <button class="btn ghost" onclick="goto('setup')">↩ 回上一步</button>
+          <button class="btn" onclick="goto('setup')">↩ 重新設定配對</button>
         </div>
       </div>
     </div>
@@ -223,6 +236,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
           <span class="hint">此報告可下載留存,或存為版本紀錄以追蹤還原度趨勢。</span>
           <button class="btn pri" onclick="downloadReport()">⬇ 下載報告</button>
           <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
+          <button class="btn" onclick="closeDetail()">← 回總覽</button>
         </div>
       </div>
     </div>
@@ -321,6 +335,7 @@ function startRun(){
 
 // ---------- STEP 3 overview ----------
 function showResult(){
+  ranOnce=true;
   goto("result");
   document.getElementById("overview").style.display="block";
   document.getElementById("detail").style.display="none";
@@ -399,6 +414,7 @@ function toast(m){const t=document.getElementById("toast");t.textContent=m;t.cla
   clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),2600)}
 
 // ---------- nav ----------
+let ranOnce=false;   // 是否已完成過一次核對(決定「報告」步驟能否點回)
 function goto(k){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
   document.getElementById("scr-"+k).classList.add("on");
@@ -406,8 +422,32 @@ function goto(k){
   document.querySelectorAll("#stepper .s").forEach(s=>{
     const si=order.indexOf(s.dataset.k);
     s.classList.toggle("on",si===idx); s.classList.toggle("done",si<idx);
+    // 可點回的步驟:建立配對(隨時)、報告(核對過後);執行中不可點
+    const navigable = s.dataset.k!=="running" && si!==idx &&
+      (s.dataset.k==="setup" || (s.dataset.k==="result" && ranOnce));
+    s.classList.toggle("nav",navigable);
+    if(navigable){ s.setAttribute("tabindex","0"); s.setAttribute("role","button"); }
+    else { s.removeAttribute("tabindex"); s.removeAttribute("role"); }
   });
   window.scrollTo({top:0,behavior:"smooth"});
 }
+// 點步驟列直接跳轉(建立配對 / 回報告總覽)
+function stepClick(k){
+  if(k==="running") return;
+  if(k==="result"){
+    if(!ranOnce) return;
+    goto("result");
+    document.getElementById("overview").style.display="block";
+    document.getElementById("detail").style.display="none";
+    return;
+  }
+  goto(k);
+}
+document.querySelectorAll("#stepper .s").forEach(s=>{
+  s.addEventListener("click",()=>{ if(s.classList.contains("nav")) stepClick(s.dataset.k); });
+  s.addEventListener("keydown",e=>{
+    if((e.key==="Enter"||e.key===" ")&&s.classList.contains("nav")){ e.preventDefault(); stepClick(s.dataset.k); }
+  });
+});
 renderPairs();
 </script>
