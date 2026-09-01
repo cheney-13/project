@@ -35,7 +35,11 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
   名稱含 `@寬度` 的尺寸 frame(略過注記框/popup),`to_config()` 展開成 qa.py 多尺寸批次骨架。
 - `auto_qa.py` — 依規範自動對位:`parse_frame_name()` 解析 `/route @width`;以 `data-figma-id` 為 key 配對;
   `coverage()`=配對成功 / 設計獨有(漏做)/ 實作獨有(多餘)。
-- `report_html.py` / `qa.py`(index)/ `run_diff.py` — 三種 HTML 輸出,共用視覺系統。
+- `run_section.py` — 多尺寸核對總管:把 section 各尺寸展成 `qa.build_qa_cfg` 的 pairs,
+  `--live` 先用 `fetch_dom.py` 逐寬度即時抓 DOM,再呼叫 `qa.run_config_dict` 出逐尺寸報告 + 合併總覽。
+- `fetch_dom.py` — 即時抓 DOM(Playwright)。多寬度 `--widths`;`--selectors` 給 key→CSS 選擇器
+  (未標 data-figma-id 的正式站)。與 `extract_dom.js` 屬性集對齊。
+- `report_html.py` / `qa.py`(index,`run_config_dict` 可被重用)/ `run_diff.py` — HTML 輸出,共用視覺系統。
 - `extract_dom.js` — 注入網頁蒐集 `[data-figma-id]` 的 computed(Browser MCP 或 fetch_dom.py 用)。
 
 ## 資料契約

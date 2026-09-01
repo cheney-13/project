@@ -1,0 +1,11 @@
+{
+  "_note":"多尺寸核對示範:一個 section 兩個尺寸(桌機 1440 / 手機 375)。桌機全過,手機主標字級有程式問題。",
+  "section":"about",
+  "outDir":"out",
+  "failUnder":80,
+  "baseURL":"https://bizdev.medialand.com.tw/demo/2021_02_MX_website/#/about",
+  "sizes":[
+    {"frame":"about @1440","width":1440,"figmaNodes":"about_1440_figma.json","dom":"about_1440_dom.json"},
+    {"frame":"about @375","width":375,"figmaNodes":"about_375_figma.json","dom":"about_375_dom.json"}
+  ]
+}

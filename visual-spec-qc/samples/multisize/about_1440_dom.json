@@ -1,0 +1,4 @@
+{"_note":"about 桌機 1440 實作 DOM(全數符合)","url":"about @1440","nodes":[
+  {"key":"hero:title","computed":{"fontSize":"48px","color":"rgb(199,0,103)"}},
+  {"key":"sec:cta","computed":{"backgroundColor":"rgb(199,0,103)","borderRadius":"8px"}}
+]}

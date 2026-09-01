@@ -26,6 +26,7 @@ import auto_qa                  # noqa: E402
 import figma_extract as fx      # noqa: E402
 import figma_section as fs      # noqa: E402
 import run_diff                 # noqa: E402
+import run_section              # noqa: E402
 
 
 def load(name):
@@ -294,6 +295,38 @@ class TestRunDiff(unittest.TestCase):
         regressed = {k[1] for (k, _, _) in cats["REGRESSED"]}
         self.assertIn("[data-figma-id='hero:title']", resolved)
         self.assertIn("[data-figma-id='seo:card']", regressed)
+
+
+# ------------------------------------------------------------------ #
+class TestRunSection(unittest.TestCase):
+    """多尺寸核對:一個 section 兩尺寸 → 逐尺寸報告 + 合併總覽(離線,不需 Playwright)。"""
+
+    def test_multisize_chain_offline(self):
+        import tempfile, shutil
+        src_dir = os.path.join(SAMPLES, "multisize")
+        cfg = json.load(open(os.path.join(src_dir, "section.json"), encoding="utf-8"))
+        tmp = tempfile.mkdtemp()
+        try:
+            for fn in os.listdir(src_dir):
+                sp = os.path.join(src_dir, fn)
+                if os.path.isfile(sp):
+                    shutil.copy(sp, tmp)
+            cfg["outDir"] = "out"
+            code = run_section.run(cfg, tmp, live=False, fail_under=80)
+            out = os.path.join(tmp, "out")
+            self.assertTrue(os.path.isfile(os.path.join(out, "index.html")))
+            reports = [f for f in os.listdir(out) if f.startswith("report_")]
+            self.assertEqual(len(reports), 2)          # 兩個尺寸各一份
+            self.assertEqual(code, 1)                   # 手機 70% < 80 → CI 未達標
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_build_qa_cfg_maps_sizes_to_pairs(self):
+        cfg = json.load(open(os.path.join(SAMPLES, "multisize", "section.json"), encoding="utf-8"))
+        qa_cfg = run_section.build_qa_cfg(cfg)
+        self.assertEqual(len(qa_cfg["pairs"]), 2)
+        self.assertEqual(qa_cfg["pairs"][0]["frame"], "about @1440")
+        self.assertTrue(all(p["url"] == cfg["baseURL"] for p in qa_cfg["pairs"]))
 
 
 # ------------------------------------------------------------------ #

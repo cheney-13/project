@@ -1,0 +1,4 @@
+{"_note":"多尺寸示範 · about @375 設計事實(手機主標 32px)","baseURL":"","frames":[{"name":"about @375","nodes":[
+  {"key":"hero:title","name":"主標 H1","props":{"fontSize":{"value":32,"token":"fs/h1-m"},"color":{"value":"#c70067","token":"color/brand"}}},
+  {"key":"sec:cta","name":"CTA 按鈕","props":{"backgroundColor":{"value":"#c70067","token":"color/brand"},"borderRadius":{"value":8,"token":"radius/md"}}}
+]}]}

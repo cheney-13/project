@@ -54,6 +54,11 @@ def load_figma_doc(pair, base_dir):
 def run_config(cfg_path, fail_under=None):
     cfg = json.load(open(cfg_path, encoding="utf-8"))
     base_dir = os.path.dirname(os.path.abspath(cfg_path))
+    return run_config_dict(cfg, base_dir, fail_under)
+
+def run_config_dict(cfg, base_dir, fail_under=None):
+    """吃已載入的 config dict(base_dir 為相對路徑基準),跑完整批次並產出報告 + 總覽。
+    供 qa.py 檔案入口與 run_section.py(多尺寸)共用。"""
     out_dir = os.path.join(base_dir, cfg.get("outDir", "qa_out"))
     os.makedirs(out_dir, exist_ok=True)
     threshold = fail_under if fail_under is not None else cfg.get("failUnder", 0)

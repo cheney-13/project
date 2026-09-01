@@ -41,7 +41,11 @@ python3 src/auto_qa.py samples/demo_figma_nodes.json samples/demo_dom_facts.json
 python3 src/auto_qa.py samples/demo_figma_nodes.json samples/demo_dom_facts.json \
         out/report.html --accepted samples/demo_accepted.json
 
-# 5) 回歸測試(純標準庫 unittest,無外部依賴)
+# 5) 多尺寸核對(一個 section 放多 RWD 尺寸 → 逐尺寸報告 + 合併總覽)
+python3 src/run_section.py samples/multisize/section.json --fail-under 80
+#   加 --live 會用 fetch_dom.py 對每個尺寸即時抓網站 DOM(需 pip install playwright)
+
+# 6) 回歸測試(純標準庫 unittest,無外部依賴)
 python3 -m unittest discover -s tests
 ```
 
@@ -108,9 +112,10 @@ visual-spec-qc/
 │   ├── auto_qa.py        # 依交付規範自動對位 + 覆蓋率
 │   ├── figma_extract.py  # 從 get_design_context 抽設計事實(含 token 綁定)
 │   ├── figma_section.py  # 一個 section 放多 RWD 尺寸 → 自動列出各尺寸 + 展開批次
+│   ├── run_section.py    # 多尺寸核對:逐尺寸抓+比對 → 合併總覽(串起整條鏈)
 │   ├── run_diff.py       # 執行差異(解決/回歸/未解決)
 │   ├── extract_dom.js    # 注入網頁蒐集 [data-figma-id] 的 computed
-│   └── fetch_dom.py      # (選用)Playwright 抓 DOM,無需 MCP
+│   └── fetch_dom.py      # (選用)Playwright 抓 DOM:多寬度 + 選擇器對照,無需 MCP
 ├── tests/                # 回歸測試(python3 -m unittest discover -s tests)
 └── samples/              # 示範資料(含真實 MX 案例、規範示範、基準線示範)
 ```
@@ -137,8 +142,10 @@ visual-spec-qc/
 - 執行差異 A(修→驗→修:解決 / 回歸 / 未解決)
 - **B. 接受清單 / 基準線**(把已核准的可接受差異靜音,不阻擋分數、每輪不再當雜訊)
 - **多尺寸(一個 section 放多 RWD 尺寸)**:`figma_section.py` 讀 `get_metadata`,挑出名稱含
-  `@寬度` 的尺寸 frame(自動略過注記框 / popup),展開成「每尺寸一組 pair」的批次,
-  各自對照網站在相同視窗寬度的呈現;工具頁斷點新增「多尺寸(全部)」選項。
+  `@寬度` 的尺寸 frame(自動略過注記框 / popup);`run_section.py` 逐尺寸抓 + 比對,
+  各自對照網站在相同視窗寬度的呈現,產出逐尺寸報告 + 一頁合併總覽 + CI 門檻;
+  `fetch_dom.py` 升級為多寬度 + 選擇器對照(未標 data-figma-id 的正式站也能量);
+  工具頁斷點新增「多尺寸(全部)」選項。
 - **回歸測試套件**(`tests/`,純標準庫 unittest,鎖定 MX 案例 80% 等關鍵行為)
 - 視覺:極簡日式亮色主題
 
@@ -146,12 +153,15 @@ visual-spec-qc/
 - C. 趨勢紀錄(同一頁還原度曲線)
 - 擴充比對維度(陰影、狀態 hover/disabled)
 - 設計稿自身一致性檢查(同 token 跨節點值不一致)
-- 多尺寸「即時抓取」串接:目前 `figma_section.py` 產出批次骨架,context/DOM 仍待即時填入(見下)
 
-**唯一整合縫**
-`qa.py` 吃的是**已抓好的** context / dom 檔。把 URL 變成這兩個檔的即時抓取:
-- Figma 側 ← `get_design_context`(本機 Figma MCP,或 Figma REST API + token)
-- DOM 側 ← Browser MCP 注入 `extract_dom.js`,或 `fetch_dom.py`(Playwright,已附)
+**即時抓取(整合縫)現況**
+把 URL 變成 context / dom 檔的兩側:
+- **DOM 側 ✅ 已串接**:`run_section.py --live` 會呼叫 `fetch_dom.py`(Playwright)對每個尺寸的
+  網站在該 `@寬度` 即時抓 DOM(支援 data-figma-id 或 CSS 選擇器對照)。本專案雲端環境已預裝
+  Chromium,本機只需 `pip install playwright`。
+- **Figma 側(剩餘邊界)**:各尺寸 frame 的設計事實目前由 `get_design_context`(session 內 Figma MCP,
+  由代理人取)或預抽好的 `figmaNodes` 提供;獨立程序要全自動需 Figma REST API + token。
+  `figma_section.py` 已能從 `get_metadata` 自動列出各尺寸並產出批次骨架,填入各尺寸來源即可跑。
 
 ---
 

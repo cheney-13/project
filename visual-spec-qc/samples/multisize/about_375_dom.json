@@ -1,0 +1,4 @@
+{"_note":"about 手機 375 實作 DOM(主標字級誤植 28,應 32 → 手機獨有的程式問題)","url":"about @375","nodes":[
+  {"key":"hero:title","computed":{"fontSize":"28px","color":"rgb(199,0,103)"}},
+  {"key":"sec:cta","computed":{"backgroundColor":"rgb(199,0,103)","borderRadius":"8px"}}
+]}
