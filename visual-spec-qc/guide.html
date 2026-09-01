@@ -134,27 +134,28 @@ td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;backgroun
         </tbody>
       </table>
     </div>
-    <div class="tip">🎯 <b>為什麼固定這三個寬度?</b>　工具會把瀏覽器設成 frame 名稱裡的寬度再抓網頁。用 <span class="mono">768 / 375</span> 這種範圍內的代表值,而不是斷點邊緣值(如 576),可避免剛好卡在臨界點造成的抖動。Frame 畫布寬度請 = 命名的寬度。</div>
+    <div class="tip">🎯 <b>寬度怎麼定?</b>　工具會把瀏覽器設成 frame 名稱裡的 <span class="mono">@寬度</span> 再抓網頁,所以<b>命名的寬度就是實際測試寬度</b>——<span class="mono">1440 / 768 / 375</span> 是建議的代表值,但<b>你們團隊實際交付的斷點(如 <span class="mono">576</span>)一樣可以</b>,照著命名即可。小提醒:盡量用斷點範圍內的代表值、避開剛好卡在臨界點的邊緣寬度,可減少抖動。Frame 畫布寬度請 = 命名的寬度。</div>
   </section>
 
   <!-- 02 結構 -->
   <section class="rule">
-    <div class="rhead"><span class="rnum">02</span><h2>檔案結構:一頁一 Page,三尺寸並列</h2></div>
+    <div class="rhead"><span class="rnum">02</span><h2>檔案結構:一個 section 放全尺寸</h2><span class="sub">同一頁的各 RWD 尺寸並排在一個 section</span></div>
     <div class="card pad">
-<div class="tree"><span class="pg">▚ Page：About</span>            <span class="cm"># 一個網站頁面 = 一個 Figma Page</span>
- ├─ <span class="fr">🖼 /about @1440</span>          <span class="cm"># 交付 frame(桌機)</span>
- │   ├─ <span class="sec">sec:hero</span>
- │   ├─ <span class="sec">sec:seo-cards</span>
- │   ├─ <span class="sec">sec:iso</span>
- │   └─ <span class="sec">sec:footer</span>
- ├─ <span class="fr">🖼 /about @768</span>           <span class="cm"># 平板:用同一組 sec:key</span>
- │   └─ <span class="sec">sec:hero / sec:seo-cards / …</span>
- └─ <span class="fr">🖼 /about @375</span>           <span class="cm"># 手機:用同一組 sec:key</span>
-     └─ <span class="sec">sec:hero / sec:seo-cards / …</span>
+<div class="tree"><span class="pg">▚ Page：About</span>                <span class="cm"># 一個網站頁面 = 一個 Figma Page</span>
+ └─ <span class="sec">▧ Section：about</span>          <span class="cm"># 這一頁的「全尺寸」都放這個 section</span>
+     ├─ <span class="fr">🖼 about @1440</span>        <span class="cm"># 桌機</span>
+     │   ├─ <span class="sec">sec:hero</span>
+     │   ├─ <span class="sec">sec:seo-cards</span>
+     │   └─ <span class="sec">sec:footer</span>
+     ├─ <span class="fr">🖼 about @768</span>         <span class="cm"># 平板:用同一組 sec:key</span>
+     ├─ <span class="fr">🖼 about @375</span>         <span class="cm"># 手機:用同一組 sec:key</span>
+     ├─ <span class="scratch">▢ 1440以上 / 992~576 …</span>   <span class="cm"># 尺寸注記框 → 工具自動略過</span>
+     └─ <span class="scratch">▢ popup / 裝飾</span>          <span class="cm"># 非尺寸框 → 工具自動略過</span>
 
-<span class="scratch">▚ Page：_工作區</span>           <span class="cm"># 草稿 / popup / FAQ schema 文字 → 放這,不交付</span></div>
+<span class="scratch">▚ Page：_工作區</span>               <span class="cm"># 草稿 / FAQ schema 文字 → 放這,不交付</span></div>
     </div>
-    <div class="tip">📁 三個尺寸都是 <b>top-level frame</b>(不要巢狀在難定址的 instance 裡),尺寸靠<b>命名</b>區分,不要靠旁邊另畫的文字標籤。</div>
+    <div class="tip">📐 <b>「全尺寸」怎麼運作:</b>把同一頁的各尺寸 frame 命名為 <span class="mono">頁名 @寬度</span>(如 <span class="mono">about @1440 / @768 / @375</span>),一起放進<b>同一個 section</b>。工具會讀取這個 section,<b>依每個 frame 名稱的 <span class="mono">@寬度</span> 自動拆出各尺寸</b>,分別把瀏覽器設成該寬度去抓測試網站、逐尺寸核對還原度。名稱<b>沒有 @寬度</b> 的框(尺寸標籤、popup、裝飾)會自動略過。<br>👉 在「切版核對工具」裡,測試連結後方斷點選 <b>多尺寸(全部)</b> 即代表一次核對此 section 的所有尺寸。</div>
+    <div class="tip">📁 各尺寸請都是 section 下的 <b>frame</b>(不要巢狀在難定址的 instance 裡),尺寸靠<b>命名的 @寬度</b>區分,不要只靠旁邊另畫的文字標籤;寬度值填你實際交付的斷點即可(如 <span class="mono">576</span> 也可以,工具讀命名而非固定三種)。</div>
   </section>
 
   <!-- 03 mapping -->
