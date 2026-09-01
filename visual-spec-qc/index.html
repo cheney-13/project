@@ -151,6 +151,10 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
   box-shadow:0 8px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .proto{font-size:11px;color:var(--ink-3);text-align:center;margin-top:26px;letter-spacing:.3px}
+.demoNote{background:var(--warn-bg);border:1px solid #e6d3a6;border-radius:11px;padding:12px 15px;
+  margin-bottom:16px;font-size:13px;line-height:1.7;color:#7a5a1e}
+.demoNote b{color:#6b4e12}
+.demoNote code{font-family:"IBM Plex Mono",monospace;background:#fff;border:1px solid #e6d3a6;border-radius:5px;padding:1px 6px;font-size:12px}
 </style>
 
 <div class="wrap">
@@ -207,6 +211,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
         <div class="eyebrow">STEP 03 · 總覽</div>
         <h2 class="sec">核對結果</h2>
         <p class="desc">每組一張卡:還原度、燈號、與「誰要修幾項」。點卡片看逐項明細。</p>
+        <div class="demoNote" id="demoNote"></div>
         <div class="grid" id="ovCards"></div>
         <div class="foot">
           <span class="hint" id="ovSummary"></span>
@@ -280,7 +285,7 @@ const DATA=[
 ];
 
 const STATUS={good:{c:"var(--good)",bg:"var(--good-bg)",light:"🟢"},warn:{c:"var(--warn)",bg:"var(--warn-bg)",light:"🟡"},bad:{c:"var(--bad)",bg:"var(--bad-bg)",light:"🔴"}};
-let history=0, curDetail=null;
+let history=0, curDetail=null, edited=false;   // edited:使用者是否動過預設示範連結
 
 // ---------- STEP 1 ----------
 const seed=[
@@ -291,9 +296,9 @@ function renderPairs(){
   document.getElementById("pairs").innerHTML=seed.map((p,i)=>`
    <div class="pair">
      <span class="idx">${i+1}</span>
-     <input class="inp" value="${p.figma}" placeholder="貼上 Figma frame 連結…" oninput="seed[${i}].figma=this.value;refreshRun()">
-     <input class="inp c-web" value="${p.web}" placeholder="貼上測試網頁連結…" oninput="seed[${i}].web=this.value;refreshRun()">
-     <select class="inp" onchange="seed[${i}].bp=this.value">${bpOptions(p.bp)}</select>
+     <input class="inp" value="${p.figma}" placeholder="貼上 Figma frame 連結…" oninput="seed[${i}].figma=this.value;edited=true;refreshRun()">
+     <input class="inp c-web" value="${p.web}" placeholder="貼上測試網頁連結…" oninput="seed[${i}].web=this.value;edited=true;refreshRun()">
+     <select class="inp" onchange="seed[${i}].bp=this.value;edited=true">${bpOptions(p.bp)}</select>
      <button class="rm" title="移除" onclick="rmPair(${i})">✕</button>
    </div>`).join("");
   refreshRun();
@@ -363,6 +368,13 @@ function showResult(){
   }).join("");
   const tc=items.reduce((a,d)=>a+d.counts.code,0), td=items.reduce((a,d)=>a+d.counts.design,0);
   document.getElementById("ovSummary").innerHTML=`共 ${items.length} 組 · 程式待修 <b style="color:var(--bad)">${tc}</b> · 設計待補 <b style="color:var(--info)">${td}</b>`;
+  // 誠實提示:此網頁為互動原型,顯示的是固定示範資料,並非即時比對貼上的連結
+  const base=`⚠ <b>這是互動原型</b>:下方為<b>固定示範資料</b>,用來展示流程與報告樣貌,<b>不是</b>對你貼上連結的即時比對。`;
+  const extra=edited
+    ? `<br>你已更動連結,但網頁版<b>不會因此改變下方數字</b>——瀏覽器基於安全無法跨站讀取別的網站 DOM、也不能直接呼叫 Figma。`
+    : ``;
+  const how=`<br>要得到你自己專案的<b>真實結果</b>(不同專案不同、對不到元素會標「待人工/無法比對」),請用後端 CLI:<code>python3 src/run_section.py &lt;section.json&gt;</code> 或 <code>qa.py</code>。`;
+  document.getElementById("demoNote").innerHTML=base+extra+how;
 }
 function chip(k,n){return `<span class="chip" style="color:${SEV[k].c};background:${SEV[k].bg}">${SEV[k].t} <span class="mono">${n}</span></span>`}
 
