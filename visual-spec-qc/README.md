@@ -46,7 +46,7 @@ python3 -m unittest discover -s tests
 ```
 
 互動原型與規範卡(可直接用瀏覽器開):
-- `ui/qa_console.html` — 切版核對台(貼連結 → 一鍵批次 → 分眾報告)
+- `ui/qa_console.html` — 切版核對工具(貼連結 → 一鍵批次 → 分眾報告)
 - `ui/handoff_spec.html` — Figma 交付規範卡(設計師照著整理檔案)
 
 ---
@@ -109,7 +109,7 @@ visual-spec-qc/
 │   ├── extract_dom.js    # 注入網頁蒐集 [data-figma-id] 的 computed
 │   └── fetch_dom.py      # (選用)Playwright 抓 DOM,無需 MCP
 ├── ui/
-│   ├── qa_console.html   # 互動原型:切版核對台
+│   ├── qa_console.html   # 互動原型:切版核對工具
 │   └── handoff_spec.html # Figma 交付規範卡
 ├── tests/                # 回歸測試(python3 -m unittest discover -s tests)
 └── samples/              # 示範資料(含真實 MX 案例、規範示範、基準線示範)
