@@ -47,7 +47,7 @@ python3 -m unittest discover -s tests
 
 互動原型與規範卡(可直接用瀏覽器開):
 - `index.html` — 切版核對工具(貼連結 → 一鍵批次 → 分眾報告;資料夾主入口)
-- `handoff_spec.html` — Figma 交付規範卡(設計師照著整理檔案)
+- `guide.html` — Figma 交付規範卡(設計師照著整理檔案)
 
 ---
 
@@ -100,7 +100,7 @@ visual-spec-qc/
 ├── CLAUDE.md              # 給 Claude Code 續作的專案指南
 ├── LICENSE
 ├── index.html            # 切版核對工具(團隊入口 · 互動原型)
-├── handoff_spec.html     # Figma 交付規範卡(設計師照著整理檔案)
+├── guide.html     # Figma 交付規範卡(設計師照著整理檔案)
 ├── src/
 │   ├── qa.py             # CLI 入口:批次 + 總覽 index + CI 門檻
 │   ├── qa_engine.py      # 比對 + 責任歸因 + 分數(純標準庫)
@@ -118,7 +118,7 @@ visual-spec-qc/
 
 ## 交付規範(讓核對可自動化)
 
-自動對位需要設計檔遵循約定,詳見 `handoff_spec.html`:
+自動對位需要設計檔遵循約定,詳見 `guide.html`:
 
 1. **Frame 命名** `/route @width`(如 `/about @1440`)→ 工具推導測試 URL + 瀏覽器寬度。
 2. **單元 key** ↔ 前端 `data-figma-id`(如圖層 `sec:hero` ↔ `data-figma-id="sec:hero"`)。
