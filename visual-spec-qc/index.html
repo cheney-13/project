@@ -174,7 +174,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
     <div class="card pad">
       <div class="eyebrow">STEP 01</div>
       <h2 class="sec">建立比對配對</h2>
-      <p class="desc">一組配對 = 一個 Figma frame ↔ 一個測試網頁 ＋ 對應螢幕斷點。可加多組,一次批次核對多頁、多裝置。</p>
+      <p class="desc">一組配對 = 一個 Figma frame ↔ 一個測試網頁 ＋ 對應螢幕斷點。可加多組,一次批次核對多頁、多裝置。<br>斷點選「<b>多尺寸（全部）</b>」時,會讀取該 Figma section 內同一頁的各 RWD 尺寸(依 frame 名稱的 <span class="mono">@寬度</span>,如 @1440 / @576 / @375),分別對照測試網站在相同視窗寬度下的呈現。</p>
 
       <div class="pairhead">
         <span></span><span>🎨 Figma frame 連結</span><span class="h-web">🌐 測試網頁連結</span><span>斷點</span><span></span>
@@ -286,7 +286,7 @@ let history=0, curDetail=null;
 const seed=[
  {figma:"figma.com/…?node-id=10830-3249",web:"bizdev.medialand.com.tw/…/#/about",bp:"桌機 1440"},
  {figma:"figma.com/…?node-id=10503-4932",web:"bizdev.medialand.com.tw/…/#/about",bp:"手機 375"}];
-function bpOptions(sel){return ["桌機 1440","平板 768","手機 375"].map(o=>`<option ${o===sel?"selected":""}>${o}</option>`).join("")}
+function bpOptions(sel){return ["多尺寸（全部）","桌機 1440","平板 768","手機 375"].map(o=>`<option ${o===sel?"selected":""}>${o}</option>`).join("")}
 function renderPairs(){
   document.getElementById("pairs").innerHTML=seed.map((p,i)=>`
    <div class="pair">
@@ -340,7 +340,9 @@ function showResult(){
   document.getElementById("overview").style.display="block";
   document.getElementById("detail").style.display="none";
   const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
-  const items=DATA.slice(0,Math.max(1,active.length));
+  // 「多尺寸」= 一次核對此頁 section 內的所有 RWD 尺寸(依各 frame 的 @寬度自動拆分)
+  const multi=active.some(p=>/多尺寸/.test(p.bp));
+  const items=multi?DATA:DATA.slice(0,Math.max(1,active.length));
   document.getElementById("ovCards").innerHTML=items.map(d=>{
     const s=STATUS[d.status];
     return `<div class="card ov" onclick="openDetail('${d.id}')">

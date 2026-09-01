@@ -24,6 +24,7 @@ sys.path.insert(0, SRC)
 import qa_engine as qe          # noqa: E402
 import auto_qa                  # noqa: E402
 import figma_extract as fx      # noqa: E402
+import figma_section as fs      # noqa: E402
 import run_diff                 # noqa: E402
 
 
@@ -242,6 +243,44 @@ class TestFigmaExtract(unittest.TestCase):
         self.assertEqual(n["props"]["fontSize"]["value"], 48)
         self.assertEqual(n["props"]["fontSize"]["token"], "fs/h1")
         self.assertEqual(n["props"]["fontWeight"]["value"], 700)
+
+
+# ------------------------------------------------------------------ #
+class TestFigmaSection(unittest.TestCase):
+    """一個 section 放多個 RWD 尺寸 → 自動列出各尺寸(略過注記/popup)。"""
+
+    def _load(self):
+        with open(os.path.join(SAMPLES, "demo_section_metadata.xml"), encoding="utf-8") as f:
+            return f.read()
+
+    def test_route_width(self):
+        self.assertEqual(fs.route_width("about @1440"), ("about", 1440))
+        self.assertEqual(fs.route_width("about @576"), ("about", 576))
+        self.assertEqual(fs.route_width("popup"), ("popup", None))
+
+    def test_section_picks_only_sized_frames(self):
+        sec = fs.parse_section(self._load())
+        self.assertEqual(sec["section"], "about")
+        self.assertEqual(sec["page"], "about")
+        widths = [s["width"] for s in sec["sizes"]]
+        self.assertEqual(widths, [1440, 576, 375])            # 由大到小,且只有 3 個
+        frames = [s["frame"] for s in sec["sizes"]]
+        self.assertNotIn("popup", frames)                     # popup 略過
+        self.assertTrue(all("@" in f for f in frames))        # 注記框(1440以上/992~576)略過
+
+    def test_to_config_one_pair_per_size(self):
+        sec = fs.parse_section(self._load())
+        cfg = fs.to_config(sec, base_url="https://site/#/about")
+        self.assertEqual(len(cfg["pairs"]), 3)
+        self.assertTrue(all(p["url"] == "https://site/#/about" for p in cfg["pairs"]))
+        self.assertEqual(cfg["pairs"][0]["frame"], "about @1440")   # 桌機在前
+
+    def test_frames_map_to_engine_widths(self):
+        """每個尺寸 frame 名稱能被 auto_qa 的 parse_frame_name 正確解析寬度。"""
+        sec = fs.parse_section(self._load())
+        for s in sec["sizes"]:
+            route, width = auto_qa.parse_frame_name(s["frame"])
+            self.assertEqual(width, s["width"])
 
 
 # ------------------------------------------------------------------ #

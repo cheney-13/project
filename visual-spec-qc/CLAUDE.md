@@ -31,6 +31,8 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
   **改比對邏輯只動這支。**
 - `figma_extract.py` — 解析 `get_design_context` 的 React+Tailwind。關鍵:`var(--token,值)`=有綁 token、
   原始值=hardcode;`classify()`=Tailwind class→CSS 屬性;`parse()`=把樣式併入最近的具鍵節點。
+- `figma_section.py` — 一個 section 放多 RWD 尺寸時,讀 `get_metadata` XML,`parse_section()` 挑出
+  名稱含 `@寬度` 的尺寸 frame(略過注記框/popup),`to_config()` 展開成 qa.py 多尺寸批次骨架。
 - `auto_qa.py` — 依規範自動對位:`parse_frame_name()` 解析 `/route @width`;以 `data-figma-id` 為 key 配對;
   `coverage()`=配對成功 / 設計獨有(漏做)/ 實作獨有(多餘)。
 - `report_html.py` / `qa.py`(index)/ `run_diff.py` — 三種 HTML 輸出,共用視覺系統。

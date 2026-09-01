@@ -1,0 +1,11 @@
+<!-- 取自真實案例:MX 官網 about 頁的 Figma section(get_metadata 輸出,精簡保留頂層結構)。
+     同一頁三個 RWD 尺寸並排放在一個 section;另有注記框與 popup 應被自動略過。 -->
+<section id="11696:7310" name="about" x="3836" y="-893" width="2717" height="7553">
+  <frame id="11696:9891" name="about @1440 " x="100" y="200" width="1440" height="5173"></frame>
+  <frame id="11696:10432" name="about @576" x="1601" y="200" width="576" height="6988"></frame>
+  <frame id="11696:10961" name="about @375" x="2237" y="200" width="375" height="7253"></frame>
+  <frame id="11696:7316" name="Frame 5448" x="100" y="100" width="1440" height="80"><text id="11696:7317" name="1440以上" /></frame>
+  <frame id="11696:7314" name="Frame 5446" x="1598" y="100" width="579" height="80"><text id="11696:7315" name="992~576" /></frame>
+  <frame id="11696:7318" name="Frame 5447" x="2237" y="100" width="380" height="80"><text id="11696:7319" name="小於 576" /></frame>
+  <frame id="11696:7322" name="popup" x="152" y="5910" width="1440" height="680"></frame>
+</section>

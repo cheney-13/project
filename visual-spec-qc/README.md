@@ -107,6 +107,7 @@ visual-spec-qc/
 │   ├── report_html.py    # 分眾報告(業務摘要 / 工程明細)
 │   ├── auto_qa.py        # 依交付規範自動對位 + 覆蓋率
 │   ├── figma_extract.py  # 從 get_design_context 抽設計事實(含 token 綁定)
+│   ├── figma_section.py  # 一個 section 放多 RWD 尺寸 → 自動列出各尺寸 + 展開批次
 │   ├── run_diff.py       # 執行差異(解決/回歸/未解決)
 │   ├── extract_dom.js    # 注入網頁蒐集 [data-figma-id] 的 computed
 │   └── fetch_dom.py      # (選用)Playwright 抓 DOM,無需 MCP
@@ -135,13 +136,17 @@ visual-spec-qc/
 - 單一 CLI(批次 + 總覽 + CI 門檻)
 - 執行差異 A(修→驗→修:解決 / 回歸 / 未解決)
 - **B. 接受清單 / 基準線**(把已核准的可接受差異靜音,不阻擋分數、每輪不再當雜訊)
+- **多尺寸(一個 section 放多 RWD 尺寸)**:`figma_section.py` 讀 `get_metadata`,挑出名稱含
+  `@寬度` 的尺寸 frame(自動略過注記框 / popup),展開成「每尺寸一組 pair」的批次,
+  各自對照網站在相同視窗寬度的呈現;工具頁斷點新增「多尺寸(全部)」選項。
 - **回歸測試套件**(`tests/`,純標準庫 unittest,鎖定 MX 案例 80% 等關鍵行為)
 - 視覺:極簡日式亮色主題
 
 **待做**
 - C. 趨勢紀錄(同一頁還原度曲線)
-- 擴充比對維度(陰影、狀態 hover/disabled、多斷點)
+- 擴充比對維度(陰影、狀態 hover/disabled)
 - 設計稿自身一致性檢查(同 token 跨節點值不一致)
+- 多尺寸「即時抓取」串接:目前 `figma_section.py` 產出批次骨架,context/DOM 仍待即時填入(見下)
 
 **唯一整合縫**
 `qa.py` 吃的是**已抓好的** context / dom 檔。把 URL 變成這兩個檔的即時抓取:
