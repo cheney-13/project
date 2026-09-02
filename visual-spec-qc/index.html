@@ -151,9 +151,6 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
   box-shadow:0 8px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .proto{font-size:11px;color:var(--ink-3);text-align:center;margin-top:26px;letter-spacing:.3px}
-.backend{margin-top:16px;padding:14px 16px;border:1px dashed var(--line);border-radius:11px;background:var(--surface-2)}
-.backend label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
-.backend .bhint{font-size:11.5px;color:var(--ink-3);margin-top:8px;line-height:1.6}
 .demoNote{background:var(--warn-bg);border:1px solid #e6d3a6;border-radius:11px;padding:12px 15px;
   margin-bottom:16px;font-size:13px;line-height:1.7;color:#7a5a1e}
 .demoNote b{color:#6b4e12}
@@ -191,12 +188,6 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
       </div>
       <div id="pairs"></div>
       <button class="addrow" onclick="addPair()">＋ 新增比對配對</button>
-
-      <div class="backend">
-        <label>🔌 後端 API 網址(選填)</label>
-        <input class="inp" id="apiUrl" placeholder="留空 = 示範模式；填 http://127.0.0.1:8787 = 真實比對" oninput="edited=true">
-        <div class="bhint">填入後端網址即進入<b>真實比對</b>:後端用 Figma REST 讀設計、Playwright 抓網站 DOM、跑引擎回傳真結果(啟動見 <span class="mono">src/server.py</span>)。留空則為示範資料。</div>
-      </div>
 
       <div class="foot">
         <span class="hint">連結僅供讀取結構;不會送出任何帳密或個資。</span>
@@ -330,9 +321,10 @@ const STAGES=[
  {lab:"逐屬性比對 + 責任歸因",sub:"顏色 ΔE · 字級 · 間距 · token 對照"}];
 let RESULTS=null;   // 真實比對結果(來自後端);null = 示範模式
 function startRun(){
-  const api=document.getElementById("apiUrl").value.trim();
+  // 目前為示範模式。未來改為「直接提供可連結查資料的網址」時,
+  // 在此改呼叫 startRealRun(dataUrl)(下方函式已備妥)即可切換為真實比對。
   RESULTS=null;
-  if(api) startRealRun(api); else startDemoRun();
+  startDemoRun();
 }
 function playStages(done){
   const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
@@ -426,8 +418,8 @@ function showResult(){
   }else{
     note.className="demoNote";
     const base=`⚠ <b>這是互動原型</b>:下方為<b>固定示範資料</b>,用來展示流程與報告樣貌,<b>不是</b>對你貼上連結的即時比對。`;
-    const extra=edited?`<br>你已更動連結,但示範模式<b>不會因此改變下方數字</b>——要真的比對請在上一步填「後端 API 網址」。`:``;
-    const how=`<br>真實比對走後端(<code>src/server.py</code>),或用 CLI:<code>python3 src/run_section.py &lt;section.json&gt;</code>。`;
+    const extra=edited?`<br>你已更動連結,但示範模式<b>不會因此改變下方數字</b>。`:``;
+    const how=`<br>真實比對將在「可連結查資料的網址」接上後開放;目前也可用 CLI:<code>python3 src/run_section.py &lt;section.json&gt;</code>。`;
     note.innerHTML=base+extra+how;
   }
 }

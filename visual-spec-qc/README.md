@@ -179,7 +179,7 @@ pip install playwright           # 抓網站各寬度 DOM(雲端環境已預裝 
 python3 src/server.py            # → http://127.0.0.1:8787(工具頁與 API 同源)
 ```
 
-在工具頁「STEP 01」最下方的 **🔌 後端 API 網址** 填入 `http://127.0.0.1:8787`,即進入**真實比對**:
+後端做的三件事:
 
 ```
 ① 設計  figma_rest.py  Figma REST 讀 section 各尺寸 frame → 設計事實(色/字/間距/圓角 + token 綁定)
@@ -187,8 +187,13 @@ python3 src/server.py            # → http://127.0.0.1:8787(工具頁與 API �
 ③ 比對  auto_qa/引擎    逐屬性比 + 責任歸因 → 逐尺寸真實報告(對不到元素標「待人工/無法比對」)
 ```
 
-留空後端網址則維持示範模式(結果頁會明確標示為固定示範資料)。
-CLI 也可獨立跑:`python3 src/figma_rest.py <fileKey> <nodeId> <token> --out nodes.json`。
+> **網頁工具目前為示範模式**(結果為固定示範資料,結果頁會明確標示)。
+> 未來將以「**可連結查資料的網址**」接上真實比對:屆時 `index.html` 的 `startRun()` 改呼叫
+> 已備妥的 `startRealRun(dataUrl)` 即可切換。後端 API 網址欄已先移除,避免誤解。
+>
+> 現在要跑真實結果,直接用 CLI:
+> `python3 src/run_section.py <section.json>`,或
+> `python3 src/figma_rest.py <fileKey> <nodeId> <token> --out nodes.json`。
 
 ---
 
