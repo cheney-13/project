@@ -62,9 +62,11 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
 單頁多 screen(`.screen` + JS `nav(id)` 切換);狀態輕量存 localStorage(`vsqc.v2`)。
 - `scr-home` 雙階段選單 → `enterCheck(mode)` → `scr-check`(Step 00 連線檢查,`recheckConn`/`proceedFromCheck`)
 - 模式 A `scr-lint`(設計稿規範檢核,`runLint`,目前示範骨架)/ 模式 B `scr-setup`→`scr-running`→`scr-result`(單欄卡片 `col1`)
-- **路線圖**:P1 結構/UX(已完成)· P2 協作(每張差異卡留言 / 標記特例 / 審核狀態 🔴→🟢,特例回測略過)· P3 歷史紀錄 + 新舊回歸對比(🟢已解決/🔴新問題/🟡未解決)· 截圖備查。
+- **路線圖**:P1 結構/UX(✅)· P2 協作(✅:每張差異點 issue 卡的留言 / 標記特例 / 審核狀態
+  🔴待處理→🟢已解決 / 🏷️特例;`renderIssues()` + `ISS`(localStorage `vsqc.issues`),issueId=repId::selector::prop)·
+  P3 歷史紀錄 + 新舊回歸對比(🟢已解決/🔴新問題/🟡未解決)· 截圖備查。
   真實資料(A 用 Figma MCP 圖層 JSON、B 用設計+DOM)未來由「可連結查資料的網址」接入:
-  在 `startRun()` 改呼叫已備妥的 `startRealRun(dataUrl)` 即可切換。協作/歷史先以 localStorage 暫存。
+  在 `startRun()` 改呼叫已備妥的 `startRealRun(dataUrl)` 即可切換;協作/歷史的 save/load 換成打該 API 即可跨人共用。
 
 ## 視覺系統(極簡日式 · 單一亮色)
 所有 HTML 輸出共用同一套 token,改樣式要同步四處(`report_html.py`、`qa.py`、`run_diff.py`、根層 `index.html` / `guide.html`):

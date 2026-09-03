@@ -167,6 +167,35 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
 .delta{font-family:"IBM Plex Mono",monospace;font-weight:600}
 .passline{padding:12px 14px;background:var(--good-bg);border-radius:10px;font-size:13px;color:var(--good);margin-top:12px;font-weight:500}
 
+/* P2 協作:差異點 issue 卡 + 留言 + 特例 + 狀態 */
+.isum{font-size:12.5px;color:var(--ink-2);margin:2px 0 12px}
+.isum b{font-family:"IBM Plex Mono",monospace}
+.issues{display:flex;flex-direction:column;gap:12px}
+.issue{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);transition:background .15s,border-color .15s}
+.issue.resolved{background:var(--good-bg);border-color:#bcd0b4}
+.issue.exception{background:var(--warn-bg);border-color:#e6d3a6}
+.ihead{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.ihead b{font-size:14px}
+.istatus{margin-left:auto;font-size:12px;font-weight:700;padding:3px 11px;border-radius:99px}
+.st-open{color:var(--bad);background:var(--bad-bg)}
+.st-resolved{color:#3e5a38;background:#dfe9da}
+.st-exception{color:#7a5a1e;background:#f0e4c8}
+.idiff{font-size:12.5px;color:var(--ink-2);margin:10px 0 0;line-height:1.75}
+.idiff code{background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+.idiff .sel{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);word-break:break-all}
+.exline{margin-top:9px;font-size:12.5px;color:#7a5a1e;background:#fbf4e2;border:1px dashed #e6d3a6;border-radius:8px;padding:8px 11px}
+.iact{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ibtn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit}
+.ibtn:hover{border-color:var(--accent);color:var(--accent)}
+.ithread{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+.cmt{font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--line-2)}
+.cmt:last-of-type{border-bottom:none}
+.cmt .who{font-weight:700;color:var(--ink)} .cmt .role{font-size:10.5px;color:var(--on-accent);background:var(--ink-3);border-radius:99px;padding:1px 7px;margin-left:6px}
+.cmt .ts{float:right;font-size:11px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.composer{display:flex;gap:8px;margin-top:9px;align-items:flex-start}
+.composer textarea{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit;resize:vertical;min-height:38px;background:var(--surface-2);color:var(--ink)}
+.composer textarea:focus{outline:2px solid var(--accent);outline-offset:0;background:var(--surface)}
+
 /* lint (Mode A) result cards */
 .lint .lh{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
 .lint .lh .cnt{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;border-radius:99px;padding:2px 10px}
@@ -354,7 +383,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
         <div id="v-kpi"></div>
         <div id="v-dev"></div>
         <div class="foot">
-          <span class="hint">留言、標記特例、審核狀態等協作功能將於下一階段(P2)接上。</span>
+          <span class="hint">每個差異點可留言、標記特例、切換審核狀態(🔴待處理 → 🟢已解決 / 🏷️特例);狀態暫存於此瀏覽器。</span>
           <button class="btn pri" onclick="downloadReport()">⬇ 下載報告</button>
           <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
           <button class="btn" onclick="closeDetail()">← 回總覽</button>
@@ -625,23 +654,81 @@ function openDetail(id){
      <div class="kpi"><b style="color:var(--human)">${d.counts.human}</b><span>待人工</span></div>
    </div>
    <div class="legend">🔴 <b>程式問題</b>(前端):設計已綁 token,實作未對齊　·　🔵 <b>設計問題</b>(設計師):設計稿 hardcode、規格待補　·　檢視涵蓋 <b>顏色 / 字型 / 字級字重 / 圓角</b> 與 <b>空間距離(間距 gap、內距 padding、外距 margin、寬高)</b>。</div>`;
-  const rows=(d.rows||[]).filter(r=>SEV[r.j]);
-  const table = rows.length ? `
-   <div class="tbl-wrap"><table>
-   <thead><tr><th>判定</th><th>元件 / 選擇器</th><th>屬性</th><th>設計規格</th><th>實際渲染</th><th>差異 / 說明</th></tr></thead>
-   <tbody>${rows.map(r=>{const sv=SEV[r.j];return `<tr>
-     <td class="judge"><span class="badge" style="color:${sv.c};background:${sv.bg}">${sv.t}</span><div class="assignee">→ ${sv.who}</div></td>
-     <td class="node"><b>${r.node}</b><span class="sel">${r.sel}</span></td>
-     <td>${r.prop}<span class="tok">${r.tok}</span></td>
-     <td>${swatch(r.spec)}</td><td>${swatch(r.act)}</td>
-     <td><span class="delta" style="color:${sv.c}">${r.d}</span><div style="color:var(--ink-2);font-size:12px;margin-top:3px">${r.msg}</div></td>
-   </tr>`}).join("")}</tbody></table></div>` : "";
-  const pass = d.pass ? d.pass : `${d.counts.pass} 項通過`;
-  document.getElementById("v-dev").innerHTML = table + `<div class="passline">✓ ${rows.length?pass:("全數通過,無差異("+d.counts.pass+" 項)")}</div>`;
+  renderIssues();
 }
 function swatch(v){const hex=/^#([0-9a-f]{6})$/i.test(v);
-  return `${hex?`<span class="sw" style="background:${v}"></span>`:""}<span class="mono">${v}</span>`}
+  return `${hex?`<span class="sw" style="background:${v}"></span>`:""}<span class="mono">${esc(v)}</span>`}
 function closeDetail(){document.getElementById("detail").style.display="none";document.getElementById("overview").style.display="block"}
+
+// ============================================================ //
+//  P2 協作:差異點留言 / 標記特例 / 審核狀態(localStorage 暫存)
+//  之後接「可連結查資料的網址」時,把 loadIssues/saveIssues 換成打該 API 即可跨人共用。
+// ============================================================ //
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+let ISS={}; try{ ISS=JSON.parse(localStorage.getItem("vsqc.issues")||"{}"); }catch(e){ ISS={}; }
+let lastRole=store.role||"設計";
+function saveIssues(){ try{ localStorage.setItem("vsqc.issues", JSON.stringify(ISS)); }catch(e){} }
+function issueId(repId,r){ return (repId+"::"+r.sel+"::"+r.prop).replace(/[^\w:.\-]/g,"_"); }
+function issue(id){ return ISS[id] || {status:"open",exceptionReason:"",comments:[]}; }
+function nowStr(){ const d=new Date(),p=n=>String(n).padStart(2,"0");
+  return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function setStatus(id,st){ const it=issue(id); it.status=st; ISS[id]=it; saveIssues(); renderIssues();
+  toast(st==="resolved"?"已標記為已解決":st==="open"?"已重新開啟":"狀態已更新"); }
+function askException(id){ const w=document.getElementById("ex-wrap-"+id); if(!w) return;
+  const show=w.style.display==="none"; w.style.display=show?"block":"none";
+  if(show){ const inp=document.getElementById("ex-"+id); inp.value=issue(id).exceptionReason||""; inp.focus(); } }
+function saveException(id){ const v=(document.getElementById("ex-"+id).value||"").trim();
+  const it=issue(id); it.status="exception"; it.exceptionReason=v; ISS[id]=it; saveIssues();
+  toast("已標記為特例(回測將自動略過)"); renderIssues(); }
+function addComment(id){ const ta=document.getElementById("cm-"+id), role=document.getElementById("role-"+id).value;
+  const text=(ta.value||"").trim(); if(!text){ toast("請先輸入留言"); return; }
+  lastRole=role; store.role=role; persist();
+  const it=issue(id); it.comments=(it.comments||[]).concat([{role,text,ts:nowStr()}]); ISS[id]=it; saveIssues();
+  renderIssues(); }
+function renderIssues(){
+  const d=curDetail; if(!d) return;
+  const rows=(d.rows||[]).filter(r=>SEV[r.j]);
+  if(!rows.length){ document.getElementById("v-dev").innerHTML=`<div class="passline">✓ 全數通過,無差異(${d.counts.pass} 項)</div>`; return; }
+  let open=0,res=0,exc=0;
+  const roleOpts=["設計","前端","其他"].map(o=>`<option ${o===lastRole?"selected":""}>${o}</option>`).join("");
+  const cards=rows.map(r=>{
+    const id=issueId(d.id,r), it=issue(id), sv=SEV[r.j];
+    if(it.status==="resolved")res++; else if(it.status==="exception")exc++; else open++;
+    const stBadge = it.status==="resolved"?`<span class="istatus st-resolved">🟢 已解決</span>`
+      : it.status==="exception"?`<span class="istatus st-exception">🏷️ 特例</span>`
+      : `<span class="istatus st-open">🔴 待處理</span>`;
+    const exLine = (it.status==="exception"&&it.exceptionReason)?`<div class="exline">🏷️ 特例說明:${esc(it.exceptionReason)}</div>`:``;
+    const comments=(it.comments||[]).length
+      ? it.comments.map(c=>`<div class="cmt"><span class="who">留言</span><span class="role">${esc(c.role)}</span><span class="ts">${esc(c.ts)}</span><div>${esc(c.text)}</div></div>`).join("")
+      : `<div class="cmt" style="color:var(--ink-3)">尚無留言。設計與前端可在此討論這個差異點。</div>`;
+    return `<div class="issue ${it.status}">
+      <div class="ihead"><span class="badge" style="color:${sv.c};background:${sv.bg}">${sv.t}</span>
+        <b>${esc(r.node)}</b> ${stBadge}</div>
+      <div class="idiff">屬性 <code>${esc(r.prop)}</code>　設計 ${swatch(r.spec)} → 實作 ${swatch(r.act)}　<b style="color:${sv.c}">${esc(r.d)}</b><br>
+        <span class="sel">${esc(r.sel)}</span><br>${esc(r.msg)}</div>
+      ${exLine}
+      <div class="iact">
+        ${it.status!=="resolved"?`<button class="ibtn" onclick="setStatus('${id}','resolved')">✅ 標記已解決</button>`
+                                :`<button class="ibtn" onclick="setStatus('${id}','open')">↩ 重新開啟</button>`}
+        ${it.status!=="exception"?`<button class="ibtn" onclick="askException('${id}')">🏷️ 標記為特例</button>`
+                                :`<button class="ibtn" onclick="setStatus('${id}','open')">↩ 取消特例</button>`}
+      </div>
+      <div id="ex-wrap-${id}" style="display:none;margin-top:9px">
+        <input class="inp" id="ex-${id}" placeholder="特例邏輯說明(如:行銷活動 Banner,設計刻意加大字級)">
+        <div class="iact"><button class="ibtn" onclick="saveException('${id}')">儲存特例</button></div>
+      </div>
+      <div class="ithread">${comments}
+        <div class="composer">
+          <select class="inp" id="role-${id}" style="width:82px;flex:none">${roleOpts}</select>
+          <textarea id="cm-${id}" placeholder="留言 / 備註…"></textarea>
+          <button class="ibtn" onclick="addComment('${id}')">送出</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  const summary=`<div class="isum">狀態:待處理 <b style="color:var(--bad)">${open}</b> · 已解決 <b style="color:var(--good)">${res}</b> · 特例 <b style="color:var(--warn)">${exc}</b>　<span style="color:var(--ink-3)">— 存在此瀏覽器(localStorage),接資料網址後可跨人共用;特例項於 P3 回測自動略過。</span></div>`;
+  document.getElementById("v-dev").innerHTML = summary + `<div class="issues">${cards}</div>`;
+}
 
 // ---------- 共用動作 ----------
 function saveRecord(){history++;store.hist=history;persist();document.getElementById("histN").textContent=history;
