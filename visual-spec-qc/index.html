@@ -19,7 +19,7 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .wrap{max-width:1060px;margin:0 auto;padding:22px 22px 72px}
 
 /* top bar */
-.top{display:flex;align-items:center;gap:14px;padding:6px 0 20px;flex-wrap:wrap}
+.top{display:flex;align-items:center;gap:14px;padding:6px 0 18px;flex-wrap:wrap}
 .logo{width:34px;height:34px;border-radius:9px;background:var(--accent);color:var(--on-accent);
   display:grid;place-items:center;font-weight:700;font-size:18px;flex-shrink:0;box-shadow:var(--raise)}
 .brand b{font-size:17px;letter-spacing:.5px} .brand span{display:block;color:var(--ink-2);font-size:12px}
@@ -30,6 +30,12 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .hist{margin-left:auto;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:7px}
 .hist .n{font-family:"IBM Plex Mono",monospace;background:var(--surface);border:1px solid var(--line);
   border-radius:99px;padding:2px 9px;font-weight:600;color:var(--ink)}
+
+/* context bar (回主選單 + 當前模式) */
+.ctxbar{display:none;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.ctxbar .mode{font-size:12px;font-weight:600;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);
+  border-radius:99px;padding:4px 12px}
+.ctxbar .mode b{color:var(--accent)}
 
 /* stepper */
 .steps{display:flex;gap:6px;align-items:center;margin-bottom:22px;font-size:12.5px;flex-wrap:wrap}
@@ -54,6 +60,30 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-3);font-weight:600;font-family:"IBM Plex Mono",monospace}
 h2.sec{font-size:19px;margin:2px 0 3px;text-wrap:balance} .desc{color:var(--ink-2);font-size:13.5px;margin:0 0 18px}
 
+/* home / mode menu */
+.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+@media(max-width:640px){.modegrid{grid-template-columns:1fr}}
+.modecard{text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--surface);border-radius:14px;
+  padding:22px;box-shadow:var(--raise);transition:transform .12s,box-shadow .12s,border-color .12s;font-family:inherit;color:inherit}
+.modecard:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,30,40,.08);border-color:var(--accent)}
+.modecard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.modecard .tag{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:1px;color:var(--accent);font-weight:600}
+.modecard h3{font-size:18px;margin:9px 0 6px;display:flex;align-items:center;flex-wrap:wrap}
+.modecard p{font-size:13px;color:var(--ink-2);margin:0 0 12px;line-height:1.6}
+.modecard ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2);line-height:1.85}
+.modecard .go{margin-top:16px;font-size:13px;color:var(--accent);font-weight:600}
+.badge-soon{font-size:10.5px;font-weight:700;color:var(--warn);background:var(--warn-bg);border-radius:99px;padding:2px 9px;margin-left:8px}
+
+/* connection check (Step 00) */
+.conn{display:flex;flex-direction:column;gap:12px;margin:2px 0 2px}
+.connrow{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--ink-3);flex-shrink:0;box-shadow:0 0 0 3px var(--line-2)}
+.dot.ok{background:var(--good);box-shadow:0 0 0 3px var(--good-bg)}
+.dot.bad{background:var(--bad);box-shadow:0 0 0 3px var(--bad-bg)}
+.dot.wait{background:var(--warn);box-shadow:0 0 0 3px var(--warn-bg)}
+.connrow .nm{font-weight:600;font-size:14px} .connrow .nm small{display:block;color:var(--ink-3);font-size:11.5px;font-weight:400;font-family:"IBM Plex Mono",monospace}
+.connrow .stt{margin-left:auto;font-size:12.5px;color:var(--ink-2);font-family:"IBM Plex Mono",monospace}
+
 /* pair rows */
 .pairhead,.pair{display:grid;grid-template-columns:20px 1fr 1fr 118px 30px;gap:10px;align-items:center}
 .pairhead{font-size:11px;color:var(--ink-3);font-weight:600;padding:0 2px 8px;letter-spacing:.5px}
@@ -69,6 +99,9 @@ select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px
 .addrow{margin-top:6px;width:100%;border:1.5px dashed var(--line);background:none;color:var(--accent);
   border-radius:10px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
 .addrow:hover{border-color:var(--accent);background:var(--surface-2)}
+
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
 
 .foot{display:flex;gap:12px;align-items:center;margin-top:20px;flex-wrap:wrap}
 .hint{color:var(--ink-3);font-size:12px;flex:1;min-width:200px}
@@ -89,11 +122,8 @@ select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px
 .prog .st{width:64px;text-align:right;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3)}
 .prog.done .st{color:var(--good)}
 
-/* overview cards */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:620px){.grid{grid-template-columns:1fr}
- .pairhead,.pair{grid-template-columns:18px 1fr 84px 26px}
- .pairhead .h-web,.pair .c-web{display:none}}
+/* overview cards — 單欄一列 */
+.col1{display:flex;flex-direction:column;gap:14px}
 .ov{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;overflow:hidden}
 .ov:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(20,30,40,.1)}
 .ov .stripe{height:5px} .ov-in{padding:16px 18px}
@@ -115,20 +145,12 @@ select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px
   box-shadow:var(--raise);transition:border-color .15s,background .15s}
 .back:hover{border-color:var(--accent);color:var(--accent)}
 .back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin:14px 0 18px}
-.tab{border:none;background:none;padding:10px 16px;font-size:14px;font-weight:600;color:var(--ink-3);
-  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;font-family:inherit}
-.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
-.view{display:none} .view.on{display:block}
 
-/* biz view */
+/* kpi + legend */
 .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .kpi{flex:1;min-width:120px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
 .kpi b{display:block;font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:600;line-height:1.1}
 .kpi span{color:var(--ink-2);font-size:12px}
-.bizrow{display:flex;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line-2);font-size:14px;align-items:flex-start}
-.bizrow:last-child{border-bottom:none}
-.bizrow .ic{width:22px;flex-shrink:0;text-align:center}
 .legend{font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:12px 14px;margin-top:14px;line-height:1.7}
 
 /* dev table */
@@ -145,30 +167,48 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
 .delta{font-family:"IBM Plex Mono",monospace;font-weight:600}
 .passline{padding:12px 14px;background:var(--good-bg);border-radius:10px;font-size:13px;color:var(--good);margin-top:12px;font-weight:500}
 
-/* toast */
+/* lint (Mode A) result cards */
+.lint .lh{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.lint .lh .cnt{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;border-radius:99px;padding:2px 10px}
+.lint ul{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--ink-2);line-height:1.85}
+.lint li b{color:var(--ink)}
+.lint code{background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:"IBM Plex Mono",monospace;font-size:12px}
+.lint .ok{color:var(--good);font-size:13px;margin-top:8px}
+
+/* toast + notes */
 #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
   background:var(--ink);color:var(--surface);padding:11px 20px;border-radius:11px;font-size:13.5px;font-weight:500;
   box-shadow:0 8px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90vw}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .proto{font-size:11px;color:var(--ink-3);text-align:center;margin-top:26px;letter-spacing:.3px}
+.note{background:var(--warn-bg);border:1px solid #e6d3a6;border-radius:11px;padding:11px 14px;
+  margin:0 0 16px;font-size:12.5px;line-height:1.7;color:#7a5a1e}
+.note b{color:#6b4e12}
+.note code{font-family:"IBM Plex Mono",monospace;background:#fff;border:1px solid #e6d3a6;border-radius:5px;padding:1px 6px;font-size:11.5px}
 .demoNote{background:var(--warn-bg);border:1px solid #e6d3a6;border-radius:11px;padding:12px 15px;
   margin-bottom:16px;font-size:13px;line-height:1.7;color:#7a5a1e}
 .demoNote b{color:#6b4e12}
 .demoNote code{font-family:"IBM Plex Mono",monospace;background:#fff;border:1px solid #e6d3a6;border-radius:5px;padding:1px 6px;font-size:12px}
 .demoNote.real{background:var(--good-bg);border-color:#bcd0b4;color:#3e5a38}
 .demoNote.real b{color:#2f4a2a}
-.demoNote.real code{border-color:#bcd0b4}
 </style>
 
 <div class="wrap">
   <div class="top">
     <div class="logo">◎</div>
-    <div class="brand"><b>切版核對工具</b><span>Figma 設計稿 × 切版成品 · 自動核對</span>
+    <div class="brand"><b>切版核對工具</b><span>Visual &amp; Spec QC · 交付前檢核 × 交付後比對</span>
       <a class="brand-link" href="guide.html">📐 設計檔案規範 →</a></div>
     <div class="hist">已存紀錄 <span class="n" id="histN">0</span> 筆</div>
   </div>
 
-  <div class="steps" id="stepper">
+  <!-- 情境列:回主選單 + 當前模式 -->
+  <div class="ctxbar" id="ctxbar">
+    <button class="back" onclick="goHome()">← 回主選單</button>
+    <span class="mode" id="ctxMode"></span>
+  </div>
+
+  <!-- Mode B 步驟列(僅 Mode B 顯示) -->
+  <div class="steps" id="stepper" style="display:none">
     <div class="s on" data-k="setup"><span class="d">1</span>建立配對</div>
     <div class="sep"></div>
     <div class="s" data-k="running"><span class="d">2</span>執行核對</div>
@@ -176,8 +216,86 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
     <div class="s" data-k="result"><span class="d">3</span>報告</div>
   </div>
 
-  <!-- ============ STEP 1 SETUP ============ -->
-  <section class="screen on" id="scr-setup">
+  <!-- ============ HOME:雙階段選單 ============ -->
+  <section class="screen on" id="scr-home">
+    <div class="eyebrow" style="margin-bottom:4px">Visual QA Platform</div>
+    <h2 class="sec">你要做哪一件事?</h2>
+    <p class="desc">涵蓋「交付前的設計稿自我檢核」與「交付後的設計 × 切版比對」。選一個模式開始。</p>
+    <div class="modegrid">
+      <button class="modecard" onclick="enterCheck('A')">
+        <div class="tag">MODE A · 交付前</div>
+        <h3>🧹 設計稿規範檢核 <span class="badge-soon">Beta</span></h3>
+        <p>交付前先讓 Figma 設計稿「自我健檢」,把不合規的地方在源頭修掉。</p>
+        <ul>
+          <li>圖層命名語意化(揪出 <code>Frame 1</code>、<code>Group 99</code>)</li>
+          <li>Design Token 綁定檢查(列出 hardcode 數值)</li>
+          <li>RWD 斷點與 Auto Layout / Constraints</li>
+          <li>無障礙對比度(WCAG AA 4.5:1)</li>
+        </ul>
+        <div class="go">開始檢核 →</div>
+      </button>
+      <button class="modecard" onclick="enterCheck('B')">
+        <div class="tag">MODE B · 交付後</div>
+        <h3>🔍 設計與切版比對</h3>
+        <p>把 Figma 設計稿與切版成品逐屬性比對,自動分辨差異是設計還是程式的責任。</p>
+        <ul>
+          <li>逐屬性比:顏色 / 字型 / 字級字重 / 圓角</li>
+          <li>空間距離:間距 gap、內距 padding、外距 margin、寬高</li>
+          <li>多尺寸(一個 section 多個 RWD 尺寸)一次核對</li>
+          <li>分眾明細:前端要修 / 設計要補</li>
+        </ul>
+        <div class="go">開始比對 →</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 00:MCP 連線檢查 ============ -->
+  <section class="screen" id="scr-check">
+    <div class="card pad">
+      <div class="eyebrow">STEP 00 · 環境確認</div>
+      <h2 class="sec">連線狀態檢查</h2>
+      <p class="desc">進入功能前先確認資料來源已就緒。兩者皆正常才會解鎖下一步。</p>
+      <div class="note" id="connNote"></div>
+      <div class="conn">
+        <div class="connrow">
+          <span class="dot" id="dotFigma"></span>
+          <span class="nm">Figma MCP<small>讀取設計稿圖層 / Variables / Token</small></span>
+          <span class="stt" id="sttFigma">尚未檢測</span>
+        </div>
+        <div class="connrow">
+          <span class="dot" id="dotBrowser"></span>
+          <span class="nm">Browser MCP<small>載入測試站抓 DOM / 截圖</small></span>
+          <span class="stt" id="sttBrowser">尚未檢測</span>
+        </div>
+      </div>
+      <div class="foot">
+        <span class="hint">連線由代理人(Figma/Browser MCP)或未來的「可連結查資料的網址」提供。</span>
+        <button class="btn" onclick="recheckConn()">🔄 重新檢測</button>
+        <button class="btn pri" id="proceedBtn" onclick="proceedFromCheck()" disabled>下一步 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODE A:設計稿規範檢核 ============ -->
+  <section class="screen" id="scr-lint">
+    <div class="card pad">
+      <div class="eyebrow">MODE A · 交付前</div>
+      <h2 class="sec">設計稿規範檢核</h2>
+      <p class="desc">貼上 Figma 檔案的 frame / section 連結,透過 Figma MCP 讀取圖層 JSON,執行自動化規範檢查。</p>
+      <div class="field">
+        <label>🎨 Figma 連結(含 node-id)</label>
+        <input class="inp" id="lintUrl" placeholder="https://www.figma.com/design/<fileKey>/…?node-id=11696-7310">
+      </div>
+      <div class="foot">
+        <span class="hint">檢查項目:命名語意化 · Token 綁定 · RWD/Auto Layout · 對比度(WCAG AA)。</span>
+        <button class="btn pri" onclick="runLint()">▶　執行規範檢核</button>
+      </div>
+    </div>
+    <div id="lintOut" style="margin-top:16px"></div>
+  </section>
+
+  <!-- ============ MODE B · STEP 01:建立配對 ============ -->
+  <section class="screen" id="scr-setup">
     <div class="card pad">
       <div class="eyebrow">STEP 01</div>
       <h2 class="sec">建立比對配對</h2>
@@ -187,7 +305,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
         <span></span><span>🎨 Figma frame 連結</span><span class="h-web">🌐 測試網頁連結</span><span>斷點</span><span></span>
       </div>
       <div id="pairs"></div>
-      <button class="addrow" onclick="addPair()">＋ 新增比對配對</button>
+      <button class="addrow" onclick="addPair()">＋ 新增比對項目</button>
 
       <div class="foot">
         <span class="hint">連結僅供讀取結構;不會送出任何帳密或個資。</span>
@@ -196,7 +314,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
     </div>
   </section>
 
-  <!-- ============ STEP 2 RUNNING ============ -->
+  <!-- ============ MODE B · STEP 02:執行核對 ============ -->
   <section class="screen" id="scr-running">
     <div class="card pad">
       <div class="eyebrow">STEP 02</div>
@@ -206,16 +324,15 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
     </div>
   </section>
 
-  <!-- ============ STEP 3 RESULT ============ -->
+  <!-- ============ MODE B · STEP 03:報告 ============ -->
   <section class="screen" id="scr-result">
-    <!-- overview -->
     <div id="overview">
       <div class="card pad">
         <div class="eyebrow">STEP 03 · 總覽</div>
         <h2 class="sec">核對結果</h2>
         <p class="desc">每組一張卡:還原度、燈號、與「誰要修幾項」。點卡片看逐項明細。</p>
         <div class="demoNote" id="demoNote"></div>
-        <div class="grid" id="ovCards"></div>
+        <div class="col1" id="ovCards"></div>
         <div class="foot">
           <span class="hint" id="ovSummary"></span>
           <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
@@ -223,7 +340,6 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
         </div>
       </div>
     </div>
-    <!-- detail -->
     <div id="detail" style="display:none">
       <button class="back" onclick="closeDetail()">← 回總覽</button>
       <div class="card pad" style="margin-top:10px">
@@ -238,7 +354,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
         <div id="v-kpi"></div>
         <div id="v-dev"></div>
         <div class="foot">
-          <span class="hint">此報告可下載留存,或存為版本紀錄以追蹤還原度趨勢。</span>
+          <span class="hint">留言、標記特例、審核狀態等協作功能將於下一階段(P2)接上。</span>
           <button class="btn pri" onclick="downloadReport()">⬇ 下載報告</button>
           <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
           <button class="btn" onclick="closeDetail()">← 回總覽</button>
@@ -247,24 +363,32 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
     </div>
   </section>
 
-  <div class="proto">互動原型 · 比對邏輯正式版接 Figma MCP + Browser MCP 即時抓取</div>
+  <div class="proto">互動原型 · 交付前檢核(Mode A)與比對(Mode B)之真實資料將由 Figma / Browser MCP 或「可連結查資料的網址」接入</div>
 </div>
 <div id="toast"></div>
 
 <script>
-// ---------- 真實資料(桌機版取自實際核對) + 批次示範(手機版) ----------
+// ============================================================ //
+//  狀態(輕量:localStorage 暫存,之後接「可連結查資料的網址」)
+// ============================================================ //
+const LS="vsqc.v2";
+let store={hist:0, mode:null};
+try{ store=Object.assign(store, JSON.parse(localStorage.getItem(LS)||"{}")); }catch(e){}
+function persist(){ try{ localStorage.setItem(LS, JSON.stringify(store)); }catch(e){} }
+let history=store.hist||0, currentMode=null, curDetail=null, edited=false, ranOnce=false, RESULTS=null;
+document.getElementById("histN").textContent=history;
+
+// ============================================================ //
+//  Mode B 示範資料(桌機取自實際核對 + 手機批次示範)
+// ============================================================ //
 const SEV={code:{t:"程式問題",c:"var(--bad)",bg:"var(--bad-bg)",who:"前端工程師"},
   design:{t:"設計問題",c:"var(--info)",bg:"var(--info-bg)",who:"設計師"},
   human:{t:"待人工",c:"var(--human)",bg:"var(--human-bg)",who:"人工確認"}};
+const STATUS={good:{c:"var(--good)",bg:"var(--good-bg)",light:"🟢"},warn:{c:"var(--warn)",bg:"var(--warn-bg)",light:"🟡"},bad:{c:"var(--bad)",bg:"var(--bad-bg)",light:"🔴"}};
+const VERDICT={good:"可上線",warn:"建議修正後上線",bad:"不建議上線"};
 const DATA=[
- {id:"d", name:"about 桌機版", bp:"桌機 1440",
-  figma:"figma.com/…?node-id=10830-3249", web:"bizdev…/#/about",
-  score:80, status:"warn", verdict:"建議修正後上線",
+ {id:"d", name:"about 桌機版", bp:"桌機 1440", score:80, status:"warn", verdict:"建議修正後上線",
   counts:{code:5,design:1,human:1,pass:20},
-  biz:[
-   {ic:"🔴",h:"3 項「程式沒照設計做」",t:"H1 主標與兩個區塊標題的品牌色沒套上——用了框架預設灰 <b class='mono'>#212529</b>,設計要的是品牌色 <b class='mono'>#313334</b>(ΔE 7.0,肉眼可辨)。已分派 <b>前端</b>。"},
-   {ic:"⚪",h:"1 項待人工確認",t:"卡片標題「AIO是什麼？」是漸層文字,工具無法用單一顏色比對,交人工看一眼即可。"},
-   {ic:"✅",h:"亮點",t:"品牌 magenta、ISO 藍字、Footer 灰字、卡片圓角、所有字級/字重/字型 全數命中設計 token。"}],
   rows:[
    {j:"code",node:"主標題 H1",sel:"section.sec-title h1.d-none.d-lg-block",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"設計規格明確,實作未對齊"},
    {j:"code",node:"區塊標題「結合搜尋優化與UX設計」",sel:"section.sec-subtitle h2.new-t2",prop:"color",tok:"semantic/text-primary",spec:"#313334",act:"#212529",d:"ΔE 7.0",msg:"同上,品牌主色未套用"},
@@ -274,26 +398,96 @@ const DATA=[
    {j:"design",node:"KV 主標區 text",sel:"section.sec-title .text",prop:"marginBottom",tok:"(未綁定)",spec:"未定義",act:"24px",d:"—",msg:"空間距離:外距(margin-bottom)在設計稿為 hardcode,未綁間距 token"},
    {j:"human",node:"卡片標題「AIO是什麼？」",sel:"section.sec-seo .border-radius-20px h3.new-t3",prop:"color",tok:"Brand Gradient/Warm",spec:"漸層",act:"transparent",d:"—",msg:"漸層文字,需人工確認"}],
   pass:"20 項通過:麵包屑 #c70067(ΔE 0)、ISO 藍字 #005d91(ΔE 0)、Footer #9FA0A0、卡片圓角 20px、白底、字級 48/36/28/16、字重、Noto Sans TC 字型…"},
-
- {id:"m", name:"about 手機版", bp:"手機 375",
-  figma:"figma.com/…?node-id=10503-4932", web:"bizdev…/#/about",
-  score:97, status:"good", verdict:"可上線",
+ {id:"m", name:"about 手機版", bp:"手機 375", score:97, status:"good", verdict:"可上線",
   counts:{code:0,design:1,human:0,pass:22},
-  biz:[
-   {ic:"🔵",h:"1 項「設計稿規格待補」",t:"手機版主標字級實作為 <b class='mono'>32px</b>,但設計稿此處是 hardcode、沒綁字級 token,無法判定對錯。已通知 <b>設計師</b> 補上 token。"},
-   {ic:"✅",h:"其餘一致",t:"色彩、間距、字重、圓角與設計稿相符,還原度 97%,可上線。"}],
   rows:[
    {j:"design",node:"手機版主標 H1",sel:"section.sec-title h1.d-block.d-lg-none",prop:"fontSize",tok:"(未綁定)",spec:"未定義",act:"32px",d:"—",msg:"設計稿此屬性未使用字級 token,規格待補"}],
   pass:"22 項通過:品牌色、間距、字重、圓角、字型與設計稿一致。"}
 ];
 
-const STATUS={good:{c:"var(--good)",bg:"var(--good-bg)",light:"🟢"},warn:{c:"var(--warn)",bg:"var(--warn-bg)",light:"🟡"},bad:{c:"var(--bad)",bg:"var(--bad-bg)",light:"🔴"}};
-let history=0, curDetail=null, edited=false;   // edited:使用者是否動過預設示範連結
+// ============================================================ //
+//  導覽(screen 切換 + 步驟列 / 情境列可見性)
+// ============================================================ //
+const STEP_SCREENS=["scr-setup","scr-running","scr-result"];
+function nav(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  const el=document.getElementById(id); if(el) el.classList.add("on");
+  document.getElementById("stepper").style.display = STEP_SCREENS.includes(id)?"flex":"none";
+  document.getElementById("ctxbar").style.display  = (id==="scr-home")?"none":"flex";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function goHome(){ currentMode=null; nav("scr-home"); }
+function setCtx(){ document.getElementById("ctxMode").innerHTML =
+  currentMode==="A" ? '模式 <b>A · 交付前</b> 設計稿規範檢核'
+                    : '模式 <b>B · 交付後</b> 設計與切版比對'; }
 
-// ---------- STEP 1 ----------
-const seed=[
- {figma:"figma.com/…?node-id=10830-3249",web:"bizdev.medialand.com.tw/…/#/about",bp:"桌機 1440"},
- {figma:"figma.com/…?node-id=10503-4932",web:"bizdev.medialand.com.tw/…/#/about",bp:"手機 375"}];
+// ---------- Step 00 連線檢查 ----------
+let conn={figma:null, browser:null};   // null=未檢測 / true / false
+function paintConn(){
+  const set=(dot,stt,v)=>{ const d=document.getElementById(dot), s=document.getElementById(stt);
+    d.className="dot"+(v===true?" ok":v==="wait"?" wait":v===false?" bad":"");
+    s.textContent = v===true?"已連線":v==="wait"?"檢測中…":v===false?"未連線":"尚未檢測"; };
+  set("dotFigma","sttFigma",conn.figma);
+  set("dotBrowser","sttBrowser",conn.browser);
+  document.getElementById("connNote").innerHTML =
+    `⚠ <b>目前為示範狀態</b>:此頁尚未接上即時連線,「重新檢測」為示範動作。實際將檢測 Figma MCP / Browser MCP(或「可連結查資料的網址」)的連線與 Token 狀態,兩者皆 🟢 才解鎖下一步。`;
+  document.getElementById("proceedBtn").disabled = !(conn.figma===true && conn.browser===true);
+}
+function enterCheck(mode){ currentMode=mode; store.mode=mode; persist(); setCtx();
+  conn={figma:null,browser:null}; paintConn(); nav("scr-check"); }
+function recheckConn(){
+  conn={figma:"wait",browser:"wait"}; paintConn();
+  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  setTimeout(()=>{ conn={figma:true,browser:true}; paintConn(); }, reduce?0:650);
+}
+function proceedFromCheck(){
+  if(conn.figma!==true||conn.browser!==true){ toast("請先完成連線檢測"); return; }
+  if(currentMode==="A"){ nav("scr-lint"); }
+  else { renderPairs(); goto("setup"); }
+}
+
+// ============================================================ //
+//  Mode A:設計稿規範檢核(示範骨架)
+// ============================================================ //
+function runLint(){
+  const url=document.getElementById("lintUrl").value.trim();
+  if(!url){ toast("請貼上 Figma 連結(含 node-id)"); return; }
+  const cats=[
+    {icon:"🏷️",title:"圖層命名語意化",col:"var(--warn)",bg:"var(--warn-bg)",n:3,
+     items:["<b>3</b> 個預設命名圖層未語意化:<code>Frame 427</code>、<code>Group 99</code>、<code>Rectangle 12</code>",
+            "建議改為語意化 key(如 <code>sec:hero</code>、<code>card:price</code>)以利交付後自動對位"]},
+    {icon:"🎯",title:"Design Token 綁定",col:"var(--bad)",bg:"var(--bad-bg)",n:5,
+     items:["<b>5</b> 個屬性為 hardcode、未綁 Local Variables:主標色 <code>#313334</code>、間距 <code>24px</code> ×2、圓角 <code>20px</code>、字級 <code>32px</code>",
+            "綁上 token 後,交付後比對才能把責任正確歸給前端 / 設計"]},
+    {icon:"📐",title:"RWD 斷點與佈局",col:"var(--warn)",bg:"var(--warn-bg)",n:2,
+     items:["<b>2</b> 個容器未使用 Auto Layout,改寬度時子元素不會自動流動",
+            "1 個 frame 命名缺 <code>@寬度</code>(如 <code>about</code> 應為 <code>about @1440</code>)"]},
+    {icon:"👁️",title:"無障礙對比度(WCAG AA 4.5:1)",col:"var(--bad)",bg:"var(--bad-bg)",n:2,
+     items:["<b>2</b> 段文字對比不足:淺灰註解 <code>#A8A298</code> / 白底 = 對比 <b>2.1:1</b>(需 ≥ 4.5:1)",
+            "Footer 版權字 <code>#9FA0A0</code> / 白底 = 對比 <b>2.6:1</b>,建議加深"]},
+  ];
+  const total=cats.reduce((a,c)=>a+c.n,0);
+  const cards=cats.map(c=>`
+    <div class="card pad lint">
+      <div class="lh"><span>${c.icon}</span><span>${c.title}</span>
+        <span class="cnt" style="color:${c.col};background:${c.bg}">${c.n} 項待改</span></div>
+      <ul>${c.items.map(i=>`<li>${i}</li>`).join("")}</ul>
+    </div>`).join("");
+  document.getElementById("lintOut").innerHTML=`
+    <div class="demoNote"><b>示範結果</b>:此為介面與檢查項目的示範資料。接上 Figma MCP(或可連結查資料的網址)後,將依實際圖層 JSON 產出真實檢核結果。</div>
+    <div class="kpis">
+      <div class="kpi"><b style="color:var(--bad)">${total}</b><span>規範待改項</span></div>
+      <div class="kpi"><b style="color:var(--warn)">${cats.filter(c=>c.n).length}</b><span>涉及類別</span></div>
+      <div class="kpi"><b style="color:var(--good)">✓</b><span>可交付前修正</span></div>
+    </div>
+    <div class="col1">${cards}</div>`;
+  document.getElementById("lintOut").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+// ============================================================ //
+//  Mode B:建立配對(預設 1 列)
+// ============================================================ //
+const seed=[{figma:"figma.com/…?node-id=11696-7310",web:"bizdev.medialand.com.tw/…/#/about",bp:"多尺寸（全部）"}];
 function bpOptions(sel){return ["多尺寸（全部）","桌機 1440","平板 768","手機 375"].map(o=>`<option ${o===sel?"selected":""}>${o}</option>`).join("")}
 function renderPairs(){
   document.getElementById("pairs").innerHTML=seed.map((p,i)=>`
@@ -307,24 +501,21 @@ function renderPairs(){
   refreshRun();
 }
 function addPair(){seed.push({figma:"",web:"",bp:"桌機 1440"});renderPairs()}
-function rmPair(i){seed.splice(i,1);renderPairs()}
+function rmPair(i){ if(seed.length<=1){ toast("至少保留一組配對"); return; } seed.splice(i,1);renderPairs()}
 function refreshRun(){
   const ok=seed.some(p=>p.figma.trim()&&p.web.trim());
   document.getElementById("runBtn").disabled=!ok;
 }
 
-// ---------- STEP 2 ----------
+// ---------- Mode B:執行核對 ----------
 const STAGES=[
  {lab:"讀取設計事實",sub:"Figma MCP · get_variable_defs / metadata"},
  {lab:"讀取實作事實",sub:"Browser MCP · 調斷點寬度 → getComputedStyle"},
  {lab:"節點對位",sub:"data-figma-id / 文字·位置 模糊配對"},
  {lab:"逐屬性比對 + 責任歸因",sub:"顏色 ΔE · 字級 · 間距 · token 對照"}];
-let RESULTS=null;   // 真實比對結果(來自後端);null = 示範模式
 function startRun(){
-  // 目前為示範模式。未來改為「直接提供可連結查資料的網址」時,
-  // 在此改呼叫 startRealRun(dataUrl)(下方函式已備妥)即可切換為真實比對。
-  RESULTS=null;
-  startDemoRun();
+  // 目前為示範模式。未來接「可連結查資料的網址」時,改呼叫 startRealRun(dataUrl) 即可切換。
+  RESULTS=null; startDemoRun();
 }
 function playStages(done){
   const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
@@ -348,7 +539,7 @@ function playStages(done){
 }
 function startDemoRun(){ goto("running"); playStages(showResult); }
 
-// ---- 真實比對(後端)----
+// ---- 真實比對(後端 / 資料網址,未來接上)----
 function parseFigma(u){
   const fk=(u.match(/\/(?:design|file)\/([0-9A-Za-z]{10,})/)||[])[1]||null;
   let nid=(u.match(/node-id=([^&]+)/)||[])[1]||null;
@@ -359,34 +550,28 @@ function startRealRun(api){
   const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
   if(!active.length){toast("請至少填一組 Figma 連結 + 測試網頁");return;}
   const p0=active[0], {fileKey,nodeId}=parseFigma(p0.figma);
-  if(!fileKey||!nodeId){toast("Figma 連結需含 node-id(貼含 ?node-id= 的連結)");return;}
+  if(!fileKey||!nodeId){toast("Figma 連結需含 node-id");return;}
   goto("running"); playStages(null);
   fetch(api.replace(/\/+$/,"")+"/api/run",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({fileKey,nodeId,siteUrl:p0.web,selectors:p0.selectors||null})})
    .then(r=>r.json().then(j=>({ok:r.ok,j})))
-   .then(({ok,j})=>{ if(!ok||j.error){ showError(j.error||("後端回應 "+(ok?"":"錯誤"))); return; }
+   .then(({ok,j})=>{ if(!ok||j.error){ showError(j.error||"資料來源回應錯誤"); return; }
       RESULTS=(j.results||[]).map((r,i)=>({id:"sz"+i, name:r.name, bp:(r.width?r.width+"px":""),
         score:r.score, status:r.status, counts:r.counts, rows:r.rows||[], coverage:r.coverage||{}}));
       showResult(); })
-   .catch(e=>showError("無法連線後端("+api+"):"+e.message));
+   .catch(e=>showError("無法連線資料來源:"+e.message));
 }
-function showError(msg){
-  goto("setup");
-  toast("❌ "+msg);
-}
+function showError(msg){ goto("setup"); toast("❌ "+msg); }
 
-// ---------- STEP 3 overview ----------
+// ---------- Mode B:總覽(單欄卡片) ----------
 function showResult(){
-  ranOnce=true;
-  goto("result");
+  ranOnce=true; goto("result");
   document.getElementById("overview").style.display="block";
   document.getElementById("detail").style.display="none";
-  const VERDICT={good:"可上線",warn:"建議修正後上線",bad:"不建議上線"};
   let items;
   if(RESULTS){ items=RESULTS; }
   else {
     const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
-    // 「多尺寸」= 一次核對此頁 section 內的所有 RWD 尺寸(依各 frame 的 @寬度自動拆分)
     const multi=active.some(p=>/多尺寸/.test(p.bp));
     items=multi?DATA:DATA.slice(0,Math.max(1,active.length));
   }
@@ -412,31 +597,26 @@ function showResult(){
   document.getElementById("ovSummary").innerHTML=`共 ${items.length} 組 · 程式待修 <b style="color:var(--bad)">${tc}</b> · 設計待補 <b style="color:var(--info)">${td}</b>`;
   const note=document.getElementById("demoNote");
   if(RESULTS){
-    // 真實比對結果(來自後端:Figma REST × 網站 DOM × 引擎)
     note.className="demoNote real";
-    note.innerHTML=`✅ <b>真實比對結果</b>:由後端用 Figma REST 讀設計、Playwright 抓網站各寬度 DOM、跑引擎產生;不同專案會得到不同結果。`;
+    note.innerHTML=`✅ <b>真實比對結果</b>:由資料來源讀設計 × 抓網站 DOM × 引擎產生;不同專案會得到不同結果。`;
   }else{
     note.className="demoNote";
-    const base=`⚠ <b>這是互動原型</b>:下方為<b>固定示範資料</b>,用來展示流程與報告樣貌,<b>不是</b>對你貼上連結的即時比對。`;
     const extra=edited?`<br>你已更動連結,但示範模式<b>不會因此改變下方數字</b>。`:``;
-    const how=`<br>真實比對將在「可連結查資料的網址」接上後開放;目前也可用 CLI:<code>python3 src/run_section.py &lt;section.json&gt;</code>。`;
-    note.innerHTML=base+extra+how;
+    note.innerHTML=`⚠ <b>這是互動原型</b>:下方為<b>固定示範資料</b>,展示流程與報告樣貌,<b>不是</b>對你連結的即時比對。${extra}<br>真實比對將在「可連結查資料的網址」接上後開放;現也可用 CLI:<code>python3 src/run_section.py &lt;section.json&gt;</code>。`;
   }
 }
 function chip(k,n){return `<span class="chip" style="color:${SEV[k].c};background:${SEV[k].bg}">${SEV[k].t} <span class="mono">${n}</span></span>`}
 
-// ---------- detail ----------
+// ---------- Mode B:逐項明細 ----------
 function openDetail(id){
   const d=(RESULTS||DATA).find(x=>x.id===id); curDetail=d;
   const s=STATUS[d.status];
-  const VERDICT={good:"可上線",warn:"建議修正後上線",bad:"不建議上線"};
   document.getElementById("overview").style.display="none";
   document.getElementById("detail").style.display="block";
   document.getElementById("dName").textContent=d.name+(d.bp?" · "+d.bp:"");
   document.getElementById("dScore").textContent=d.score+"%";
   document.getElementById("dScore").style.color=s.c;
   const v=document.getElementById("dVerdict"); v.textContent=d.verdict||VERDICT[d.status]; v.style.color=s.c;
-  // 頂部數字摘要(前端 / 設計師都看)
   document.getElementById("v-kpi").innerHTML=`
    <div class="kpis">
      <div class="kpi"><b style="color:${s.c}">${d.score}%</b><span>整體還原度</span></div>
@@ -445,7 +625,6 @@ function openDetail(id){
      <div class="kpi"><b style="color:var(--human)">${d.counts.human}</b><span>待人工</span></div>
    </div>
    <div class="legend">🔴 <b>程式問題</b>(前端):設計已綁 token,實作未對齊　·　🔵 <b>設計問題</b>(設計師):設計稿 hardcode、規格待補　·　檢視涵蓋 <b>顏色 / 字型 / 字級字重 / 圓角</b> 與 <b>空間距離(間距 gap、內距 padding、外距 margin、寬高)</b>。</div>`;
-  // dev
   const rows=(d.rows||[]).filter(r=>SEV[r.j]);
   const table = rows.length ? `
    <div class="tbl-wrap"><table>
@@ -464,42 +643,33 @@ function swatch(v){const hex=/^#([0-9a-f]{6})$/i.test(v);
   return `${hex?`<span class="sw" style="background:${v}"></span>`:""}<span class="mono">${v}</span>`}
 function closeDetail(){document.getElementById("detail").style.display="none";document.getElementById("overview").style.display="block"}
 
-// ---------- actions ----------
-function saveRecord(){history++;document.getElementById("histN").textContent=history;
-  toast(`已存為版本紀錄 #${history} · 可追蹤還原度趨勢`)}
+// ---------- 共用動作 ----------
+function saveRecord(){history++;store.hist=history;persist();document.getElementById("histN").textContent=history;
+  toast(`已存為版本紀錄 #${history}(歷史列表將於 P3 開放)`)}
 function downloadReport(){toast("原型示意:正式版會輸出獨立 HTML / PDF 報告檔")}
 let tT;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");
   clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),2600)}
 
-// ---------- nav ----------
-let ranOnce=false;   // 是否已完成過一次核對(決定「報告」步驟能否點回)
+// ---------- Mode B 步驟列導覽 ----------
 function goto(k){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
-  document.getElementById("scr-"+k).classList.add("on");
+  nav("scr-"+k);
   const order=["setup","running","result"], idx=order.indexOf(k);
   document.querySelectorAll("#stepper .s").forEach(s=>{
     const si=order.indexOf(s.dataset.k);
     s.classList.toggle("on",si===idx); s.classList.toggle("done",si<idx);
-    // 可點回的步驟:建立配對(隨時)、報告(核對過後);執行中不可點
     const navigable = s.dataset.k!=="running" && si!==idx &&
       (s.dataset.k==="setup" || (s.dataset.k==="result" && ranOnce));
     s.classList.toggle("nav",navigable);
     if(navigable){ s.setAttribute("tabindex","0"); s.setAttribute("role","button"); }
     else { s.removeAttribute("tabindex"); s.removeAttribute("role"); }
   });
-  window.scrollTo({top:0,behavior:"smooth"});
 }
-// 點步驟列直接跳轉(建立配對 / 回報告總覽)
 function stepClick(k){
   if(k==="running") return;
-  if(k==="result"){
-    if(!ranOnce) return;
-    goto("result");
+  if(k==="result"){ if(!ranOnce) return; goto("result");
     document.getElementById("overview").style.display="block";
-    document.getElementById("detail").style.display="none";
-    return;
-  }
+    document.getElementById("detail").style.display="none"; return; }
   goto(k);
 }
 document.querySelectorAll("#stepper .s").forEach(s=>{
@@ -508,5 +678,8 @@ document.querySelectorAll("#stepper .s").forEach(s=>{
     if((e.key==="Enter"||e.key===" ")&&s.classList.contains("nav")){ e.preventDefault(); stepClick(s.dataset.k); }
   });
 });
+
+// 起始:主選單
 renderPairs();
+nav("scr-home");
 </script>
