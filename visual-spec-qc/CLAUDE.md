@@ -64,7 +64,8 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
 - 模式 A `scr-lint`(設計稿規範檢核,`runLint`,目前示範骨架)/ 模式 B `scr-setup`→`scr-running`→`scr-result`(單欄卡片 `col1`)
 - **路線圖**:P1 結構/UX(✅)· P2 協作(✅:每張差異點 issue 卡的留言 / 標記特例 / 審核狀態
   🔴待處理→🟢已解決 / 🏷️特例;`renderIssues()` + `ISS`(localStorage `vsqc.issues`),issueId=repId::selector::prop)·
-  P3 歷史紀錄 + 新舊回歸對比(🟢已解決/🔴新問題/🟡未解決)· 截圖備查。
+  P3 歷史紀錄 + 新舊回歸對比(✅:`vsqc.history` 存主題/填表人/時間/差異點快照;`openHistory`/`renderHistory`
+  /`loadRecord`/`openRegress`+`classify` → 🟢已解決 / 🔴新問題 / 🟡未解決 / 🏷️特例略過,整合 P2 狀態)· 截圖備查(待)。
   真實資料(A 用 Figma MCP 圖層 JSON、B 用設計+DOM)未來由「可連結查資料的網址」接入:
   在 `startRun()` 改呼叫已備妥的 `startRealRun(dataUrl)` 即可切換;協作/歷史的 save/load 換成打該 API 即可跨人共用。
 

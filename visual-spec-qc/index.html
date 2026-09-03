@@ -196,6 +196,28 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
 .composer textarea{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit;resize:vertical;min-height:38px;background:var(--surface-2);color:var(--ink)}
 .composer textarea:focus{outline:2px solid var(--accent);outline-offset:0;background:var(--surface)}
 
+/* P3 歷史 + 回歸 */
+.hist.clk{cursor:pointer} .hist.clk:hover .n{border-color:var(--accent);color:var(--accent)}
+.hlist{display:flex;flex-direction:column;gap:12px}
+.hrow{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.hrow .hmain{flex:1;min-width:180px}
+.hrow .htitle{font-weight:700;font-size:15px}
+.hrow .hmeta{font-size:12px;color:var(--ink-2);margin-top:3px}
+.hrow .hmeta .mono{color:var(--ink-3)}
+.hrow .hscore{font-family:"IBM Plex Mono",monospace;font-size:24px;font-weight:600;line-height:1}
+.hact{display:flex;gap:8px;flex-wrap:wrap}
+.empty{color:var(--ink-3);font-size:13px;text-align:center;padding:34px;border:1px dashed var(--line);border-radius:12px}
+.rgroup{margin-bottom:14px}
+.rgh{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rgh .cnt{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;border-radius:99px;padding:2px 11px}
+.ritem{border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:12.5px;margin-bottom:7px;background:var(--surface)}
+.ritem b{color:var(--ink)} .ritem .sel{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);display:block;margin-top:2px;word-break:break-all}
+/* save dialog */
+.dlg{position:fixed;inset:0;background:rgba(20,18,16,.38);display:none;place-items:center;z-index:60;padding:20px}
+.dlg.on{display:grid}
+.dlgcard{background:var(--surface);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.25);max-width:420px;width:100%;padding:22px}
+.dlgcard h3{font-size:17px;margin:0 0 4px} .dlgcard .sub{color:var(--ink-2);font-size:12.5px;margin:0 0 16px}
+
 /* lint (Mode A) result cards */
 .lint .lh{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
 .lint .lh .cnt{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;border-radius:99px;padding:2px 10px}
@@ -227,7 +249,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
     <div class="logo">◎</div>
     <div class="brand"><b>切版核對工具</b><span>Visual &amp; Spec QC · 交付前檢核 × 交付後比對</span>
       <a class="brand-link" href="guide.html">📐 設計檔案規範 →</a></div>
-    <div class="hist">已存紀錄 <span class="n" id="histN">0</span> 筆</div>
+    <div class="hist clk" onclick="openHistory()" title="查看歷史紀錄">📜 已存紀錄 <span class="n" id="histN">0</span> 筆</div>
   </div>
 
   <!-- 情境列:回主選單 + 當前模式 -->
@@ -364,7 +386,8 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
         <div class="col1" id="ovCards"></div>
         <div class="foot">
           <span class="hint" id="ovSummary"></span>
-          <button class="btn" onclick="saveRecord()">💾 存檔紀錄</button>
+          <button class="btn" onclick="openHistory()">📜 歷史紀錄</button>
+          <button class="btn pri" onclick="saveRecord()">💾 存檔紀錄</button>
           <button class="btn" onclick="goto('setup')">↩ 重新設定配對</button>
         </div>
       </div>
@@ -392,7 +415,44 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
     </div>
   </section>
 
+  <!-- ============ 歷史紀錄 ============ -->
+  <section class="screen" id="scr-history">
+    <div class="card pad">
+      <div class="eyebrow">History</div>
+      <h2 class="sec">歷史紀錄</h2>
+      <p class="desc">每次「存檔紀錄」會保存主題、填表人、時間與該次的差異點快照。點「載入」可帶回設定重跑,點「新舊回歸」可與上一筆同主題比對。</p>
+      <div class="note">此清單存在此瀏覽器(localStorage);接上「可連結查資料的網址」後即可跨人共用。</div>
+      <div class="hlist" id="histList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 新舊回歸對比 ============ -->
+  <section class="screen" id="scr-regress">
+    <div class="card pad">
+      <div class="eyebrow">Regression Delta</div>
+      <h2 class="sec" id="rgTitle">新舊回歸對比</h2>
+      <p class="desc" id="rgSub"></p>
+      <div id="rgOut"></div>
+      <div class="foot"><button class="btn" onclick="openHistory()">← 回歷史紀錄</button></div>
+    </div>
+  </section>
+
   <div class="proto">互動原型 · 交付前檢核(Mode A)與比對(Mode B)之真實資料將由 Figma / Browser MCP 或「可連結查資料的網址」接入</div>
+</div>
+
+<!-- 存檔對話框 -->
+<div class="dlg" id="saveDlg">
+  <div class="dlgcard">
+    <h3>💾 存檔紀錄</h3>
+    <p class="sub">填寫主題與填表人,保存這次核對結果與差異點狀態。</p>
+    <div class="field"><label>主題</label><input class="inp" id="recTitle" placeholder="如:about 頁 交付後核對"></div>
+    <div class="field"><label>填表人</label><input class="inp" id="recAuthor" placeholder="你的名字 / 團隊"></div>
+    <div class="foot" style="margin-top:6px">
+      <span class="hint"></span>
+      <button class="btn" onclick="closeSaveDlg()">取消</button>
+      <button class="btn pri" onclick="confirmSave()">儲存</button>
+    </div>
+  </div>
 </div>
 <div id="toast"></div>
 
@@ -404,8 +464,7 @@ const LS="vsqc.v2";
 let store={hist:0, mode:null};
 try{ store=Object.assign(store, JSON.parse(localStorage.getItem(LS)||"{}")); }catch(e){}
 function persist(){ try{ localStorage.setItem(LS, JSON.stringify(store)); }catch(e){} }
-let history=store.hist||0, currentMode=null, curDetail=null, edited=false, ranOnce=false, RESULTS=null;
-document.getElementById("histN").textContent=history;
+let currentMode=null, curDetail=null, edited=false, ranOnce=false, RESULTS=null, LAST_ITEMS=[];
 
 // ============================================================ //
 //  Mode B 示範資料(桌機取自實際核對 + 手機批次示範)
@@ -604,6 +663,7 @@ function showResult(){
     const multi=active.some(p=>/多尺寸/.test(p.bp));
     items=multi?DATA:DATA.slice(0,Math.max(1,active.length));
   }
+  LAST_ITEMS=items;
   document.getElementById("ovCards").innerHTML=items.map(d=>{
     const s=STATUS[d.status];
     return `<div class="card ov" onclick="openDetail('${d.id}')">
@@ -731,9 +791,107 @@ function renderIssues(){
 }
 
 // ---------- 共用動作 ----------
-function saveRecord(){history++;store.hist=history;persist();document.getElementById("histN").textContent=history;
-  toast(`已存為版本紀錄 #${history}(歷史列表將於 P3 開放)`)}
 function downloadReport(){toast("原型示意:正式版會輸出獨立 HTML / PDF 報告檔")}
+
+// ============================================================ //
+//  P3 歷史紀錄 + 新舊回歸對比(localStorage 暫存)
+// ============================================================ //
+let HIST=[]; try{ HIST=JSON.parse(localStorage.getItem("vsqc.history")||"[]"); }catch(e){ HIST=[]; }
+function saveHist(){ try{ localStorage.setItem("vsqc.history", JSON.stringify(HIST)); }catch(e){} }
+function updateHistN(){ document.getElementById("histN").textContent=HIST.length; }
+function pointsFromItems(items){
+  const pts=[];
+  items.forEach(it=>(it.rows||[]).filter(r=>SEV[r.j]).forEach(r=>{
+    const st=issue(issueId(it.id,r)).status;
+    pts.push({key:it.name+"::"+r.sel+"::"+r.prop, name:r.node, prop:r.prop, j:r.j, report:it.name,
+              exception:st==="exception", resolved:st==="resolved"});
+  }));
+  return pts;
+}
+function seedHistory(){   // 首次載入放一筆「前一版」示範,好讓回歸對比有東西可看
+  if(HIST.length) return;
+  const cur=pointsFromItems(DATA);
+  const prior=cur.slice(0,cur.length-1).map(p=>({key:p.key,name:p.name,prop:p.prop,j:p.j,report:p.report,exception:false,resolved:false}));
+  prior.push({key:"about 桌機版::section.sec-footer .copyright::color",name:"Footer 版權字",prop:"color",j:"code",report:"about 桌機版",exception:false,resolved:false});
+  HIST.push({id:"h0", title:"about 頁 交付後核對", author:"系統示範", ts:"(前一版示範)", mode:"B",
+    seed:[{figma:seed[0].figma,web:seed[0].web,bp:seed[0].bp}], points:prior, score:79});
+  saveHist();
+}
+function priorOf(rec){ const i=HIST.findIndex(r=>r.id===rec.id);
+  for(let k=i-1;k>=0;k--){ if(HIST[k].title===rec.title) return HIST[k]; } return null; }
+
+// ---- 存檔對話框 ----
+function saveRecord(){ openSaveDlg(); }
+function openSaveDlg(){ if(!LAST_ITEMS.length){ toast("請先完成一次核對"); return; }
+  document.getElementById("recTitle").value="about 頁 交付後核對";
+  document.getElementById("recAuthor").value=store.author||"";
+  document.getElementById("saveDlg").classList.add("on"); }
+function closeSaveDlg(){ document.getElementById("saveDlg").classList.remove("on"); }
+function confirmSave(){
+  const title=(document.getElementById("recTitle").value||"").trim()||"未命名核對";
+  const author=(document.getElementById("recAuthor").value||"").trim()||"—";
+  store.author=author; persist();
+  const items=LAST_ITEMS, score=Math.round(items.reduce((a,d)=>a+d.score,0)/items.length);
+  HIST.push({id:"h"+Date.now(), title, author, ts:nowStr(), mode:currentMode||"B",
+    seed:seed.map(s=>({figma:s.figma,web:s.web,bp:s.bp})), points:pointsFromItems(items), score});
+  saveHist(); updateHistN(); closeSaveDlg(); toast("已存檔:"+title); openHistory();
+}
+
+// ---- 歷史清單 ----
+function openHistory(){ document.getElementById("ctxMode").innerHTML='📜 <b>歷史紀錄</b>'; renderHistory(); nav("scr-history"); }
+function renderHistory(){
+  const el=document.getElementById("histList");
+  if(!HIST.length){ el.innerHTML=`<div class="empty">尚無紀錄。到「模式 B」核對後點「💾 存檔紀錄」即可建立第一筆。</div>`; return; }
+  el.innerHTML=HIST.slice().reverse().map(rec=>{
+    const prior=priorOf(rec);
+    return `<div class="hrow">
+      <div class="hscore" style="color:var(--ink-2)">${rec.score!=null?rec.score+"%":"—"}</div>
+      <div class="hmain">
+        <div class="htitle">${esc(rec.title)}</div>
+        <div class="hmeta">填表人 <b>${esc(rec.author||"—")}</b>　·　<span class="mono">${esc(rec.ts)}</span>　·　差異 ${rec.points.length} 點</div>
+      </div>
+      <div class="hact">
+        <button class="btn" onclick="loadRecord('${rec.id}')">↧ 載入設定並重跑</button>
+        <button class="btn ${prior?"pri":""}" ${prior?"":"disabled"} onclick="openRegress('${rec.id}')">🔀 新舊回歸</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+function loadRecord(id){ const rec=HIST.find(r=>r.id===id); if(!rec) return;
+  seed.length=0; (rec.seed||[]).forEach(s=>seed.push({figma:s.figma||"",web:s.web||"",bp:s.bp||"桌機 1440"}));
+  if(!seed.length) seed.push({figma:"",web:"",bp:"多尺寸（全部）"});
+  currentMode="B"; store.mode="B"; persist(); setCtx(); renderPairs(); goto("setup");
+  toast("已載入設定,可重新核對"); }
+
+// ---- 新舊回歸對比 ----
+function classify(oldRec,newRec){
+  const oldKeys=new Set(oldRec.points.map(p=>p.key)), newKeys=new Set(newRec.points.map(p=>p.key));
+  const fixed=[],neu=[],unresolved=[],exception=[];
+  newRec.points.forEach(p=>{
+    if(p.exception){ exception.push(p); return; }
+    if(p.resolved){ fixed.push(p); return; }          // 團隊已標記解決
+    if(oldKeys.has(p.key)) unresolved.push(p); else neu.push(p);
+  });
+  oldRec.points.forEach(p=>{ if(!newKeys.has(p.key)) fixed.push({key:p.key,name:p.name,prop:p.prop,gone:true}); });
+  return {fixed,neu,unresolved,exception};
+}
+function openRegress(id){
+  const rec=HIST.find(r=>r.id===id), prior=priorOf(rec);
+  if(!prior){ toast("找不到同主題的前一筆可比對"); return; }
+  const {fixed,neu,unresolved,exception}=classify(prior,rec);
+  document.getElementById("rgTitle").textContent="新舊回歸:"+rec.title;
+  document.getElementById("rgSub").innerHTML=`<span class="mono">${esc(prior.ts)}</span> → <span class="mono">${esc(rec.ts)}</span>　·　既有問題若已標記特例,不列入「未解決」。`;
+  const grp=(title,icon,col,bg,list)=>`<div class="rgroup"><div class="rgh" style="color:${col}">${icon} ${title}
+     <span class="cnt" style="background:${bg};color:${col}">${list.length}</span></div>
+     ${list.length?list.map(p=>`<div class="ritem"><b>${esc(p.name)}</b> · ${esc(p.prop)}<span class="sel">${esc((p.key.split("::")[1])||"")}</span></div>`).join("")
+                  :`<div class="ritem" style="color:var(--ink-3)">無</div>`}</div>`;
+  document.getElementById("rgOut").innerHTML=
+     grp("已解決 Fixed","🟢","var(--good)","var(--good-bg)",fixed)
+    +grp("新產生問題 New","🔴","var(--bad)","var(--bad-bg)",neu)
+    +grp("未解決 Unresolved","🟡","var(--warn)","var(--warn-bg)",unresolved)
+    +grp("特例略過","🏷️","var(--ink-2)","var(--surface-2)",exception);
+  document.getElementById("ctxMode").innerHTML='🔀 <b>新舊回歸</b>'; nav("scr-regress");
+}
 let tT;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");
   clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),2600)}
@@ -767,6 +925,7 @@ document.querySelectorAll("#stepper .s").forEach(s=>{
 });
 
 // 起始:主選單
+seedHistory(); updateHistN();
 renderPairs();
 nav("scr-home");
 </script>
