@@ -1,0 +1,102 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visual & Spec QC 報告</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+ /* 極簡日式 · 亮色 */
+ :root{--bg:#faf9f6;--fg:#1f1d1a;--mut:#6f6a61;--line:#e7e3da;--card:#f2efe8;}
+ *{box-sizing:border-box} body{margin:0;font-family:"Zen Kaku Gothic New","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:var(--bg);line-height:1.65}
+ .wrap{max-width:1080px;margin:0 auto;padding:24px}
+ h1{font-size:22px;margin:0 0 2px} .sub{color:var(--mut);font-size:13px;margin-bottom:20px}
+ .kpis{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+ .kpi{flex:1;min-width:130px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+ .kpi b{display:block;font-size:28px} .kpi span{color:var(--mut);font-size:12px}
+ .frame{border:1px solid var(--line);border-radius:12px;margin-bottom:14px;overflow:hidden}
+ .fh{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--card)}
+ .fh .name{font-weight:700;font-size:16px} .fh .verdict{margin-left:auto;font-weight:700}
+ .plain{padding:6px 16px 16px;font-size:14px;line-height:1.7;color:#3a3630}
+ .tbl-wrap{overflow-x:auto}
+ table{width:100%;border-collapse:collapse;font-size:13px}
+ th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+ th{background:var(--card);font-size:12px;color:var(--mut);position:sticky;top:0}
+ .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;color:#fff}
+ .sw{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid #0002;vertical-align:-2px;margin-right:4px}
+ code{background:#f2efe8;padding:1px 5px;border-radius:4px;font-size:12px}
+ .assignee{font-size:11px;color:var(--mut)}
+ .legend{font-size:12px;color:var(--mut);margin:0 0 18px;line-height:1.9;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+</style></head><body><div class="wrap">
+ <h1>Figma 設計稿 vs. 切版成品　核對報告</h1>
+ <div class="sub">產生時間 2026-09-10 03:03　·　整體還原度 <b>80%</b>　·　共檢查 24 項　·　給前端 / 設計師的逐項明細</div>
+ <div class="kpis">
+      <div class="kpi"><b>80%</b><span>整體還原度</span></div>
+      <div class="kpi"><b style="color:#b4453a">3</b><span>程式要修(前端)</span></div>
+      <div class="kpi"><b style="color:#3f5b7a">0</b><span>設計要補(設計師)</span></div>
+      <div class="kpi"><b style="color:#8f887c">1</b><span>待人工確認</span></div>
+      
+    </div>
+ <div class="legend">
+      <b>判定與分派:</b>
+      🔴 <b>程式問題</b>(前端):設計已綁 token / 有明確規格,實作未對齊。
+      🔵 <b>設計問題</b>(設計師):設計稿此屬性沒綁 token(hardcode),規格待補。
+      ⚪ <b>待人工</b>:DOM 找不到對應元素或屬性未量測。
+      檢視維度涵蓋 <b>顏色 / 字型 / 字級字重 / 圓角</b> 與 <b>空間距離(間距 gap、內距 padding、外距 margin、寬高)</b>。
+    </div>
+ <div class="frame">
+          <div class="fh"><span class="name">內容區塊標題</span>
+            <span style="margin-left:auto;color:#6f6a61">還原度 62%　差異 2 項</span>
+          </div><div class="tbl-wrap"><table><thead><tr>
+              <th>判定</th><th>元件 / 選擇器</th><th>屬性</th>
+              <th>設計規格</th><th>實際渲染</th><th>差異 / 說明</th>
+            </tr></thead><tbody><tr>
+                  <td><span class="pill" style="background:#b4453a">程式問題</span>
+                      <div class="assignee">→ 工程師</div></td>
+                  <td><b>區塊標題「結合搜尋優化與UX設計」</b><br><code>section.sec-subtitle h2.new-t2</code></td>
+                  <td>color<br><code>semantic/text-primary</code></td>
+                  <td><span class="sw" style="background:#313334"></span><code>#313334</code></td>
+                  <td><span class="sw" style="background:#212529"></span><code>#212529</code></td>
+                  <td style="color:#b4453a">ΔE=7.0<br>
+                      <span style="color:#6f6a61">設計規格明確(token: semantic/text-primary),實作未對齊</span></td>
+                </tr><tr>
+                  <td><span class="pill" style="background:#b4453a">程式問題</span>
+                      <div class="assignee">→ 工程師</div></td>
+                  <td><b>區塊標題「打造高效SEO的關鍵概念」</b><br><code>section.sec-seo h2.new-t2.text-center</code></td>
+                  <td>color<br><code>semantic/text-primary</code></td>
+                  <td><span class="sw" style="background:#313334"></span><code>#313334</code></td>
+                  <td><span class="sw" style="background:#212529"></span><code>#212529</code></td>
+                  <td style="color:#b4453a">ΔE=7.0<br>
+                      <span style="color:#6f6a61">設計規格明確(token: semantic/text-primary),實作未對齊</span></td>
+                </tr></tbody></table></div></div><div class="frame">
+          <div class="fh"><span class="name">SEO 卡片</span>
+            <span style="margin-left:auto;color:#6f6a61">還原度 75%　差異 1 項</span>
+          </div><div class="tbl-wrap"><table><thead><tr>
+              <th>判定</th><th>元件 / 選擇器</th><th>屬性</th>
+              <th>設計規格</th><th>實際渲染</th><th>差異 / 說明</th>
+            </tr></thead><tbody><tr>
+                  <td><span class="pill" style="background:#8f887c">待人工確認</span>
+                      <div class="assignee">→ 任一方</div></td>
+                  <td><b>卡片標題「AIO是什麼？」</b><br><code>section.sec-seo .border-radius-20px.bg-white h3.new-t3</code></td>
+                  <td>color<br><code>Brand Gradient/Warm — Orange → Magenta</code></td>
+                  <td><code>linear-gradient</code></td>
+                  <td><code>rgba(0, 0, 0, 0)</code></td>
+                  <td style="color:#8f887c">無法解析顏色<br>
+                      <span style="color:#6f6a61">值無法解析,需人工確認</span></td>
+                </tr></tbody></table></div></div><div class="frame">
+          <div class="fh"><span class="name">標題區 Hero</span>
+            <span style="margin-left:auto;color:#6f6a61">還原度 83%　差異 1 項</span>
+          </div><div class="tbl-wrap"><table><thead><tr>
+              <th>判定</th><th>元件 / 選擇器</th><th>屬性</th>
+              <th>設計規格</th><th>實際渲染</th><th>差異 / 說明</th>
+            </tr></thead><tbody><tr>
+                  <td><span class="pill" style="background:#b4453a">程式問題</span>
+                      <div class="assignee">→ 工程師</div></td>
+                  <td><b>主標題 H1</b><br><code>section.sec-title h1.d-none.d-lg-block</code></td>
+                  <td>color<br><code>semantic/text-primary</code></td>
+                  <td><span class="sw" style="background:#313334"></span><code>#313334</code></td>
+                  <td><span class="sw" style="background:#212529"></span><code>#212529</code></td>
+                  <td style="color:#b4453a">ΔE=7.0<br>
+                      <span style="color:#6f6a61">設計規格明確(token: semantic/text-primary),實作未對齊</span></td>
+                </tr></tbody></table></div></div><div class="frame">
+          <div class="fh"><span class="name">ISO / Footer</span>
+            <span style="margin-left:auto;color:#6f6a61">還原度 100%　差異 0 項</span>
+          </div><div class="plain">✅ 全數通過,無差異。</div></div>
+</div></body></html>
