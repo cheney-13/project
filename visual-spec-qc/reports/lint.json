@@ -1,6 +1,6 @@
 {
   "summary": {
-    "total": 1047
+    "total": 1026
   },
   "checks": [
     {
@@ -55,20 +55,11 @@
       "key": "contrast",
       "icon": "👁️",
       "title": "無障礙對比度(WCAG AA 4.5:1)",
-      "count": 21,
-      "items": [
-        "<b>UX Research 使用者研究</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
-        "<b>品牌定位</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
-        "<b>網站 內容策略</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
-        "<b>AIO 結構化資料</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
-        "<b>HTML 語意化標籤</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
-        "<b>SEO、GEO 搜尋優化</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
-        "<b>前後端 技術整合</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
-        "<b>UX Research 使用者研究</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)"
-      ]
+      "count": 0,
+      "items": []
     }
   ],
-  "generated": "2026-09-10 03:11",
+  "generated": "2026-09-10 03:16",
   "file": "nKPnENddbezQMZ5AVAKs7c",
   "node": "11696-7310",
   "name": "about"
