@@ -91,7 +91,9 @@ def lint(doc, varmap=None):
             fg = _solid_fill_rgb(n)
             base = my_bg if my_bg != _solid_fill_rgb(n) else bg
             ratio = contrast(fg, base or (255, 255, 255))
-            if ratio is not None and ratio < 4.5:
+            # ratio < 1.5 幾乎等於「文字色 ≈ 推定底色」→ 多半是背景推定抓錯(如文字其實在漸層/圖片/深色形狀上),
+            # 非真正的低對比,略過以免誤判;聚焦「看得到但不足」的 1.5–4.5 區間。
+            if ratio is not None and 1.5 <= ratio < 4.5:
                 contrast_bad.append({"name": name or "文字", "ratio": round(ratio, 2),
                                      "fg": _hexrgb(fg)})
 
