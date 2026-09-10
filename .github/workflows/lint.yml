@@ -1,0 +1,57 @@
+name: Design Spec Lint (Mode A 設計稿規範檢核)
+
+# 只需 Figma(不需網站、不需 Playwright,很快)。讀 Figma 圖層 JSON → 4 類規範檢查
+# → 產出 visual-spec-qc/reports/lint.json,commit 回 repo;工具頁 Mode A 讀它顯示真結果。
+# 使用前:repo 已設 Secret「FIGMA_TOKEN」(與 Mode B 共用同一顆)。
+
+on:
+  workflow_dispatch:
+    inputs:
+      fileKey:
+        description: "Figma file key"
+        required: false
+        default: "nKPnENddbezQMZ5AVAKs7c"
+      nodeId:
+        description: "Figma node-id(如 11696-7310)"
+        required: false
+        default: "11696-7310"
+  # schedule: [{ cron: "0 1 * * 1" }]   # 需要每週檢核時解除註解
+
+permissions:
+  contents: write
+
+concurrency:
+  group: design-spec-lint
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: visual-spec-qc } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+
+      - name: 執行設計稿規範檢核
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          FILEKEY: ${{ github.event.inputs.fileKey }}
+          NODEID:  ${{ github.event.inputs.nodeId }}
+        run: |
+          if [ -z "$FIGMA_TOKEN" ]; then
+            echo "::error::尚未設定 FIGMA_TOKEN secret"; exit 1
+          fi
+          python3 src/figma_lint.py --file "$FILEKEY" --node "$NODEID" --out reports/lint.json
+
+      - name: Commit 檢核結果回 repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/lint.json
+          if git diff --staged --quiet; then
+            echo "檢核結果無變更,略過 commit"
+          else
+            git commit -m "chore(lint): 更新設計稿規範檢核 [skip ci]"
+            git push
+          fi

@@ -225,6 +225,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
 .lint li b{color:var(--ink)}
 .lint code{background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:"IBM Plex Mono",monospace;font-size:12px}
 .lint .ok{color:var(--good);font-size:13px;margin-top:8px}
+.lint .mut{color:var(--ink-3);font-size:12px}
 
 /* toast + notes */
 #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
@@ -539,35 +540,36 @@ function proceedFromCheck(){
 //  Mode A:設計稿規範檢核(示範骨架)
 // ============================================================ //
 function runLint(){
-  const url=document.getElementById("lintUrl").value.trim();
-  if(!url){ toast("請貼上 Figma 連結(含 node-id)"); return; }
-  const cats=[
-    {icon:"🏷️",title:"圖層命名語意化",col:"var(--warn)",bg:"var(--warn-bg)",n:3,
-     items:["<b>3</b> 個預設命名圖層未語意化:<code>Frame 427</code>、<code>Group 99</code>、<code>Rectangle 12</code>",
-            "建議改為語意化 key(如 <code>sec:hero</code>、<code>card:price</code>)以利交付後自動對位"]},
-    {icon:"🎯",title:"Design Token 綁定",col:"var(--bad)",bg:"var(--bad-bg)",n:5,
-     items:["<b>5</b> 個屬性為 hardcode、未綁 Local Variables:主標色 <code>#313334</code>、間距 <code>24px</code> ×2、圓角 <code>20px</code>、字級 <code>32px</code>",
-            "綁上 token 後,交付後比對才能把責任正確歸給前端 / 設計"]},
-    {icon:"📐",title:"RWD 斷點與佈局",col:"var(--warn)",bg:"var(--warn-bg)",n:2,
-     items:["<b>2</b> 個容器未使用 Auto Layout,改寬度時子元素不會自動流動",
-            "1 個 frame 命名缺 <code>@寬度</code>(如 <code>about</code> 應為 <code>about @1440</code>)"]},
-    {icon:"👁️",title:"無障礙對比度(WCAG AA 4.5:1)",col:"var(--bad)",bg:"var(--bad-bg)",n:2,
-     items:["<b>2</b> 段文字對比不足:淺灰註解 <code>#A8A298</code> / 白底 = 對比 <b>2.1:1</b>(需 ≥ 4.5:1)",
-            "Footer 版權字 <code>#9FA0A0</code> / 白底 = 對比 <b>2.6:1</b>,建議加深"]},
-  ];
-  const total=cats.reduce((a,c)=>a+c.n,0);
+  document.getElementById("lintOut").innerHTML=`<div class="legend">讀取最新設計稿檢核…</div>`;
+  fetch("reports/lint.json",{cache:"no-store"})
+   .then(r=>{ if(!r.ok) throw 0; return r.json(); })
+   .then(j=>renderLint(j,true))
+   .catch(()=>renderLint(demoLint(),false));
+}
+function demoLint(){ return { name:"(示範)", checks:[
+  {icon:"🏷️",title:"圖層命名語意化",count:3,items:["<b>3</b> 個預設命名圖層未語意化:<code>Frame 427</code>、<code>Group 99</code>、<code>Rectangle 12</code>","建議改為語意化 key(如 <code>sec:hero</code>)"]},
+  {icon:"🎯",title:"Design Token 綁定",count:5,items:["<b>5</b> 個屬性為 hardcode、未綁 Local Variables:主標色 <code>#313334</code>、間距 <code>24px</code>、圓角 <code>20px</code>、字級 <code>32px</code>"]},
+  {icon:"📐",title:"RWD 斷點與佈局",count:2,items:["<b>2</b> 個容器未使用 Auto Layout,改寬度時子元素不會自動流動"]},
+  {icon:"👁️",title:"無障礙對比度(WCAG AA 4.5:1)",count:2,items:["淺灰註解 <code>#A8A298</code> / 白底 = 對比 <b>2.1:1</b>(需 ≥ 4.5)"]},
+]}; }
+function renderLint(j,real){
+  const cats=j.checks||[];
+  const total=(j.summary&&j.summary.total)!=null?j.summary.total:cats.reduce((a,c)=>a+(c.count||0),0);
+  const col=n=>n?"var(--bad)":"var(--good)", bg=n=>n?"var(--bad-bg)":"var(--good-bg)";
   const cards=cats.map(c=>`
     <div class="card pad lint">
-      <div class="lh"><span>${c.icon}</span><span>${c.title}</span>
-        <span class="cnt" style="color:${c.col};background:${c.bg}">${c.n} 項待改</span></div>
-      <ul>${c.items.map(i=>`<li>${i}</li>`).join("")}</ul>
+      <div class="lh"><span>${c.icon||"•"}</span><span>${c.title}</span>
+        <span class="cnt" style="color:${col(c.count)};background:${bg(c.count)}">${c.count||0} 項待改</span></div>
+      ${(c.items&&c.items.length)?`<ul>${c.items.map(i=>`<li>${i}</li>`).join("")}</ul>`:`<div class="ok">✓ 此類全數符合</div>`}
     </div>`).join("");
-  document.getElementById("lintOut").innerHTML=`
-    <div class="demoNote"><b>示範結果</b>:此為介面與檢查項目的示範資料。接上 Figma MCP(或可連結查資料的網址)後,將依實際圖層 JSON 產出真實檢核結果。</div>
+  const note=real
+    ? `<div class="demoNote real">✅ <b>真實檢核結果</b> · ${j.name||""} · ${j.generated||""}　由 GitHub Actions 讀 Figma 圖層 JSON 產生。</div>`
+    : `<div class="demoNote">⚠ <b>示範資料</b>:尚未讀到 CI 檢核結果(reports/lint.json)。到 GitHub Actions 執行「Design Spec Lint」一次即會顯示真結果。</div>`;
+  document.getElementById("lintOut").innerHTML=`${note}
     <div class="kpis">
-      <div class="kpi"><b style="color:var(--bad)">${total}</b><span>規範待改項</span></div>
-      <div class="kpi"><b style="color:var(--warn)">${cats.filter(c=>c.n).length}</b><span>涉及類別</span></div>
-      <div class="kpi"><b style="color:var(--good)">✓</b><span>可交付前修正</span></div>
+      <div class="kpi"><b style="color:${total?'var(--bad)':'var(--good)'}">${total}</b><span>規範待改項</span></div>
+      <div class="kpi"><b style="color:var(--warn)">${cats.filter(c=>c.count).length}</b><span>涉及類別</span></div>
+      <div class="kpi"><b style="color:var(--good)">${cats.filter(c=>!c.count).length}</b><span>已通過類別</span></div>
     </div>
     <div class="col1">${cards}</div>`;
   document.getElementById("lintOut").scrollIntoView({behavior:"smooth",block:"start"});

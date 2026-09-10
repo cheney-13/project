@@ -31,6 +31,7 @@ import report_html              # noqa: E402
 import figma_rest as frest      # noqa: E402
 import server                   # noqa: E402
 import ci_qc                    # noqa: E402
+import figma_lint                # noqa: E402
 
 
 def load(name):
@@ -467,6 +468,29 @@ class TestCIAssemble(unittest.TestCase):
         results = ci_qc.assemble(sizes, {1440: {"nodes": []}, 375: {"nodes": []}})
         # DOM 抓不到元素 → 標「待人工/無法比對」,不會誤判成程式/設計
         self.assertTrue(all(r["counts"]["code"] == 0 and r["counts"]["design"] == 0 for r in results))
+
+
+# ------------------------------------------------------------------ #
+class TestFigmaLint(unittest.TestCase):
+    """Mode A 設計稿規範檢核:讀 Figma 圖層 JSON → 4 類檢查(fixture 離線)。"""
+
+    def test_lint_detects_naming_and_hardcode(self):
+        doc = load("figma_rest_section.json")
+        r = figma_lint.lint(doc, {})
+        by = {c["key"]: c for c in r["checks"]}
+        self.assertEqual({"naming", "token", "layout", "contrast"}, set(by))
+        self.assertGreaterEqual(by["naming"]["count"], 1)   # "Frame 5448" 預設命名
+        self.assertGreaterEqual(by["token"]["count"], 1)    # 有未綁 Variable 的顏色/間距
+        self.assertEqual(r["summary"]["total"], sum(c["count"] for c in r["checks"]))
+
+    def test_contrast_flags_low_ratio(self):
+        # 淺灰文字 #A8A298 在白底 → 對比約 2.x:1 < 4.5 → 應被標記
+        doc = {"type": "FRAME", "name": "bg", "fills": [{"type": "SOLID", "color": {"r": 1, "g": 1, "b": 1}}],
+               "children": [{"type": "TEXT", "name": "淺灰註解",
+                             "fills": [{"type": "SOLID", "color": {"r": 0.66, "g": 0.64, "b": 0.60}}]}]}
+        r = figma_lint.lint(doc, {})
+        contrast = next(c for c in r["checks"] if c["key"] == "contrast")
+        self.assertGreaterEqual(contrast["count"], 1)
 
 
 # ------------------------------------------------------------------ #
