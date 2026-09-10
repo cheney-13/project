@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "total": 1047
+  },
+  "checks": [
+    {
+      "key": "naming",
+      "icon": "🏷️",
+      "title": "圖層命名語意化",
+      "count": 196,
+      "items": [
+        "<b>Group 646</b> <span class='mut'>(GROUP)</span> 仍是預設命名",
+        "<b>Frame 5443</b> <span class='mut'>(FRAME)</span> 仍是預設命名",
+        "<b>line</b> <span class='mut'>(FRAME)</span> 仍是預設命名",
+        "<b>Frame 5436</b> <span class='mut'>(FRAME)</span> 仍是預設命名",
+        "<b>Frame 5437</b> <span class='mut'>(FRAME)</span> 仍是預設命名",
+        "<b>Frame 5441</b> <span class='mut'>(FRAME)</span> 仍是預設命名",
+        "<b>Frame 5439</b> <span class='mut'>(FRAME)</span> 仍是預設命名",
+        "<b>Frame 5440</b> <span class='mut'>(FRAME)</span> 仍是預設命名"
+      ]
+    },
+    {
+      "key": "token",
+      "icon": "🎯",
+      "title": "Design Token 綁定",
+      "count": 790,
+      "items": [
+        "<b>about</b> · fill = <code>#D1D1D1</code> 未綁 Variable(hardcode)",
+        "<b>Ellipse 47</b> · fill = <code>#FFFFFF</code> 未綁 Variable(hardcode)",
+        "<b>Ellipse 46</b> · fill = <code>#FFFFFF</code> 未綁 Variable(hardcode)",
+        "<b>Ellipse 45</b> · fill = <code>#FFFFFF</code> 未綁 Variable(hardcode)",
+        "<b>Ellipse 44</b> · fill = <code>#FFFFFF</code> 未綁 Variable(hardcode)",
+        "<b>Ellipse 43</b> · fill = <code>#FFFFFF</code> 未綁 Variable(hardcode)",
+        "<b>Ellipse 42</b> · fill = <code>#FFFFFF</code> 未綁 Variable(hardcode)",
+        "<b>text</b> · gap = <code>24.0px</code> 未綁 Variable(hardcode)"
+      ]
+    },
+    {
+      "key": "layout",
+      "icon": "📐",
+      "title": "RWD 斷點與佈局",
+      "count": 40,
+      "items": [
+        "<b>kv</b> 有 3 個子元素卻未開 Auto Layout",
+        "<b>BG</b> 有 5 個子元素卻未開 Auto Layout",
+        "<b>believe-v02</b> 有 7 個子元素卻未開 Auto Layout",
+        "<b>line</b> 有 7 個子元素卻未開 Auto Layout",
+        "<b>圓圈</b> 有 8 個子元素卻未開 Auto Layout",
+        "<b>Frame 5451</b> 有 2 個子元素卻未開 Auto Layout",
+        "<b>Frame 668</b> 有 3 個子元素卻未開 Auto Layout",
+        "<b>Frame 5455</b> 有 2 個子元素卻未開 Auto Layout"
+      ]
+    },
+    {
+      "key": "contrast",
+      "icon": "👁️",
+      "title": "無障礙對比度(WCAG AA 4.5:1)",
+      "count": 21,
+      "items": [
+        "<b>UX Research 使用者研究</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
+        "<b>品牌定位</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
+        "<b>網站 內容策略</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
+        "<b>AIO 結構化資料</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
+        "<b>HTML 語意化標籤</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
+        "<b>SEO、GEO 搜尋優化</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
+        "<b>前後端 技術整合</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)",
+        "<b>UX Research 使用者研究</b> 文字 <code>#FFFFFF</code> 對比僅 <b>1.14:1</b>(需 ≥ 4.5)"
+      ]
+    }
+  ],
+  "generated": "2026-09-10 03:11",
+  "file": "nKPnENddbezQMZ5AVAKs7c",
+  "node": "11696-7310",
+  "name": "about"
+}
