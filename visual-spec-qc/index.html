@@ -319,6 +319,14 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
           <span class="nm">Browser MCP<small>載入測試站抓 DOM / 截圖</small></span>
           <span class="stt" id="sttBrowser">尚未檢測</span>
         </div>
+        <div class="connrow" id="rowGh">
+          <span class="dot" id="dotGh"></span>
+          <span class="nm">GitHub Actions<small>觸發真實比對 / 規範檢核的 CI 執行(必要)</small></span>
+          <span style="margin-left:auto;display:flex;gap:8px;align-items:center">
+            <input class="inp" id="ghTokenInp" type="password" placeholder="貼上 GitHub Token" style="width:190px">
+            <button class="btn" onclick="verifyGhToken()">驗證並儲存</button>
+          </span>
+        </div>
       </div>
       <div class="foot">
         <span class="hint">連線由代理人(Figma/Browser MCP)或未來的「可連結查資料的網址」提供。</span>
@@ -361,8 +369,8 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 8
 
       <div class="foot">
         <span class="hint">連結僅供讀取結構;不會送出任何帳密或個資。</span>
-        <button class="btn" onclick="loadLatestReport()">📥 載入最新真實報告</button>
-        <button class="btn pri" id="runBtn" onclick="startRun()">▶　進行核對測試（示範）</button>
+        <button class="btn" onclick="loadLatestReport()">📥 只看最新報告(不重跑)</button>
+        <button class="btn pri" id="runBtn" onclick="startRun()">▶　進行核對測試</button>
       </div>
     </div>
   </section>
@@ -520,11 +528,14 @@ function paintConn(){
   set("dotFigma","sttFigma",conn.figma);
   set("dotBrowser","sttBrowser",conn.browser);
   document.getElementById("connNote").innerHTML =
-    `⚠ <b>目前為示範狀態</b>:此頁尚未接上即時連線,「重新檢測」為示範動作。實際將檢測 Figma MCP / Browser MCP(或「可連結查資料的網址」)的連線與 Token 狀態,兩者皆 🟢 才解鎖下一步。`;
+    `⚠ <b>Figma / Browser MCP 兩列仍為示範動作</b>(「重新檢測」不做真實連線)。<b>GitHub Actions 這列是真的</b>:貼上 Token 並驗證成功後,下方「執行規範檢核」/「進行核對測試」才能真正觸發 CI 跑出結果。`;
   document.getElementById("proceedBtn").disabled = !(conn.figma===true && conn.browser===true);
 }
 function enterCheck(mode){ currentMode=mode; store.mode=mode; persist(); setCtx();
-  conn={figma:null,browser:null}; paintConn(); nav("scr-check"); }
+  conn={figma:null,browser:null}; paintConn();
+  const t=ghToken(); document.getElementById("ghTokenInp").value=t;
+  document.getElementById("dotGh").className="dot"+(t?" ok":"");
+  nav("scr-check"); }
 function recheckConn(){
   conn={figma:"wait",browser:"wait"}; paintConn();
   const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -540,18 +551,28 @@ function proceedFromCheck(){
 //  Mode A:設計稿規範檢核(示範骨架)
 // ============================================================ //
 function runLint(){
-  document.getElementById("lintOut").innerHTML=`<div class="legend">讀取最新設計稿檢核…</div>`;
-  fetch("reports/lint.json",{cache:"no-store"})
-   .then(r=>{ if(!r.ok) throw 0; return r.json(); })
-   .then(j=>renderLint(j,true))
-   .catch(()=>renderLint(demoLint(),false));
+  if(!ghToken()){ toast("請先到「連線狀態檢查」設定 GitHub Token"); nav("scr-check"); return; }
+  const url=(document.getElementById("lintUrl").value||"").trim();
+  const {fileKey,nodeId}=url?parseFigma(url):{fileKey:null,nodeId:null};
+  const inputs={}; if(fileKey) inputs.fileKey=fileKey; if(nodeId) inputs.nodeId=nodeId;
+  document.getElementById("lintOut").innerHTML=`<div class="legend">觸發 GitHub Actions「Design Spec Lint」…</div>`;
+  runLintFlow(inputs);
 }
-function demoLint(){ return { name:"(示範)", checks:[
-  {icon:"🏷️",title:"圖層命名語意化",count:3,items:["<b>3</b> 個預設命名圖層未語意化:<code>Frame 427</code>、<code>Group 99</code>、<code>Rectangle 12</code>","建議改為語意化 key(如 <code>sec:hero</code>)"]},
-  {icon:"🎯",title:"Design Token 綁定",count:5,items:["<b>5</b> 個屬性為 hardcode、未綁 Local Variables:主標色 <code>#313334</code>、間距 <code>24px</code>、圓角 <code>20px</code>、字級 <code>32px</code>"]},
-  {icon:"📐",title:"RWD 斷點與佈局",count:2,items:["<b>2</b> 個容器未使用 Auto Layout,改寬度時子元素不會自動流動"]},
-  {icon:"👁️",title:"無障礙對比度(WCAG AA 4.5:1)",count:2,items:["淺灰註解 <code>#A8A298</code> / 白底 = 對比 <b>2.1:1</b>(需 ≥ 4.5)"]},
-]}; }
+async function runLintFlow(inputs){
+  try{
+    await dispatchAndWait("lint.yml", inputs, (status)=>{
+      document.getElementById("lintOut").innerHTML=
+        `<div class="legend">GitHub Actions ${status==="completed"?"執行完成,載入結果…":"執行中…("+status+")"}</div>`;
+    });
+    await sleep(6000); // 等 GitHub Pages 重新部署
+    const r=await fetch("reports/lint.json",{cache:"no-store"});
+    if(!r.ok) throw new Error("讀取 reports/lint.json 失敗("+r.status+")");
+    renderLint(await r.json(), true);
+  }catch(e){
+    document.getElementById("lintOut").innerHTML=`<div class="demoNote">❌ ${e.message}</div>`;
+    toast("❌ "+e.message);
+  }
+}
 function renderLint(j,real){
   const cats=j.checks||[];
   const total=(j.summary&&j.summary.total)!=null?j.summary.total:cats.reduce((a,c)=>a+(c.count||0),0);
@@ -598,61 +619,86 @@ function refreshRun(){
   document.getElementById("runBtn").disabled=!ok;
 }
 
-// ---------- Mode B:執行核對 ----------
-const STAGES=[
- {lab:"讀取設計事實",sub:"Figma MCP · get_variable_defs / metadata"},
- {lab:"讀取實作事實",sub:"Browser MCP · 調斷點寬度 → getComputedStyle"},
- {lab:"節點對位",sub:"data-figma-id / 文字·位置 模糊配對"},
- {lab:"逐屬性比對 + 責任歸因",sub:"顏色 ΔE · 字級 · 間距 · token 對照"}];
-function startRun(){
-  // 目前為示範模式。未來接「可連結查資料的網址」時,改呼叫 startRealRun(dataUrl) 即可切換。
-  RESULTS=null; startDemoRun();
-}
-function playStages(done){
-  const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
-  document.getElementById("runCount").textContent=`（${active.length} 組配對）`;
-  const box=document.getElementById("runBars");
-  box.innerHTML=STAGES.map((s,i)=>`
-    <div class="prog" id="pg${i}">
-      <div class="lab">${s.lab}<small>${s.sub}</small></div>
-      <div class="track"><i id="bar${i}"></i></div>
-      <div class="st">等待</div>
-    </div>`).join("");
-  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
-  const step=(i)=>{
-    if(i>=STAGES.length){ if(done) setTimeout(done,reduce?0:350); return; }
-    const pg=document.getElementById("pg"+i);
-    pg.querySelector(".st").textContent="進行中";
-    requestAnimationFrame(()=>document.getElementById("bar"+i).style.width="100%");
-    setTimeout(()=>{pg.classList.add("done");pg.querySelector(".st").textContent="✓ 完成";step(i+1)}, reduce?60:560);
-  };
-  step(0);
-}
-function startDemoRun(){ goto("running"); playStages(showResult); }
-
-// ---- 真實比對(後端 / 資料網址,未來接上)----
+// ---------- Mode B:執行核對(觸發 GitHub Actions 真跑)----------
 function parseFigma(u){
   const fk=(u.match(/\/(?:design|file)\/([0-9A-Za-z]{10,})/)||[])[1]||null;
   let nid=(u.match(/node-id=([^&]+)/)||[])[1]||null;
   if(nid) nid=decodeURIComponent(nid);
   return {fileKey:fk, nodeId:nid};
 }
-function startRealRun(api){
+const WIDTH_MAP={"桌機 1440":"1440","平板 768":"768","手機 375":"375","多尺寸（全部）":""};
+async function startRun(){
   const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
-  if(!active.length){toast("請至少填一組 Figma 連結 + 測試網頁");return;}
+  if(!active.length){ toast("請至少填一組 Figma 連結 + 測試網頁"); return; }
+  if(!ghToken()){ toast("請先到「連線狀態檢查」設定 GitHub Token"); nav("scr-check"); return; }
   const p0=active[0], {fileKey,nodeId}=parseFigma(p0.figma);
-  if(!fileKey||!nodeId){toast("Figma 連結需含 node-id");return;}
-  goto("running"); playStages(null);
-  fetch(api.replace(/\/+$/,"")+"/api/run",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({fileKey,nodeId,siteUrl:p0.web,selectors:p0.selectors||null})})
-   .then(r=>r.json().then(j=>({ok:r.ok,j})))
-   .then(({ok,j})=>{ if(!ok||j.error){ showError(j.error||"資料來源回應錯誤"); return; }
-      RESULTS=(j.results||[]).map((r,i)=>({id:"sz"+i, name:r.name, bp:(r.width?r.width+"px":""),
-        score:r.score, status:r.status, counts:r.counts, rows:r.rows||[], coverage:r.coverage||{}}));
-      showResult(); })
-   .catch(e=>showError("無法連線資料來源:"+e.message));
+  if(!fileKey||!nodeId){ toast("Figma 連結需含 node-id"); return; }
+  const inputs={fileKey, nodeId, siteUrl:p0.web.trim(), widths:WIDTH_MAP[p0.bp]||""};
+  RESULTS=null; goto("running");
+  document.getElementById("runCount").textContent=`(${active.length} 組配對,以第 1 組觸發 CI)`;
+  try{
+    await dispatchAndWait("qc.yml", inputs, (status)=>renderGhRun("Visual Spec QC(Mode B 真實比對)",status));
+    renderGhRun("Visual Spec QC(Mode B 真實比對)","completed");
+    await sleep(6000); // 等 GitHub Pages 重新部署
+    loadLatestReport();
+  }catch(e){ showError(e.message); }
+}
+function renderGhRun(label,status){
+  const M={queued:["等待 Runner 排程…",10],in_progress:["GitHub Actions 執行中(讀 Figma REST × Playwright 抓 DOM × 引擎比對)…",65],
+           completed:["執行完成,正在載入結果…",100]};
+  const [txt,pct]=M[status]||["連線 GitHub API 中…",5];
+  document.getElementById("runBars").innerHTML=`
+    <div class="prog${status==="completed"?" done":""}">
+      <div class="lab">${label}<small>${txt}</small></div>
+      <div class="track"><i style="width:${pct}%"></i></div>
+      <div class="st">${status==="completed"?"✓ 完成":"進行中"}</div>
+    </div>`;
 }
 function showError(msg){ goto("setup"); toast("❌ "+msg); }
+
+// ---- GitHub Actions API(觸發 workflow_dispatch 並輪詢到完成)----
+const GH_OWNER="cheney-13", GH_REPO="project", GH_BRANCH="project";
+function ghToken(){ return localStorage.getItem("vsqc.ghtoken")||""; }
+function saveGhToken(v){ v?localStorage.setItem("vsqc.ghtoken",v):localStorage.removeItem("vsqc.ghtoken"); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+async function ghApi(path,opts){
+  opts=opts||{};
+  const token=ghToken(); if(!token) throw new Error("尚未設定 GitHub Token");
+  const headers=Object.assign({"Accept":"application/vnd.github+json","Authorization":"Bearer "+token,
+    "X-GitHub-Api-Version":"2022-11-28"}, opts.body?{"Content-Type":"application/json"}:{}, opts.headers||{});
+  const res=await fetch("https://api.github.com"+path, Object.assign({},opts,{headers}));
+  if(!res.ok){ const t=await res.text().catch(()=>""); throw new Error("GitHub API "+res.status+" "+t.slice(0,150)); }
+  return res.status===204?null:res.json();
+}
+async function verifyGhToken(){
+  const v=(document.getElementById("ghTokenInp").value||"").trim();
+  if(v) saveGhToken(v);
+  const dot=document.getElementById("dotGh"); dot.className="dot wait";
+  try{ await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO); dot.className="dot ok"; toast("✅ GitHub Token 驗證成功"); }
+  catch(e){ dot.className="dot bad"; toast("❌ "+e.message); }
+}
+async function dispatchAndWait(file, inputs, onTick){
+  const since=Date.now()-4000;
+  await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO+"/actions/workflows/"+file+"/dispatches",
+    {method:"POST", body:JSON.stringify({ref:GH_BRANCH, inputs:inputs||{}})});
+  let runId=null;
+  for(let i=0;i<12&&!runId;i++){
+    await sleep(1500);
+    const runs=await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO+"/actions/workflows/"+file+"/runs?event=workflow_dispatch&per_page=5");
+    const hit=(runs.workflow_runs||[]).find(r=>new Date(r.created_at).getTime()>=since);
+    if(hit) runId=hit.id;
+  }
+  if(!runId) throw new Error("已觸發,但找不到對應的 workflow run,請到 GitHub Actions 頁面查看");
+  for(;;){
+    const run=await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO+"/actions/runs/"+runId);
+    onTick && onTick(run.status);
+    if(run.status==="completed"){
+      if(run.conclusion!=="success") throw new Error("GitHub Actions 執行失敗("+run.conclusion+"),請到 "+run.html_url+" 查看 log");
+      return run;
+    }
+    await sleep(4000);
+  }
+}
 
 // ---- 載入 GitHub Actions 產出的真實報告(reports/latest.json,同源)----
 function loadLatestReport(){

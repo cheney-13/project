@@ -63,13 +63,20 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
 ## 網頁工具 index.html 的畫面結構(P1 重構後)
 單頁多 screen(`.screen` + JS `nav(id)` 切換);狀態輕量存 localStorage(`vsqc.v2`)。
 - `scr-home` 雙階段選單 → `enterCheck(mode)` → `scr-check`(Step 00 連線檢查,`recheckConn`/`proceedFromCheck`)
-- 模式 A `scr-lint`(設計稿規範檢核,`runLint`,目前示範骨架)/ 模式 B `scr-setup`→`scr-running`→`scr-result`(單欄卡片 `col1`)
+- 模式 A `scr-lint`(設計稿規範檢核,`runLint`,已接 GitHub Actions 真跑)/ 模式 B `scr-setup`→`scr-running`→`scr-result`(單欄卡片 `col1`)
 - **路線圖**:P1 結構/UX(✅)· P2 協作(✅:每張差異點 issue 卡的留言 / 標記特例 / 審核狀態
   🔴待處理→🟢已解決 / 🏷️特例;`renderIssues()` + `ISS`(localStorage `vsqc.issues`),issueId=repId::selector::prop)·
   P3 歷史紀錄 + 新舊回歸對比(✅:`vsqc.history` 存主題/填表人/時間/差異點快照;`openHistory`/`renderHistory`
   /`loadRecord`/`openRegress`+`classify` → 🟢已解決 / 🔴新問題 / 🟡未解決 / 🏷️特例略過,整合 P2 狀態)· 截圖備查(待)。
-  真實資料(A 用 Figma MCP 圖層 JSON、B 用設計+DOM)未來由「可連結查資料的網址」接入:
-  在 `startRun()` 改呼叫已備妥的 `startRealRun(dataUrl)` 即可切換;協作/歷史的 save/load 換成打該 API 即可跨人共用。
+  **真實觸發(✅)**:`scr-check` 新增「GitHub Actions」列,使用者貼自己的 GitHub Token(存
+  localStorage `vsqc.ghtoken`,只在瀏覽器端直接呼叫 `api.github.com`,不經任何後端)。
+  `runLint()` / `startRun()` 呼叫 `dispatchAndWait(file, inputs)`:對 `.github/workflows/{lint,qc}.yml` 發
+  `workflow_dispatch`,輪詢 `actions/runs/{id}` 到 `completed`,等 GitHub Pages 重新部署後讀
+  `reports/{lint,latest}.json`。GitHub REST API 對瀏覽器原生支援 CORS(含帶 Authorization 的
+  preflight),故不需代理伺服器;代價是使用者要自備一顆有 `Actions: Write` 權限的 fine-grained token,
+  且每次點擊約需等 40 秒~2 分鐘(CI 執行 + Pages 重新部署)。Mode B 目前只用第 1 組配對觸發 CI
+  (`reports.config.json` 決定實際比對哪個 Figma/網站);協作/歷史的 save/load 若要跨人共用,
+  一樣可比照這個模式改打某個雲端 API。
 
 ## 視覺系統(極簡日式 · 單一亮色)
 所有 HTML 輸出共用同一套 token,改樣式要同步四處(`report_html.py`、`qa.py`、`run_diff.py`、根層 `index.html` / `guide.html`):
