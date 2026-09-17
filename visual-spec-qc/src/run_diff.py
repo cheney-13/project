@@ -19,7 +19,7 @@ import auto_qa
 from report_html import esc
 
 FAIL = {"CODE", "DESIGN", "NEEDS_HUMAN"}
-RESP = {"CODE": ("程式", "#b4453a"), "DESIGN": ("設計", "#3f5b7a"), "NEEDS_HUMAN": ("待人工", "#8f887c")}
+RESP = {"CODE": ("程式", "#d63d38"), "DESIGN": ("設計", "#1f6fe0"), "NEEDS_HUMAN": ("待人工", "#545667")}
 
 def flatten(report):
     out = {}
@@ -54,7 +54,7 @@ def run(figma, dom_prev, dom_curr, accepted=None):
 def render(rep_prev, rep_curr, cats):
     sp, sc = rep_prev["totals"]["score"], rep_curr["totals"]["score"]
     delta = sc - sp
-    dcol = "#5e7d5a" if delta > 0 else ("#b4453a" if delta < 0 else "#6f6a61")
+    dcol = "#0e7a78" if delta > 0 else ("#d63d38" if delta < 0 else "#666b7d")
     darrow = "▲" if delta > 0 else ("▼" if delta < 0 else "＝")
 
     def rows(items, kind):
@@ -65,11 +65,11 @@ def render(rep_prev, rep_curr, cats):
             node = (c or p)["node"]
             if kind == "RESOLVED":
                 pr, pc = RESP[p["responsibility"]]
-                detail = f'<span style="color:{pc}">{pr}</span> → <span style="color:#5e7d5a">通過</span>　' \
+                detail = f'<span style="color:{pc}">{pr}</span> → <span style="color:#0e7a78">通過</span>　' \
                          f'<span class="mono">{esc(p["actual"])}</span> → <span class="mono">{esc(c["actual"])}</span>'
             elif kind == "REGRESSED":
                 cr, cc = RESP[c["responsibility"]]
-                detail = f'<span style="color:#5e7d5a">通過</span> → <span style="color:{cc}">{cr}</span>　' \
+                detail = f'<span style="color:#0e7a78">通過</span> → <span style="color:{cc}">{cr}</span>　' \
                          f'<span class="mono">{esc(p["actual"])}</span> → <span class="mono">{esc(c["actual"])}</span>　{esc(c["detail"])}'
             elif kind == "STILL_OPEN":
                 cr, cc = RESP[c["responsibility"]]
@@ -91,35 +91,36 @@ def render(rep_prev, rep_curr, cats):
           <span class="cnt" style="background:{col}">{len(items)}</span></div>
           <table>{rows(items, kind)}</table></div>"""
 
-    body = (block("REGRESSED", "🔴", "新增回歸(這輪改壞的)", "#b4453a")
-            + block("RESOLVED", "✅", "已解決", "#5e7d5a")
-            + block("NEW", "➕", "新增問題", "#b98a34")
-            + block("STILL_OPEN", "⏳", "仍未解決", "#6f6a61")
-            + block("REMOVED", "⊖", "已移除", "#a8a298"))
+    body = (block("REGRESSED", "🔴", "新增回歸(這輪改壞的)", "#d63d38")
+            + block("RESOLVED", "✅", "已解決", "#0e7a78")
+            + block("NEW", "➕", "新增問題", "#a5690f")
+            + block("STILL_OPEN", "⏳", "仍未解決", "#666b7d")
+            + block("REMOVED", "⊖", "已移除", "#9ea3b4"))
     if not body:
         body = '<div class="empty">兩輪之間沒有變化。</div>'
 
     return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>執行差異</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>執行差異</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-:root{{--bg:#f4f2ec;--sf:#fff;--ink:#1f1d1a;--mut:#6f6a61;--line:#e7e3da}}
+:root{{--bg:#f4f6fb;--sf:#fff;--ink:#14151f;--mut:#666b7d;--line:#e3e2ec;
+ --shadow:0 10px 26px -14px rgba(40,60,140,.13),0 2px 6px rgba(40,60,140,.04)}}
 
-*{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Noto Sans TC",-apple-system,"Segoe UI",sans-serif}}
+*{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter","Noto Sans TC",-apple-system,"Segoe UI",sans-serif}}
 .mono{{font-family:"IBM Plex Mono",monospace}}
 .wrap{{max-width:860px;margin:0 auto;padding:26px 22px 60px}}
-h1{{font-size:21px;margin:0 0 16px}}
+h1{{font-size:21px;margin:0 0 16px;font-weight:700}}
 .delta{{display:flex;align-items:baseline;gap:14px;background:var(--sf);border:1px solid var(--line);
- border-radius:14px;padding:16px 20px;margin-bottom:22px}}
+ border-radius:18px;padding:18px 22px;margin-bottom:22px;box-shadow:var(--shadow)}}
 .delta .a{{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--mut)}}
-.delta .big{{font-family:"IBM Plex Mono",monospace;font-size:30px;font-weight:600}}
-.blk{{background:var(--sf);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}}
+.delta .big{{font-size:30px;font-weight:800;letter-spacing:-.02em}}
+.blk{{background:var(--sf);border:1px solid var(--line);border-radius:18px;margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow)}}
 .bh{{font-weight:700;font-size:15px;padding:13px 16px;display:flex;align-items:center;gap:9px}}
-.cnt{{color:#fff;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;border-radius:99px;padding:1px 9px;margin-left:auto}}
+.cnt{{color:#fff;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;border-radius:999px;padding:1px 9px;margin-left:auto}}
 table{{width:100%;border-collapse:collapse;font-size:13px}}
 td{{padding:10px 16px;border-top:1px solid var(--line);vertical-align:top}}
 td b{{font-weight:600}} .k{{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--mut);display:block;margin-top:2px}}
 .mono{{font-variant-numeric:tabular-nums}}
-.empty{{text-align:center;color:var(--mut);padding:40px;background:var(--sf);border:1px solid var(--line);border-radius:14px}}
+.empty{{text-align:center;color:var(--mut);padding:40px;background:var(--sf);border:1px solid var(--line);border-radius:18px}}
 </style></head><body><div class="wrap">
 <h1>執行差異　Round Diff</h1>
 <div class="delta"><span class="a">還原度</span>

@@ -33,9 +33,9 @@ import os, re, json, sys
 import figma_extract, auto_qa
 from report_html import render, esc
 
-STATUS = {"green": ("🟢", "#5e7d5a", "可上線"),
-          "yellow": ("🟡", "#b98a34", "建議修正後上線"),
-          "red": ("🔴", "#b4453a", "不建議上線")}
+STATUS = {"green": ("🟢", "#0e7a78", "可上線"),
+          "yellow": ("🟡", "#a5690f", "建議修正後上線"),
+          "red": ("🔴", "#d63d38", "不建議上線")}
 
 def slug(s):
     return re.sub(r'[^0-9A-Za-z]+', '_', s).strip('_').lower() or "pair"
@@ -96,11 +96,11 @@ def render_index(cfg, results):
         t = r["totals"]
         cov = r["coverage"][0] if r["coverage"] else {"design_only": [], "dom_only": []}
         chips = []
-        if t["CODE"]:  chips.append(f'<span class="chip" style="color:#b4453a;background:#f3e6e3">程式 {t["CODE"]}</span>')
-        if t["DESIGN"]:chips.append(f'<span class="chip" style="color:#3f5b7a;background:#e9edf1">設計 {t["DESIGN"]}</span>')
-        if t["NEEDS_HUMAN"]:chips.append(f'<span class="chip" style="color:#8f887c;background:#efece5">待確認 {t["NEEDS_HUMAN"]}</span>')
-        if t.get("ACCEPTED"):chips.append(f'<span class="chip" style="color:#7c8a76;background:#eef1ea">已接受 {t["ACCEPTED"]}</span>')
-        chips.append(f'<span class="chip" style="color:#5e7d5a;background:#eaefe7">通過 {t["pass"]}</span>')
+        if t["CODE"]:  chips.append(f'<span class="chip" style="color:#d63d38;background:#ffeaea">程式 {t["CODE"]}</span>')
+        if t["DESIGN"]:chips.append(f'<span class="chip" style="color:#1f6fe0;background:#eaf3ff">設計 {t["DESIGN"]}</span>')
+        if t["NEEDS_HUMAN"]:chips.append(f'<span class="chip" style="color:#545667;background:#eef0f4">待確認 {t["NEEDS_HUMAN"]}</span>')
+        if t.get("ACCEPTED"):chips.append(f'<span class="chip" style="color:#178a63;background:#e2f7f6">已接受 {t["ACCEPTED"]}</span>')
+        chips.append(f'<span class="chip" style="color:#0e7a78;background:#e2f7f6">通過 {t["pass"]}</span>')
         covline = ""
         if cov.get("design_only"): covline += f'<div class="cov">⚠ 實作漏做:{", ".join(esc(k) for k in cov["design_only"])}</div>'
         if cov.get("dom_only"):    covline += f'<div class="cov">＋ 設計未定義:{", ".join(esc(k) for k in cov["dom_only"])}</div>'
@@ -115,30 +115,31 @@ def render_index(cfg, results):
             <div class="go">查看逐項報告 →</div>
           </div></a>""")
     return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>核對總覽</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>核對總覽</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-:root{{--bg:#f4f2ec;--sf:#fff;--ink:#1f1d1a;--mut:#6f6a61;--line:#e7e3da;--ac:#c70067}}
+:root{{--bg:#f4f6fb;--sf:#fff;--ink:#14151f;--mut:#666b7d;--line:#e3e2ec;--ac:#5468f5;
+ --shadow:0 10px 26px -14px rgba(40,60,140,.13),0 2px 6px rgba(40,60,140,.04)}}
 
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);
- font-family:"Zen Kaku Gothic New","Noto Sans TC",-apple-system,"Segoe UI",sans-serif}}
+ font-family:"Inter","Noto Sans TC",-apple-system,"Segoe UI",sans-serif}}
 .wrap{{max-width:920px;margin:0 auto;padding:28px 22px 60px}}
-h1{{font-size:22px;margin:0 0 2px}}.sub{{color:var(--mut);font-size:13px;margin-bottom:22px}}
+h1{{font-size:22px;margin:0 0 2px;font-weight:700}}.sub{{color:var(--mut);font-size:13px;margin-bottom:22px}}
 .sub b{{color:var(--ink);font-family:"IBM Plex Mono",monospace}}
 .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 @media(max-width:600px){{.grid{{grid-template-columns:1fr}}}}
 .card{{display:block;text-decoration:none;color:inherit;background:var(--sf);border:1px solid var(--line);
- border-radius:14px;overflow:hidden;transition:transform .12s}}
-.card:hover{{transform:translateY(-2px)}}
-.stripe{{height:5px}}.in{{padding:15px 17px}}
+ border-radius:18px;overflow:hidden;transition:transform .15s,box-shadow .15s;box-shadow:var(--shadow)}}
+.card:hover{{transform:translateY(-3px)}}
+.stripe{{height:5px}}.in{{padding:16px 18px}}
 .nm{{font-weight:700;font-size:15px}}.fr{{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--mut);
- border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-left:4px}}
+ border:1px solid var(--line);border-radius:8px;padding:1px 6px;margin-left:4px}}
 .sl{{display:flex;align-items:baseline;gap:8px;margin:10px 0 4px}}
-.sc{{font-family:"IBM Plex Mono",monospace;font-size:30px;font-weight:600}}.sc small{{font-size:15px}}
+.sc{{font-size:30px;font-weight:800;letter-spacing:-.02em}}.sc small{{font-size:15px}}
 .vd{{font-size:12px;font-weight:600}}
 .meter{{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 12px}}
 .meter i{{display:block;height:100%}}
 .chips{{display:flex;gap:6px;flex-wrap:wrap}}
-.chip{{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px}}
+.chip{{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px}}
 .cov{{font-size:12px;color:var(--mut);margin-top:8px}}
 .go{{margin-top:11px;font-size:12px;color:var(--ac);font-weight:600}}
 </style></head><body><div class="wrap">

@@ -1,19 +1,21 @@
 <title>Figma 交付規範</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* 極簡日式 · 單一亮色主題(和紙暖白 × 墨色 × 傳統色點綴) */
+/* 柔霧儀表板 · 淺灰底 × 白卡浮起 × 漸層點綴 */
 :root{
-  --bg:#f4f2ec; --surface:#ffffff; --surface-2:#faf8f3; --raise:0 1px 0 rgba(28,27,25,.04);
-  --ink:#1f1d1a; --ink-2:#6f6a61; --ink-3:#a8a298; --line:#e7e3da; --line-2:#f0ece3;
-  --accent:#c70067; --accent-2:#a10054; --on-accent:#ffffff;
-  --info:#3f5b7a; --good:#5e7d5a; --bad:#b4453a;
-  --good-bg:#eaefe7; --bad-bg:#f3e6e3; --info-bg:#e9edf1; --accent-bg:#f7e9f0;
+  --bg:#f4f6fb; --surface:#ffffff; --surface-2:#eceaf3;
+  --raise:0 10px 26px -14px rgba(40,60,140,.13),0 2px 6px rgba(40,60,140,.04);
+  --ink:#14151f; --ink-2:#666b7d; --ink-3:#9ea3b4; --line:#e3e2ec; --line-2:#ecebf4;
+  --accent:#5468f5; --accent-2:#4152d1; --on-accent:#ffffff;
+  --info:#4da3ff; --good:#22c3c0; --bad:#f77878;
+  --good-bg:#e2f7f6; --bad-bg:#ffeaea; --info-bg:#eaf3ff; --accent-bg:#eaeeff;
+  --good-ink:#0e7a78; --bad-ink:#d63d38; --info-ink:#1f6fe0;
 }
 *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Zen Kaku Gothic New","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;line-height:1.75;font-feature-settings:"palt" 1;font-weight:400}
+  font-family:"Inter","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;line-height:1.75;font-weight:400}
 .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .wrap{max-width:860px;margin:0 auto;padding:34px 22px 80px}
 
@@ -26,34 +28,34 @@ h1{font-size:30px;margin:8px 0 6px;letter-spacing:.5px;text-wrap:balance}
 
 /* principle banner */
 .principle{margin:26px 0 34px;background:linear-gradient(100deg,var(--accent-bg),transparent 70%);
-  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:20px 22px}
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:18px;padding:22px 24px}
 .principle .k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:1.5px;color:var(--accent);font-weight:600;text-transform:uppercase}
 .principle p{margin:8px 0 0;font-size:18px;font-weight:700;line-height:1.5;text-wrap:balance}
-.principle .mono{color:var(--info)}
+.principle .mono{color:var(--info-ink)}
 
 /* section */
 section.rule{margin:0 0 30px}
 .rhead{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
 .rnum{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;color:var(--ink-2);
-  background:none;border:1px solid var(--line);border-radius:4px;padding:2px 8px;flex-shrink:0}
-.rhead h2{font-size:19px;margin:0;letter-spacing:.3px;font-weight:500}
+  background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:2px 8px;flex-shrink:0}
+.rhead h2{font-size:19px;margin:0;letter-spacing:.3px;font-weight:600}
 .rhead .sub{color:var(--ink-3);font-size:13px;margin-left:auto;text-align:right}
 
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--raise)}
-.pad{padding:18px 20px}
+.card{background:var(--surface);border-radius:20px;box-shadow:var(--raise)}
+.pad{padding:20px 22px}
 
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2)}
 th{font-size:11px;letter-spacing:.5px;color:var(--ink-3);font-weight:600;background:var(--surface-2)}
 tr:last-child td{border-bottom:none}
-td .w{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;color:var(--info)}
+td .w{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;color:var(--info-ink)}
 td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--surface-2);
-  border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--ink)}
+  border:1px solid var(--line);border-radius:8px;padding:2px 8px;color:var(--ink)}
 
 /* tree */
 .tree{font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.85;white-space:pre;overflow-x:auto;color:var(--ink-2)}
 .tree .pg{color:var(--accent);font-weight:600}
-.tree .fr{color:var(--info);font-weight:600}
+.tree .fr{color:var(--info-ink);font-weight:600}
 .tree .sec{color:var(--ink)}
 .tree .cm{color:var(--ink-3)}
 .tree .scratch{color:var(--ink-3)}
@@ -61,47 +63,47 @@ td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;backgroun
 /* mapping diagram */
 .map{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:center;text-align:center}
 @media(max-width:640px){.map{grid-template-columns:1fr;gap:8px}.map .arw{transform:rotate(90deg)}}
-.mapbox{border:1px solid var(--line);border-radius:11px;padding:14px 12px;background:var(--surface-2)}
+.mapbox{border:1px solid var(--line);border-radius:16px;padding:14px 12px;background:var(--surface-2)}
 .mapbox .t{font-size:11px;color:var(--ink-3);margin-bottom:7px;letter-spacing:.5px}
 .mapbox .v{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:500;color:var(--ink);word-break:break-all}
 .mapbox.a{border-color:var(--accent)} .mapbox.a .v{color:var(--accent)}
-.mapbox.b{border-color:var(--info)} .mapbox.b .v{color:var(--info)}
+.mapbox.b{border-color:var(--info)} .mapbox.b .v{color:var(--info-ink)}
 .arw{color:var(--ink-3);font-size:20px;font-weight:700}
 .mapnote{margin-top:14px;text-align:center;font-size:13px;color:var(--ink-2)}
-.mapnote b{color:var(--good)}
+.mapnote b{color:var(--good-ink)}
 
 /* do / dont */
 .dd{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:640px){.dd{grid-template-columns:1fr}}
-.ddcol{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ddcol{border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .ddcol .h{padding:9px 14px;font-size:12.5px;font-weight:700;letter-spacing:.5px}
-.ddcol.no .h{background:var(--bad-bg);color:var(--bad)}
-.ddcol.yes .h{background:var(--good-bg);color:var(--good)}
+.ddcol.no .h{background:var(--bad-bg);color:var(--bad-ink)}
+.ddcol.yes .h{background:var(--good-bg);color:var(--good-ink)}
 .ddcol ul{margin:0;padding:12px 14px 14px;list-style:none;display:flex;flex-direction:column;gap:11px}
 .ddcol li{font-size:13px;line-height:1.5;color:var(--ink-2)}
 .ddcol li .mono{font-size:12px;color:var(--ink);display:inline-block}
-.ddcol.no li::before{content:"✕ ";color:var(--bad);font-weight:700}
-.ddcol.yes li::before{content:"✓ ";color:var(--good);font-weight:700}
+.ddcol.no li::before{content:"✕ ";color:var(--bad-ink);font-weight:700}
+.ddcol.yes li::before{content:"✓ ";color:var(--good-ink);font-weight:700}
 
 /* checklist */
 .check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
 .check li{display:flex;gap:12px;align-items:flex-start;padding:11px 6px;border-bottom:1px solid var(--line-2);cursor:pointer;font-size:14px}
 .check li:last-child{border-bottom:none}
-.check .box{width:20px;height:20px;border:1.8px solid var(--line);border-radius:6px;flex-shrink:0;margin-top:1px;
+.check .box{width:20px;height:20px;border:1.8px solid var(--line);border-radius:7px;flex-shrink:0;margin-top:1px;
   display:grid;place-items:center;color:transparent;font-size:13px;font-weight:700;transition:.15s}
-.check li.on .box{background:var(--good);border-color:var(--good);color:#fff}
+.check li.on .box{background:var(--good-ink);border-color:var(--good-ink);color:#fff}
 .check li.on .txt{color:var(--ink-3);text-decoration:line-through}
 .check .txt b{font-weight:600;color:var(--ink)}
 .check li.on .txt b{color:var(--ink-3)}
 
-.tip{font-size:12.5px;color:var(--ink-2);background:var(--info-bg);border-radius:10px;padding:12px 14px;margin-top:14px;line-height:1.65}
+.tip{font-size:12.5px;color:var(--ink-2);background:var(--info-bg);border-radius:14px;padding:12px 14px;margin-top:14px;line-height:1.65}
 .foot{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);text-align:center}
 .foot a{color:var(--accent);text-decoration:none;font-weight:600}
 .foot a:hover{text-decoration:underline}
 /* 回工具頁導線 */
 .topnav{margin-bottom:18px}
 .backtool{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--ink);
-  text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 15px;
+  text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:10px 17px;
   box-shadow:var(--raise);transition:border-color .15s,color .15s}
 .backtool:hover{border-color:var(--accent);color:var(--accent)}
 .backtool:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -191,7 +193,7 @@ td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;backgroun
         <li>顏色/間距/字級全綁 Variable(token)</li>
       </ul></div>
     </div>
-    <div class="tip">🎨 <b>為什麼要綁 Variable?</b>　凡是綁了 token 的屬性,實作沒對齊 → 工具判「<b style="color:var(--bad)">程式要修</b>」;沒綁、hardcode 的 → 判「<b style="color:var(--info)">設計稿規格待補</b>」丟回設計端。綁好 token,責任歸屬才準。</div>
+    <div class="tip">🎨 <b>為什麼要綁 Variable?</b>　凡是綁了 token 的屬性,實作沒對齊 → 工具判「<b style="color:var(--bad-ink)">程式要修</b>」;沒綁、hardcode 的 → 判「<b style="color:var(--accent-2)">設計稿規格待補</b>」丟回設計端。綁好 token,責任歸屬才準。</div>
   </section>
 
   <!-- 05 checklist -->

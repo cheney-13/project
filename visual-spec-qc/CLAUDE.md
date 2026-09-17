@@ -68,24 +68,38 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
   🔴待處理→🟢已解決 / 🏷️特例;`renderIssues()` + `ISS`(localStorage `vsqc.issues`),issueId=repId::selector::prop)·
   P3 歷史紀錄 + 新舊回歸對比(✅:`vsqc.history` 存主題/填表人/時間/差異點快照;`openHistory`/`renderHistory`
   /`loadRecord`/`openRegress`+`classify` → 🟢已解決 / 🔴新問題 / 🟡未解決 / 🏷️特例略過,整合 P2 狀態)· 截圖備查(待)。
-  **真實觸發(✅)**:`scr-check` 新增「GitHub Actions」列,使用者貼自己的 GitHub Token(存
+  **真實觸發(✅)**:`scr-check` 新增「GitHub Actions」列,貼 GitHub Token(存
   localStorage `vsqc.ghtoken`,只在瀏覽器端直接呼叫 `api.github.com`,不經任何後端)。
   `runLint()` / `startRun()` 呼叫 `dispatchAndWait(file, inputs)`:對 `.github/workflows/{lint,qc}.yml` 發
   `workflow_dispatch`,輪詢 `actions/runs/{id}` 到 `completed`,等 GitHub Pages 重新部署後讀
   `reports/{lint,latest}.json`。GitHub REST API 對瀏覽器原生支援 CORS(含帶 Authorization 的
-  preflight),故不需代理伺服器;代價是使用者要自備一顆有 `Actions: Write` 權限的 fine-grained token,
-  且每次點擊約需等 40 秒~2 分鐘(CI 執行 + Pages 重新部署)。Mode B 目前只用第 1 組配對觸發 CI
+  preflight),故不需代理伺服器;代價是每次點擊約需等 40 秒~2 分鐘(CI 執行 + Pages 重新部署)。
+  **採「團隊共用一組 Token」模式**(非每人各自申請):repo 是 `cheney-13/project` 私人擁有,
+  fine-grained PAT 的「Only select repositories」只會列出使用者自己有權限(擁有或已接受 collaborator
+  邀請)的 repo——若每人各自申請,沒被加為 collaborator 就選不到這個 repo。改由 repo 擁有者建
+  **一個**最小權限 token(Only select repositories → project;Permissions → Actions: Read and write,
+  其餘不勾)、經內部管道(不進 git)分享給團隊,大家貼同一組即可,不用互加 collaborator。
+  取捨:少了「誰觸發的」稽核紀錄;外流風險有限(權限僅 Actions,最多被拿去空跑 CI 消耗分鐘數,
+  碰不到程式碼/設定)。Mode B 目前只用第 1 組配對觸發 CI
   (`reports.config.json` 決定實際比對哪個 Figma/網站);協作/歷史的 save/load 若要跨人共用,
   一樣可比照這個模式改打某個雲端 API。
 
-## 視覺系統(極簡日式 · 單一亮色)
-所有 HTML 輸出共用同一套 token,改樣式要同步四處(`report_html.py`、`qa.py`、`run_diff.py`、根層 `index.html` / `guide.html`):
+## 視覺系統(柔霧儀表板 · 單一亮色)
+所有 HTML 輸出共用同一套 token,改樣式要同步四處(`report_html.py`、`qa.py`、`run_diff.py`、根層 `index.html` / `guide.html`)。
+每個語意色分「鮮明層」(裝飾用,如 `.dot`/漸層/大膽色塊)與「`-ink` 可讀層」(文字/pill 底色,已核對 WCAG 對比 ≥4.5:1,`--bad`/`--good`/`--warn`/`--info`/`--human` 皆同構):
 ```
-和紙暖白 --bg:#f4f2ec / #faf9f6   墨色 --ink:#1f1d1a   髮絲線 --line:#e7e3da
-傳統色  程式=朱紅#b4453a 設計=藍#3f5b7a 通過=苔綠#5e7d5a 警示=山吹#b98a34 待人工#8f887c
-字體    Zen Kaku Gothic New(拉丁/數字) + Noto Sans TC(中文) + IBM Plex Mono(數據)
-單一亮色主題(不做暗色);品牌 magenta #c70067 只做極少量點綴
+淺灰底  --bg:#f4f6fb   卡片白 --surface:#fff   墨色 --ink:#14151f   髮絲線 --line:#e3e2ec
+主色    --accent:#5468f5 靛藍(鮮明,已通過對比)
+語意色  程式=珊瑚紅 --bad:#f77878 / 可讀 --bad-ink:#d63d38
+        設計=天藍 --info:#4da3ff / 可讀 --info-ink:#1f6fe0
+        通過=青綠 --good:#22c3c0 / 可讀 --good-ink:#0e7a78
+        警示=金黃 --warn:#f5a623 / 可讀 --warn-ink:#a5690f
+        待人工=石板灰 --human:#7b8098 / 可讀 --human-ink:#545667
+卡片    大圓角(16–22px)+ 柔和陰影(`--raise`,無邊框線)、按鈕全膠囊形(999px)
+字體    Inter(拉丁/數字,大數字用粗體無襯線非等寬)+ Noto Sans TC(中文)+ IBM Plex Mono(小型數據標籤)
+單一亮色主題(不做暗色)
 ```
+語意色的具體色相與「鮮明/可讀」兩層拆分,是依實際使用者反饋(對比度太低 / 想要更貼近品牌或參考圖)反覆調整過的結果——**改動前務必先用 WCAG 對比公式核對可讀層 ≥4.5:1**(`src/report_html.py`/`qa.py`/`run_diff.py` 的判定 pill、KPI 數字、表格文字都吃這層),不要只憑觀感套色。
 
 ## 已知地雷 / 設計決策
 - **不可把「DOM 未擷取的屬性」當成不符**。`qa_engine.run()` 有防護:`dom_val is None` → 判「待人工/未量測」,
