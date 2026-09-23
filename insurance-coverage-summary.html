@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保障總覽與新提案比較</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --sf:#ffffff; --ink:#1c1f24; --mut:#5b6270; --line:#e3e5ea; --ac:#1d6fb8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:0 16px 64px; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.7;
+  }
+  main{max-width:840px; margin:0 auto;}
+  h1{font-size:1.6rem; margin:2.2rem 0 .4rem;}
+  h2{font-size:1.15rem; margin:2.4rem 0 .8rem; padding-top:.6rem; border-top:1px solid var(--line);}
+  .meta{color:var(--mut); font-size:.9rem; margin-bottom:1.2rem;}
+  table{width:100%; border-collapse:collapse; background:var(--sf); font-size:.92rem; margin:.8rem 0 1.2rem;}
+  th,td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top;}
+  th{background:#eef1f5; font-weight:600;}
+  .note{background:var(--sf); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin:1rem 0; font-size:.92rem;}
+  .note b{color:var(--ac);}
+  ol{padding-left:1.3rem;}
+  ol li{margin-bottom:.6rem;}
+  .disclaimer{color:var(--mut); font-size:.82rem; margin-top:3rem; border-top:1px solid var(--line); padding-top:1rem;}
+  @media (max-width:600px){
+    table, thead, tbody, th, td, tr{display:block;}
+    th{display:none;}
+    td{border:none; border-bottom:1px solid var(--line); padding:6px 0;}
+    td::before{content: attr(data-label); display:block; font-weight:600; color:var(--mut); font-size:.78rem; margin-bottom:2px;}
+    tr{margin-bottom:.8rem; padding-bottom:.4rem; border-bottom:2px solid var(--line);}
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>保障總覽與新提案比較</h1>
+  <p class="meta">整理日期 2026/09/23 ・ 資料經去識別化處理（保單號碼、被保險人全名已移除）</p>
+
+  <h2>現有保障總覽（南山，共3張，年繳合計約41,210元）</h2>
+  <table>
+    <thead><tr><th>保單</th><th>年繳保費</th><th>核心保障</th></tr></thead>
+    <tbody>
+      <tr><td data-label="保單">好EASY終身醫療健康保險</td><td data-label="年繳保費">13,390</td><td data-label="核心保障">住院日額2,000＋加護病房2,000；住院手術10,000/次＋門診手術2,000/次</td></tr>
+      <tr><td data-label="保單">好安心手術醫療終身保險</td><td data-label="年繳保費">8,290</td><td data-label="核心保障">手術醫療10萬/次＋創傷縫合3千/次＋特定處置3.5萬/次</td></tr>
+      <tr><td data-label="保單">圓滿康祥終身健康保險</td><td data-label="年繳保費">19,530</td><td data-label="核心保障">實支實付(病房1~2千/日、雜費手術費10~20萬/次)；癌症一次金(多項)；重大傷病(重度取大值＋輕度5萬)；加保：意外醫療(3萬＋日額2千)、意外失能100萬</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>現有缺口：</b>三張保單的「重大傷病」都是還本公式型（1.05倍已繳保費或保價金取大值），沒有一筆固定金額的重大傷病一次金——已繳保費不多的情況下，實際理賠金額會遠低於100萬。</div>
+
+  <h2>新提案比較（未投保，規劃階段）</h2>
+  <table>
+    <thead><tr><th>商品</th><th>型態</th><th>保額</th><th>年繳保費</th><th>主要給付</th></tr></thead>
+    <tbody>
+      <tr><td data-label="商品">PHE20（安享醫靠終身醫療）+ XHP00（全心全意2自負額附約計畫4X）</td><td data-label="型態">醫療組合（日額＋實支實付）</td><td data-label="保額">日額1,000~2,000；雜費手術費最高40萬</td><td data-label="年繳保費">27,498</td><td data-label="主要給付">住院日額、加護病房、手術(門診6,000/住院12,000/重大30,000)、特定醫材補助20萬、實支實付雜費</td></tr>
+      <tr><td data-label="商品">DCF20（醫卡好重大傷病終身）</td><td data-label="型態">重大傷病・終身</td><td data-label="保額">100萬</td><td data-label="年繳保費">27,600</td><td data-label="主要給付">首年確診給付20%，第2年起全額給付（或已繳保費×1.02取大值）；特定重大傷病另加20%；身故/滿期還本</td></tr>
+      <tr><td data-label="商品">DCE20（醫卡讚85重大傷病定期）</td><td data-label="型態">重大傷病・定期至85歲</td><td data-label="保額">100萬</td><td data-label="年繳保費">26,600</td><td data-label="主要給付">與DCF20同樣給付邏輯，但85歲後保障終止，無身故還本</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>關鍵差異：</b>DCF20 與 DCE20 保額、給付條件幾乎相同，唯一差別是 DCF20 終身保障、有身故/滿期還本，而 DCE20 只保到 85 歲、一旦途中未理賠就沒有任何還款，且年繳只便宜約 1,000 元。</div>
+
+  <h2>分析與建議</h2>
+  <ol>
+    <li><b>重大傷病選 DCF20，不選 DCE20。</b>兩者保額、給付條件幾乎一樣，只差約 1,000 元/年，DCF20 卻多了終身保障與身故/滿期還本，CP值明顯較高。</li>
+    <li><b>優先順序：先補 DCF20，醫療組合候補。</b>現有保單的重大傷病是還本公式型，實際理賠金額通常遠低於 100 萬；DCF20 能給一筆實實在在的 100 萬定額一次金，是目前保障組合中最缺的一塊。PHE20+XHP00 醫療組合雖然高於現有保單的額度（雜費限額40萬 vs 現有10~20萬），但屬於升級而非從無到有，可視預算再加保。</li>
+    <li><b>與現有保單的互補關係：</b>現有3張保單已覆蓋住院日額、手術、實支實付雜費、意外醫療/失能，新提案不是從零開始，而是補強「固定金額重大傷病」這個缺口。</li>
+    <li><b>預算充裕時：</b>可同時投保 DCF20（27,600）+ PHE20/XHP00（27,498），年繳合計約 55,098 元，將醫療、手術、重大傷病三大方向一次補齊。</li>
+  </ol>
+
+  <p class="disclaimer">本頁為家庭保單規劃參考整理，保單號碼與被保險人全名已移除。實際保障內容、給付條件與金額請以各保險公司保單條款及正式保單為準。</p>
+</main>
+</body>
+</html>
