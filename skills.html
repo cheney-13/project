@@ -59,6 +59,9 @@ section.cat>p{margin:0 0 14px;color:var(--mut);font-size:14px}
 .cmd button:hover{color:var(--ac)}
 .subs{display:flex;flex-wrap:wrap;gap:4px}
 .subs code{background:var(--chip);padding:1px 7px;border-radius:5px;font-size:12px}
+.subdl{display:grid;grid-template-columns:max-content 1fr;gap:4px 10px;margin:0;font-size:13px}
+.subdl dt code{background:var(--chip);padding:1px 7px;border-radius:5px;font-size:12px;white-space:nowrap}
+.subdl dd{margin:0;color:var(--mut)}
 .ex{font-size:13px;color:var(--mut);margin:0}
 .links{font-size:13px;display:flex;flex-wrap:wrap;gap:4px 12px}
 .links a{color:var(--ac);text-decoration:none}
@@ -164,7 +167,7 @@ const S = [
   // ── 前端美感外掛
   {c:'fe',n:'impeccable',src:'外掛 · pbakaus',d:'前端設計流暢度工具:1 個 skill、24 個子指令,加上 61 條可離線跑的「AI 味」偵測規則(Inter 字體、紫藍漸層、卡片套卡片…)。先 init 建立 PRODUCT.md,再依需求打磨。',
    use:['/impeccable init','/impeccable audit 首頁','/impeccable polish 設定頁'],
-   subs:['craft','init','document','extract','shape','critique','audit','polish','bolder','quieter','distill','harden','onboard','animate','colorize','typeset','layout','delight','overdrive','clarify','adapt','optimize','live','generate','pin <指令>'],
+   subs:[['craft','完整流程:先規劃再實作,邊做邊視覺迭代'],['init','一次性設定:蒐集產品脈絡,寫入 PRODUCT.md'],['document','從現有程式碼產生 DESIGN.md'],['extract','把可重用的元件與 token 抽進設計系統'],['shape','寫程式前先規劃 UX/UI'],['critique','UX 設計評論:層級、清晰度、情感'],['audit','技術品質檢查:無障礙、效能、響應式'],['polish','上線前最後打磨,對齊設計系統'],['bolder','讓太平淡的設計更大膽'],['quieter','讓太吵的設計收斂安靜'],['distill','去蕪存菁,只留核心'],['harden','強化錯誤處理、i18n、文字溢出等邊界情況'],['onboard','首次使用流程、空狀態、啟用路徑'],['animate','加入有目的的動效'],['colorize','為單調介面加入策略性配色'],['typeset','修正字體選擇、層級與字級'],['layout','修正版面、間距與視覺節奏'],['delight','加入讓人會心一笑的小細節'],['overdrive','做出技術上驚豔的特效'],['clarify','改善不清楚的 UX 文案、標籤、錯誤訊息'],['adapt','針對不同裝置與螢幕尺寸調整'],['optimize','診斷並改善 UI 效能'],['live','在瀏覽器中即時產生變體、挑選元素迭代'],['generate','自動產生指定元素的變體,不需手動挑選'],['pin <指令>','把子指令釘成獨立捷徑,如 pin audit → /audit']],
    i:['/plugin marketplace add pbakaus/impeccable','/plugin install impeccable@impeccable','# 或在專案根目錄:npx impeccable install'],l:[L.imp,L.impSite]},
   {c:'fe',n:'frontend-design',src:'外掛 · Anthropic',d:'Anthropic 官方前端美感指引:建立或改版 UI 時決定美術方向、字體與版面,避免做出制式模板感。',
    use:['/frontend-design 幫這個 landing page 找一個有個性的視覺方向'],
@@ -230,7 +233,7 @@ function card(s, color){
     <h3><span class="mono">${esc(s.n)}</span><span class="src">${esc(s.src)}</span></h3>
     <p class="desc">${s.d}</p>
     <div><div class="lbl">使用方法${s.args?` · 參數 <code>${esc(s.args)}</code>`:''}</div>${call}</div>
-    ${s.subs?`<div><div class="lbl">子指令</div><div class="subs">${s.subs.map(x=>`<code>${esc(x)}</code>`).join('')}</div></div>`:''}
+    ${s.subs?`<div><div class="lbl">子指令</div>${Array.isArray(s.subs[0])?`<dl class="subdl">${s.subs.map(([k,v])=>`<dt><code>${esc(k)}</code></dt><dd>${esc(v)}</dd>`).join('')}</dl>`:`<div class="subs">${s.subs.map(x=>`<code>${esc(x)}</code>`).join('')}</div>`}</div>`:''}
     ${s.ex?`<p class="ex">${esc(s.ex)}</p>`:''}
     <div><div class="lbl">下載 / 安裝</div>${s.i.map(cmd).join('')}</div>
     ${s.l.length?`<div class="links">${s.l.map(x=>`<a href="${x.u}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join('')}</div>`:''}
