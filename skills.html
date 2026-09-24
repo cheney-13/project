@@ -103,7 +103,7 @@ footer{margin-top:48px;font-size:13px;color:var(--mut)}
 <script>
 const CATS = [
   {id:'uiux', name:'UI/UX 設計套件', color:'var(--c-uiux)', note:'ui-ux-pro-max 套件(nextlevelbuilder),本機 ~/.claude/skills,一次安裝 7 個。'},
-  {id:'ds',   name:'設計系統 · Figma', color:'var(--c-ds)', note:'組織 skill 庫(claude.ai 同步)+ 本機副本,設計稿 → token → Storybook → 視覺核對的整條工作流。'},
+  {id:'ds',   name:'設計系統 · Figma', color:'var(--c-ds)', note:'開源於 harrychuang/cursor-skills,同時由組織 skill 庫同步,設計稿 → token → Storybook → 視覺核對的整條工作流。'},
   {id:'fe',   name:'前端美感外掛', color:'var(--c-fe)', note:'已安裝的 Claude Code 外掛(plugin)。'},
   {id:'doc',  name:'文件辦公', color:'var(--c-doc)', note:'Anthropic 官方檔案處理 skill,產出/讀取 Word、PDF、PPT、Excel。'},
   {id:'str',  name:'策略 · 寫作 · 品牌', color:'var(--c-str)', note:'提案、prompt、品牌規範類。'},
@@ -119,11 +119,13 @@ const L = {
   official:{t:'GitHub · claude-plugins-official',u:'https://github.com/anthropics/claude-plugins-official'},
   askills:n=>({t:'GitHub · anthropics/skills/'+n,u:'https://github.com/anthropics/skills/tree/main/skills/'+n}),
   ccDocs:{t:'Claude Code Skills 文件',u:'https://docs.claude.com/en/docs/claude-code/skills'},
+  hc:n=>({t:'GitHub · harrychuang/cursor-skills/'+n,u:'https://github.com/harrychuang/cursor-skills/tree/master/'+n}),
   sbAddon:{t:'GitHub · storybook-addons(figma-export)',u:'https://github.com/harrychuang/storybook-addons/tree/main/packages/figma-export'},
 };
 
 const I = {
   uipro:['/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill','/plugin install ui-ux-pro-max@ui-ux-pro-max-skill','# 或用 CLI:npm i -g ui-ux-pro-max-cli && uipro init --ai claude --global'],
+  hc:n=>['git clone https://github.com/harrychuang/cursor-skills.git /tmp/cursor-skills','cp -r /tmp/cursor-skills/'+n+' ~/.claude/skills/','# 也可從 claude.ai 組織 skill 庫自動同步'],
   org:['# 組織 skill 庫:登入 claude.ai 自動同步到 Claude Code','# 本機副本:~/.claude/skills/<名稱>/(可直接複製分享)'],
   anth:['/plugin marketplace add anthropics/skills','/plugin install document-skills@anthropic-agent-skills','# 或 claude.ai › 設定 › Capabilities › Skills 開啟'],
   claudeai:['# claude.ai 內建範例 skill:設定 › Capabilities › Skills 開啟即同步'],
@@ -149,15 +151,15 @@ const S = [
 
   // ── 設計系統 · Figma
   {c:'ds',n:'design-system-extractor',src:'組織庫',d:'從截圖、Figma URL/Variables、既有專案或原型程式碼「萃取」一套設計系統規格:設計原則、token 架構、元件清單、元件 token 規格、反 AI 感風格限制,並輸出靜態 HTML 文件與跨工具交接說明。',
-   use:['/design-system-extractor 從這個 Figma 連結萃取設計系統','/design-system-extractor 分析 ./screenshots 內所有畫面'],ex:'流程第一步;完成後接 ds-to-storybook。',i:I.org,l:[]},
+   use:['/design-system-extractor 從這個 Figma 連結萃取設計系統','/design-system-extractor 分析 ./screenshots 內所有畫面'],ex:'流程第一步;完成後接 ds-to-storybook。',i:I.hc('design-system-extractor'),l:[L.hc('design-system-extractor')]},
   {c:'ds',n:'ds-to-storybook',src:'組織庫',d:'把萃取好的設計系統轉成 token 綁定的 Storybook:基礎樣式、共用元件與 stories,自動推算元件相依順序、對回原始 Figma 節點,並用 figma-export addon 驗證可匯回 Figma。',
-   use:['/ds-to-storybook 依 design-system/ 規格建立第一批基礎元件'],ex:'SKILL 內部名稱為 design-system-to-storybook。',i:I.org,l:[L.sbAddon]},
+   use:['/ds-to-storybook 依 design-system/ 規格建立第一批基礎元件'],ex:'SKILL 內部名稱為 design-system-to-storybook。',i:I.hc('ds-to-storybook'),l:[L.hc('ds-to-storybook'),L.sbAddon]},
   {c:'ds',n:'design-system-governance',src:'組織庫',d:'設計系統治理守門員:token 優先、組合優先。先自動偵測專案的 token 命名、格線、動畫、共用元件,再阻止 hardcode 樣式、重複造元件、未抽出的 i18n 文字。',
-   use:['/design-system-governance 檢查這次改動有沒有 hardcode 顏色'],ex:'寫元件、頁面、Storybook 時可自動觸發。',i:I.org,l:[]},
+   use:['/design-system-governance 檢查這次改動有沒有 hardcode 顏色'],ex:'寫元件、頁面、Storybook 時可自動觸發。',i:I.hc('design-system-governance'),l:[L.hc('design-system-governance')]},
   {c:'ds',n:'figma-m3-variables',src:'組織庫',d:'用 Material Design 三層 token 繼承(Ref → Sys → Comp)在 Figma 建立、套用、稽核 Variables;可批次綁定到元件,或由既有 Variables 反推元件設計。',
-   use:['/figma-m3-variables 為這個 component set 建立並綁定 Variables','/figma-m3-variables audit 目前頁面的 token 命名'],ex:'需搭配 Figma MCP。',i:I.org,l:[]},
+   use:['/figma-m3-variables 為這個 component set 建立並綁定 Variables','/figma-m3-variables audit 目前頁面的 token 命名'],ex:'需搭配 Figma MCP。',i:I.hc('figma-m3-variables'),l:[L.hc('figma-m3-variables')]},
   {c:'ds',n:'ui-visual-parity',src:'組織庫',d:'把實作畫面和參考截圖做視覺核對(可自動找對應頁面或手動指定 URL/路由/元件),修正間距、字級、顏色、圓角、陰影、RWD 偏差,優先改 token/共用元件而非頁面硬改。',
-   use:['/ui-visual-parity 對照 refs/home.png 核對 http://localhost:3000/'],i:I.org,l:[]},
+   use:['/ui-visual-parity 對照 refs/home.png 核對 http://localhost:3000/'],i:I.hc('ui-visual-parity'),l:[L.hc('ui-visual-parity')]},
 
   // ── 前端美感外掛
   {c:'fe',n:'impeccable',src:'外掛 · pbakaus',d:'前端設計流暢度工具:1 個 skill、24 個子指令,加上 61 條可離線跑的「AI 味」偵測規則(Inter 字體、紫藍漸層、卡片套卡片…)。先 init 建立 PRODUCT.md,再依需求打磨。',
