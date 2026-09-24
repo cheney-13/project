@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我的 Skill 清單</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f2ec; --sf:#fff; --ink:#1f1d1a; --mut:#6f6a61; --line:#e7e3da;
+  --ac:#c70067; --code:#f7f5f0; --chip:#efebe2;
+  --c-uiux:#3f5b7a; --c-ds:#5e7d5a; --c-fe:#b98a34; --c-doc:#b4453a;
+  --c-str:#7a4f8a; --c-me:#8f887c; --c-cc:#1f1d1a;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#16151a; --sf:#1f1e24; --ink:#ece9e2; --mut:#a39d92; --line:#302e36;
+    --ac:#ff4fa0; --code:#26252c; --chip:#2a2930;
+    --c-uiux:#86a6cc; --c-ds:#9cc496; --c-fe:#e0b560; --c-doc:#e88a7f;
+    --c-str:#c39ad4; --c-me:#b0a99d; --c-cc:#ece9e2;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16151a; --sf:#1f1e24; --ink:#ece9e2; --mut:#a39d92; --line:#302e36;
+  --ac:#ff4fa0; --code:#26252c; --chip:#2a2930;
+  --c-uiux:#86a6cc; --c-ds:#9cc496; --c-fe:#e0b560; --c-doc:#e88a7f;
+  --c-str:#c39ad4; --c-me:#b0a99d; --c-cc:#ece9e2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Noto Sans TC",system-ui,sans-serif}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.86em}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 16px 80px}
+header h1{font-size:28px;margin:0 0 6px;letter-spacing:.02em}
+header p{margin:0;color:var(--mut)}
+.meta{font-size:13px;color:var(--mut);margin-top:6px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:16px 0 12px;margin-top:20px;border-bottom:1px solid var(--line)}
+.search{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--sf);color:var(--ink);font:inherit}
+.search:focus{outline:2px solid var(--ac);outline-offset:-1px}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.cats button{border:1px solid var(--line);background:var(--sf);color:var(--ink);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.count{font-size:13px;color:var(--mut);margin-top:8px}
+.howto{background:var(--sf);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-top:24px;font-size:14px}
+.howto h2{font-size:15px;margin:0 0 8px}
+.howto ul{margin:0;padding-left:20px}
+.howto li{margin:3px 0}
+section.cat{margin-top:34px}
+section.cat>h2{font-size:18px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+section.cat>h2 i{width:10px;height:10px;border-radius:3px;display:inline-block}
+section.cat>p{margin:0 0 14px;color:var(--mut);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--cc)}
+.card h3{margin:0;font-size:16px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.card h3 .src{font-size:11px;font-weight:500;color:var(--mut);background:var(--chip);padding:1px 8px;border-radius:999px;white-space:nowrap}
+.card .desc{margin:0;font-size:14px}
+.lbl{font-size:12px;color:var(--mut);font-weight:700;letter-spacing:.04em;margin-bottom:4px}
+.cmd{display:flex;align-items:flex-start;gap:6px;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin:4px 0}
+.cmd code{flex:1;white-space:pre-wrap;word-break:break-all}
+.cmd button{border:0;background:transparent;color:var(--mut);cursor:pointer;font-size:12px;padding:2px 4px;border-radius:4px;flex-shrink:0}
+.cmd button:hover{color:var(--ac)}
+.subs{display:flex;flex-wrap:wrap;gap:4px}
+.subs code{background:var(--chip);padding:1px 7px;border-radius:5px;font-size:12px}
+.ex{font-size:13px;color:var(--mut);margin:0}
+.links{font-size:13px;display:flex;flex-wrap:wrap;gap:4px 12px}
+.links a{color:var(--ac);text-decoration:none}
+.links a:hover{text-decoration:underline}
+.empty{color:var(--mut);padding:40px 0;text-align:center}
+.theme{position:absolute;top:16px;right:16px;border:1px solid var(--line);background:var(--sf);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer;font:inherit;font-size:13px}
+footer{margin-top:48px;font-size:13px;color:var(--mut)}
+</style>
+</head>
+<body>
+<button class="theme" id="theme" aria-label="切換深淺色">◐ 主題</button>
+<div class="wrap">
+  <header>
+    <h1>我的 Skill 清單</h1>
+    <p>Claude Code/claude.ai 目前可用的所有 skill:它是做什麼的、怎麼叫、去哪裡下載。</p>
+    <div class="meta">盤點日期 2026-09-24 · 來源:<code>~/.claude/skills</code>、claude.ai 同步 skill、已安裝外掛、Claude Code 內建</div>
+  </header>
+
+  <div class="howto">
+    <h2>通用使用方式</h2>
+    <ul>
+      <li><b>斜線指令</b>:在 Claude Code 輸入 <code>/skill名稱 參數</code>,例如 <code>/ui-ux-pro-max 幫我做 SaaS 定價頁</code>。</li>
+      <li><b>自然語言觸發</b>:直接描述需求(例:「幫我把這份 Excel 清乾淨」),Claude 會依 skill 描述自動載入。</li>
+      <li><b>命名空間</b>:外掛/同步來的 skill 會帶前綴,如 <code>/impeccable:impeccable</code>、<code>/anthropic-skills:pptx</code>;沒撞名時可省略前綴。</li>
+      <li><b>本機 skill 位置</b>:<code>~/.claude/skills/&lt;名稱&gt;/SKILL.md</code>;專案層級放 <code>.claude/skills/</code>。</li>
+      <li><b>外掛管理</b>:<code>/plugin</code> 開啟外掛面板;<code>/plugin marketplace add 擁有者/repo</code> 加來源、<code>/plugin install 名稱@marketplace</code> 安裝。</li>
+    </ul>
+  </div>
+
+  <div class="bar">
+    <input class="search" id="q" type="search" placeholder="搜尋名稱、功能、指令… (例:簡報、token、Figma、Excel)" autocomplete="off">
+    <div class="cats" id="cats"></div>
+    <div class="count" id="count"></div>
+  </div>
+
+  <main id="list"></main>
+
+  <footer>
+    清單以本機實際安裝為準;要更新時請 Claude「重新盤點 skill 清單並更新 skills.html」。
+  </footer>
+</div>
+
+<script>
+const CATS = [
+  {id:'uiux', name:'UI/UX 設計套件', color:'var(--c-uiux)', note:'ui-ux-pro-max 套件(nextlevelbuilder),本機 ~/.claude/skills,一次安裝 7 個。'},
+  {id:'ds',   name:'設計系統 · Figma', color:'var(--c-ds)', note:'組織 skill 庫(claude.ai 同步)+ 本機副本,設計稿 → token → Storybook → 視覺核對的整條工作流。'},
+  {id:'fe',   name:'前端美感外掛', color:'var(--c-fe)', note:'已安裝的 Claude Code 外掛(plugin)。'},
+  {id:'doc',  name:'文件辦公', color:'var(--c-doc)', note:'Anthropic 官方檔案處理 skill,產出/讀取 Word、PDF、PPT、Excel。'},
+  {id:'str',  name:'策略 · 寫作 · 品牌', color:'var(--c-str)', note:'提案、prompt、品牌規範類。'},
+  {id:'me',   name:'個人助理', color:'var(--c-me)', note:'claude.ai 內建範例 skill。'},
+  {id:'cc',   name:'Claude Code 內建', color:'var(--c-cc)', note:'隨 Claude Code 附帶,不用另外下載;更新 Claude Code 即更新。'},
+];
+
+const L = {
+  uipro:{t:'GitHub · ui-ux-pro-max-skill',u:'https://github.com/nextlevelbuilder/ui-ux-pro-max-skill'},
+  uiproNpm:{t:'npm · ui-ux-pro-max-cli',u:'https://www.npmjs.com/package/ui-ux-pro-max-cli'},
+  imp:{t:'GitHub · impeccable',u:'https://github.com/pbakaus/impeccable'},
+  impSite:{t:'impeccable.style 官網',u:'https://impeccable.style'},
+  official:{t:'GitHub · claude-plugins-official',u:'https://github.com/anthropics/claude-plugins-official'},
+  askills:n=>({t:'GitHub · anthropics/skills/'+n,u:'https://github.com/anthropics/skills/tree/main/skills/'+n}),
+  cap:{t:'claude.ai 設定 › Capabilities',u:'https://claude.ai/settings/capabilities'},
+  ccDocs:{t:'Claude Code Skills 文件',u:'https://docs.claude.com/en/docs/claude-code/skills'},
+  sbAddon:{t:'GitHub · storybook-addons(figma-export)',u:'https://github.com/harrychuang/storybook-addons/tree/main/packages/figma-export'},
+};
+
+const I = {
+  uipro:['/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill','/plugin install ui-ux-pro-max@ui-ux-pro-max-skill','# 或用 CLI:npm i -g ui-ux-pro-max-cli && uipro init --ai claude --global'],
+  org:['# 組織 skill 庫:登入 claude.ai 自動同步到 Claude Code','# 本機副本:~/.claude/skills/<名稱>/(可直接複製分享)'],
+  anth:['/plugin marketplace add anthropics/skills','/plugin install document-skills@anthropic-agent-skills','# 或 claude.ai › 設定 › Capabilities › Skills 開啟'],
+  claudeai:['# claude.ai 內建範例 skill:設定 › Capabilities › Skills 開啟即同步'],
+  builtin:['# 內建,無需安裝;更新:claude update'],
+};
+
+const S = [
+  // ── UI/UX 套件
+  {c:'uiux',n:'ui-ux-pro-max',src:'本機 · MIT',d:'UI/UX 設計智庫:內建 84 種風格、192 組配色、74 組字體搭配、98 條 UX 準則、GSAP 動效、圖表類型,支援 React/Vue/Flutter/SwiftUI/HTML 等 22 種技術棧。',
+   use:['/ui-ux-pro-max 幫我設計一個 SaaS 定價頁,品牌感高級、深色'],ex:'適合:從零挑風格/配色/字體、UI 檢視。',i:I.uipro,l:[L.uipro,L.uiproNpm]},
+  {c:'uiux',n:'design',src:'本機 · MIT',d:'綜合設計工具箱:品牌識別、design token、Logo 生成(55 種風格)、企業識別 CIP(50 項產出)、HTML 簡報、Banner、SVG icon、社群圖。',
+   use:['/design logo 咖啡品牌,極簡線條','/design cip 為 MX 產出企業識別組'],args:'[design-type] [context]',i:I.uipro,l:[L.uipro]},
+  {c:'uiux',n:'design-system',src:'本機 · MIT',d:'三層 token 架構(primitive → semantic → component)、CSS 變數、間距/字級刻度、元件規格,也能產出符合品牌的簡報。',
+   use:['/design-system button','/design-system 幫這個專案建立 token 三層架構'],args:'[component or token]',i:I.uipro,l:[L.uipro]},
+  {c:'uiux',n:'ui-styling',src:'本機 · MIT',d:'用 shadcn/ui(Radix + Tailwind)做好看又無障礙的介面:表單、Dialog、下拉、暗色模式、響應式;也支援 canvas 視覺/海報。',
+   use:['/ui-styling 設定頁,含表單驗證與暗色模式'],args:'[component or layout]',i:I.uipro,l:[L.uipro]},
+  {c:'uiux',n:'banner-design',src:'本機 · MIT',d:'設計社群/廣告/網站主視覺/印刷 Banner,給多個美術方向;支援 FB、IG、YouTube、LinkedIn、Google 多尺寸,22 種風格。',
+   use:['/banner-design instagram gradient 1080x1080'],args:'[platform] [style] [dimensions]',i:I.uipro,l:[L.uipro]},
+  {c:'uiux',n:'brand',src:'本機 · MIT',d:'品牌語氣、視覺識別、訊息框架、素材管理與品牌一致性檢查,可產出 style guide。',
+   use:['/brand create 為新品牌建立語氣與視覺規範','/brand review 檢查這份文案是否符合品牌'],args:'[update|review|create] [args]',i:I.uipro,l:[L.uipro]},
+  {c:'uiux',n:'slides',src:'本機 · MIT',d:'產出策略型 HTML 簡報:Chart.js 圖表、design token、響應式版面、文案公式與情境化頁面策略。',
+   use:['/slides Q3 營運回顧 12'],args:'[topic] [slide-count]',i:I.uipro,l:[L.uipro]},
+
+  // ── 設計系統 · Figma
+  {c:'ds',n:'design-system-extractor',src:'組織庫',d:'從截圖、Figma URL/Variables、既有專案或原型程式碼「萃取」一套設計系統規格:設計原則、token 架構、元件清單、元件 token 規格、反 AI 感風格限制,並輸出靜態 HTML 文件與跨工具交接說明。',
+   use:['/design-system-extractor 從這個 Figma 連結萃取設計系統','/design-system-extractor 分析 ./screenshots 內所有畫面'],ex:'流程第一步;完成後接 ds-to-storybook。',i:I.org,l:[L.cap]},
+  {c:'ds',n:'ds-to-storybook',src:'組織庫',d:'把萃取好的設計系統轉成 token 綁定的 Storybook:基礎樣式、共用元件與 stories,自動推算元件相依順序、對回原始 Figma 節點,並用 figma-export addon 驗證可匯回 Figma。',
+   use:['/ds-to-storybook 依 design-system/ 規格建立第一批基礎元件'],ex:'SKILL 內部名稱為 design-system-to-storybook。',i:I.org,l:[L.cap,L.sbAddon]},
+  {c:'ds',n:'design-system-governance',src:'組織庫',d:'設計系統治理守門員:token 優先、組合優先。先自動偵測專案的 token 命名、格線、動畫、共用元件,再阻止 hardcode 樣式、重複造元件、未抽出的 i18n 文字。',
+   use:['/design-system-governance 檢查這次改動有沒有 hardcode 顏色'],ex:'寫元件、頁面、Storybook 時可自動觸發。',i:I.org,l:[L.cap]},
+  {c:'ds',n:'figma-m3-variables',src:'組織庫',d:'用 Material Design 三層 token 繼承(Ref → Sys → Comp)在 Figma 建立、套用、稽核 Variables;可批次綁定到元件,或由既有 Variables 反推元件設計。',
+   use:['/figma-m3-variables 為這個 component set 建立並綁定 Variables','/figma-m3-variables audit 目前頁面的 token 命名'],ex:'需搭配 Figma MCP。',i:I.org,l:[L.cap]},
+  {c:'ds',n:'ui-visual-parity',src:'組織庫',d:'把實作畫面和參考截圖做視覺核對(可自動找對應頁面或手動指定 URL/路由/元件),修正間距、字級、顏色、圓角、陰影、RWD 偏差,優先改 token/共用元件而非頁面硬改。',
+   use:['/ui-visual-parity 對照 refs/home.png 核對 http://localhost:3000/'],i:I.org,l:[L.cap]},
+
+  // ── 前端美感外掛
+  {c:'fe',n:'impeccable',src:'外掛 · pbakaus',d:'前端設計流暢度工具:1 個 skill、24 個子指令,加上 61 條可離線跑的「AI 味」偵測規則(Inter 字體、紫藍漸層、卡片套卡片…)。先 init 建立 PRODUCT.md,再依需求打磨。',
+   use:['/impeccable init','/impeccable audit 首頁','/impeccable polish 設定頁'],
+   subs:['craft','init','document','extract','shape','critique','audit','polish','bolder','quieter','distill','harden','onboard','animate','colorize','typeset','layout','delight','overdrive','clarify','adapt','optimize','live','generate','pin <指令>'],
+   i:['/plugin marketplace add pbakaus/impeccable','/plugin install impeccable@impeccable','# 或在專案根目錄:npx impeccable install'],l:[L.imp,L.impSite]},
+  {c:'fe',n:'frontend-design',src:'外掛 · Anthropic',d:'Anthropic 官方前端美感指引:建立或改版 UI 時決定美術方向、字體與版面,避免做出制式模板感。',
+   use:['/frontend-design 幫這個 landing page 找一個有個性的視覺方向'],
+   i:['/plugin install frontend-design@claude-plugins-official'],l:[L.official,L.askills('frontend-design')]},
+
+  // ── 文件辦公
+  {c:'doc',n:'docx',src:'Anthropic',d:'建立、讀取、編輯 Word(.docx/.dotx):套範本、插圖、尋找取代、追蹤修訂與註解。',
+   use:['/anthropic-skills:docx 把這份會議紀錄做成正式 Word 報告'],i:I.anth,l:[L.askills('docx'),L.cap]},
+  {c:'doc',n:'pdf',src:'Anthropic',d:'PDF 全能處理:擷取文字/表格、合併拆分、旋轉、浮水印、填表單、加解密、抽圖、OCR 掃描檔。',
+   use:['/anthropic-skills:pdf 把資料夾內所有 PDF 合併並加浮水印'],i:I.anth,l:[L.askills('pdf'),L.cap]},
+  {c:'doc',n:'pptx',src:'Anthropic',d:'製作、讀取、修改 PowerPoint(.pptx/.potx):簡報、範本版型、講者備註、合併拆分。',
+   use:['/anthropic-skills:pptx 依這份大綱做 10 頁提案簡報'],i:I.anth,l:[L.askills('pptx'),L.cap]},
+  {c:'doc',n:'xlsx',src:'Anthropic',d:'處理試算表(.xlsx/.csv/.tsv):清理髒資料、加欄位、公式、格式化、圖表、格式轉換。',
+   use:['/anthropic-skills:xlsx 清理這份客戶名單並依地區加總'],i:I.anth,l:[L.askills('xlsx'),L.cap]},
+  {c:'doc',n:'docs',src:'claude.ai 內建',d:'Claude Docs 線上共編文件:可分享、留言、分頁、放表格與即時圖表(不是本機檔案)。',
+   use:['「幫我開一份 PRD 文件」','/anthropic-skills:docs'],i:I.claudeai,l:[L.cap]},
+
+  // ── 策略 · 寫作 · 品牌
+  {c:'str',n:'設計策略顧問',src:'組織庫',d:'15+ 年資深設計總監角色:把感性設計轉成理性商業策略。可翻譯客戶需求、發想提案方向、收斂簡報架構、潤飾設計語意。',
+   use:['/anthropic-skills:設計策略顧問','/潤稿 (貼上文字,並指定:客戶提案版/標書版/內部說明/行銷敘事版)'],
+   subs:['/翻譯 需求翻譯','/發想 提案方向 3–5 個','/收斂 簡報骨架','/潤稿 設計語意'],i:I.org,l:[L.cap]},
+  {c:'str',n:'prompt-master',src:'自建',d:'為特定 AI 工具(ChatGPT、Cursor、Midjourney、影像/影片 AI、coding agent…)產出一段可直接貼上的最佳化 prompt;會先確認目標工具。',
+   use:['/anthropic-skills:prompt-master 幫我寫一段給 Midjourney 的產品情境圖 prompt'],i:['# 自建 skill,存於 claude.ai 個人 skill 庫,登入即同步'],l:[L.cap]},
+  {c:'str',n:'brand-guidelines',src:'Anthropic',d:'把 Anthropic 官方品牌色與字體套用到產出物上(作為品牌規範 skill 的範例)。',
+   use:['/anthropic-skills:brand-guidelines'],i:I.claudeai,l:[L.askills('brand-guidelines')]},
+
+  // ── 個人助理
+  {c:'me',n:'morning',src:'claude.ai 內建',d:'產生每日晨間簡報 HTML(行事曆、信件、訊息重點),也能設成平日定時自動產出。',
+   use:['/anthropic-skills:morning','「把晨間簡報設成每個平日早上 8 點」'],i:I.claudeai,l:[L.cap]},
+  {c:'me',n:'import-memory',src:'claude.ai 內建',d:'把其他 AI 助理(ChatGPT、Gemini…)匯出的記憶,以只增不刪的方式匯入 Claude 記憶,寫入前會先確認。',
+   use:['/anthropic-skills:import-memory 然後貼上匯出內容'],i:I.claudeai,l:[{t:'claude.ai 記憶匯入',u:'https://claude.ai/settings/capabilities?open_memory_import=true'}]},
+
+  // ── Claude Code 內建
+  {c:'cc',n:'skill-creator',src:'Anthropic',d:'建立新 skill、修改既有 skill、跑 eval 測試並優化觸發描述。自己做 skill 從這裡開始。',
+   use:['/anthropic-skills:skill-creator 幫我把「週報整理流程」做成 skill'],i:['/plugin install skill-creator@claude-plugins-official'],l:[L.askills('skill-creator'),L.ccDocs]},
+  {c:'cc',n:'code-review',src:'內建',d:'審查目前 diff、PR 或分支的正確性問題;可指定強度 low→max,<code>--comment</code> 貼到 PR、<code>--fix</code> 直接修。',
+   use:['/code-review','/code-review high 123 --comment'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'simplify',src:'內建',d:'針對改動做重用、精簡、效率清理並直接套用(只管品質,不抓 bug)。',use:['/simplify'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'security-review',src:'內建',d:'對目前分支尚未合併的改動做資安審查。',use:['/security-review'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'init',src:'內建',d:'掃描專案並產生 CLAUDE.md 專案說明。',use:['/init'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'run',src:'內建',d:'啟動並操作專案 app(CLI、伺服器、瀏覽器頁面…)親眼確認改動有效、可截圖。',use:['/run','「把網站跑起來截圖給我看」'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'loop',src:'內建',d:'以固定間隔重複執行某個 prompt 或指令;不給間隔則由 Claude 自行調整節奏。',use:['/loop 5m 檢查部署狀態','/loop /code-review'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'schedule',src:'內建',d:'建立/管理雲端排程 agent(cron),也可排一次性任務。',use:['/schedule 每週一早上 9 點整理上週 PR','「明天下午 3 點提醒我看報表」'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'fewer-permission-prompts',src:'內建',d:'掃描過往紀錄中常用的唯讀指令,加進專案 allowlist,減少權限詢問。',use:['/fewer-permission-prompts'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'update-config',src:'內建',d:'修改 settings.json:權限、環境變數、hooks(「每次…之後自動…」這類自動化)。',use:['「允許 npm 指令不用再問」','「每次存檔後自動跑 prettier」'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'keybindings-help',src:'內建',d:'自訂快捷鍵、組合鍵(~/.claude/keybindings.json)。',use:['「把送出改成 ctrl+enter」'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'claude-api',src:'內建',d:'Claude API / Anthropic SDK 參考:模型 ID、價格、串流、tool use、MCP、快取、agent。',use:['/claude-api','「用 Anthropic SDK 寫一個串流聊天範例」'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'workflow-authoring',src:'內建',d:'撰寫多 agent 平行工作流程(Workflow)腳本的參考手冊。',use:['「用 workflow 平行審查這 5 個模組」'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'dataviz',src:'內建',d:'做任何圖表/儀表板前的視覺化規範:選圖型、配色公式、無障礙、深淺色一致。',use:['「把這份銷售數據做成儀表板」'],i:I.builtin,l:[L.ccDocs]},
+  {c:'cc',n:'artifact-design / -diagramming / -capabilities',src:'內建',d:'發佈 claude.ai Artifact 網頁時的設計規範、圖解畫法、以及可用的執行期能力(共享資料、表單、檔案)。',use:['「做一個可分享的追蹤表網頁」'],i:I.builtin,l:[L.ccDocs]},
+];
+
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cat = 'all';
+
+function cmd(text){
+  return `<div class="cmd"><code>${esc(text)}</code><button type="button" data-copy="${esc(text)}" aria-label="複製">複製</button></div>`;
+}
+function card(s, color){
+  const call = s.use.map(cmd).join('');
+  return `<article class="card" style="--cc:${color}">
+    <h3><span class="mono">${esc(s.n)}</span><span class="src">${esc(s.src)}</span></h3>
+    <p class="desc">${s.d}</p>
+    <div><div class="lbl">使用方法${s.args?` · 參數 <code>${esc(s.args)}</code>`:''}</div>${call}</div>
+    ${s.subs?`<div><div class="lbl">子指令</div><div class="subs">${s.subs.map(x=>`<code>${esc(x)}</code>`).join('')}</div></div>`:''}
+    ${s.ex?`<p class="ex">${esc(s.ex)}</p>`:''}
+    <div><div class="lbl">下載 / 安裝</div>${s.i.map(cmd).join('')}</div>
+    <div class="links">${s.l.map(x=>`<a href="${x.u}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join('')}</div>
+  </article>`;
+}
+function render(){
+  const q = $('#q').value.trim().toLowerCase();
+  let total = 0, html = '';
+  for (const c of CATS){
+    if (cat!=='all' && cat!==c.id) continue;
+    const items = S.filter(s=>s.c===c.id && (!q || JSON.stringify(s).toLowerCase().includes(q)));
+    if (!items.length) continue;
+    total += items.length;
+    html += `<section class="cat"><h2><i style="background:${c.color}"></i>${c.name} <span class="count">(${items.length})</span></h2><p>${c.note}</p><div class="grid">${items.map(s=>card(s,c.color)).join('')}</div></section>`;
+  }
+  $('#list').innerHTML = html || '<div class="empty">找不到符合的 skill</div>';
+  $('#count').textContent = `顯示 ${total} / ${S.length} 個`;
+}
+$('#cats').innerHTML = [{id:'all',name:'全部'},...CATS].map(c=>`<button type="button" data-cat="${c.id}" aria-pressed="${c.id==='all'}">${c.name}</button>`).join('');
+$('#cats').addEventListener('click',e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  cat = b.dataset.cat;
+  document.querySelectorAll('#cats button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  render();
+});
+$('#q').addEventListener('input',render);
+document.addEventListener('click',e=>{
+  const b = e.target.closest('[data-copy]'); if(!b) return;
+  navigator.clipboard.writeText(b.dataset.copy).then(()=>{b.textContent='已複製';setTimeout(()=>b.textContent='複製',1200)});
+});
+$('#theme').addEventListener('click',()=>{
+  const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark';
+  try{localStorage.setItem('skills.theme', r.dataset.theme)}catch(e){}
+});
+try{const t=localStorage.getItem('skills.theme'); if(t) document.documentElement.dataset.theme=t}catch(e){}
+render();
+</script>
+</body>
+</html>
