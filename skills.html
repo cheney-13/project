@@ -35,9 +35,7 @@ header h1{font-size:28px;margin:0 0 6px;letter-spacing:.02em}
 header p{margin:0;color:var(--mut)}
 .meta{font-size:13px;color:var(--mut);margin-top:6px}
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:16px 0 12px;margin-top:20px;border-bottom:1px solid var(--line)}
-.search{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--sf);color:var(--ink);font:inherit}
-.search:focus{outline:2px solid var(--ac);outline-offset:-1px}
-.cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.cats{display:flex;flex-wrap:wrap;gap:6px}
 .cats button{border:1px solid var(--line);background:var(--sf);color:var(--ink);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
 .cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .count{font-size:13px;color:var(--mut);margin-top:8px}
@@ -91,7 +89,6 @@ footer{margin-top:48px;font-size:13px;color:var(--mut)}
   </div>
 
   <div class="bar">
-    <input class="search" id="q" type="search" placeholder="搜尋名稱、功能、指令… (例:簡報、token、Figma、Excel)" autocomplete="off">
     <div class="cats" id="cats"></div>
     <div class="count" id="count"></div>
   </div>
@@ -239,16 +236,15 @@ function card(s, color){
   </article>`;
 }
 function render(){
-  const q = $('#q').value.trim().toLowerCase();
   let total = 0, html = '';
   for (const c of CATS){
     if (cat!=='all' && cat!==c.id) continue;
-    const items = S.filter(s=>s.c===c.id && (!q || JSON.stringify(s).toLowerCase().includes(q)));
+    const items = S.filter(s=>s.c===c.id);
     if (!items.length) continue;
     total += items.length;
     html += `<section class="cat"><h2><i style="background:${c.color}"></i>${c.name} <span class="count">(${items.length})</span></h2><p>${c.note}</p><div class="grid">${items.map(s=>card(s,c.color)).join('')}</div></section>`;
   }
-  $('#list').innerHTML = html || '<div class="empty">找不到符合的 skill</div>';
+  $('#list').innerHTML = html || '<div class="empty">此分類沒有 skill</div>';
   $('#count').textContent = `顯示 ${total} / ${S.length} 個`;
 }
 $('#cats').innerHTML = [{id:'all',name:'全部'},...CATS].map(c=>`<button type="button" data-cat="${c.id}" aria-pressed="${c.id==='all'}">${c.name}</button>`).join('');
@@ -258,7 +254,6 @@ $('#cats').addEventListener('click',e=>{
   document.querySelectorAll('#cats button').forEach(x=>x.setAttribute('aria-pressed', x===b));
   render();
 });
-$('#q').addEventListener('input',render);
 document.addEventListener('click',e=>{
   const b = e.target.closest('[data-copy]'); if(!b) return;
   navigator.clipboard.writeText(b.dataset.copy).then(()=>{b.textContent='已複製';setTimeout(()=>b.textContent='複製',1200)});
