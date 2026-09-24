@@ -1,33 +1,33 @@
 <title>切版核對工具</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* 柔霧儀表板 · 淺灰底 × 白卡浮起 × 漸層點綴 */
 :root{
-  --bg:#f4f6fb; --surface:#ffffff; --surface-2:#eceaf3;
-  --raise:0 10px 26px -14px rgba(40,60,140,.13),0 2px 6px rgba(40,60,140,.04);
-  --raise-lg:0 20px 44px -16px rgba(40,60,140,.16),0 4px 12px rgba(40,60,140,.05);
-  --ink:#14151f; --ink-2:#666b7d; --ink-3:#9ea3b4; --line:#e3e2ec; --line-2:#ecebf4;
-  --accent:#5468f5; --accent-2:#4152d1; --on-accent:#ffffff;
-  --grad-brand:linear-gradient(135deg,#5ec8f0,#5468f5);
-  --info:#4da3ff; --good:#22c3c0; --warn:#f5a623; --bad:#f77878; --human:#7b8098;
-  --good-bg:#e2f7f6; --warn-bg:#fff3de; --bad-bg:#ffeaea; --human-bg:#eef0f4; --info-bg:#eaf3ff;
-  --warn-bd:#f8e2ad; --good-bd:#b7e6e3; --bad-bd:#f8c6c3;
-  --warn-ink:#a5690f; --good-ink:#0e7a78; --bad-ink:#d63d38; --info-ink:#1f6fe0; --human-ink:#545667;
+  --bg:#f6f9fc; --surface:#ffffff; --surface-2:#eef2f6;
+  --raise:0 10px 26px -14px rgba(0,55,112,.13),0 2px 6px rgba(0,55,112,.04);
+  --raise-lg:0 20px 44px -16px rgba(0,55,112,.16),0 4px 12px rgba(0,55,112,.05);
+  --ink:#06192f; --ink-2:#586a86; --ink-3:#9aa4b2; --line:#e3e8ee; --line-2:#eef1f5;
+  --accent:#35b597; --accent-2:#26977d; --accent-b:#c70067; --accent-b-2:#a10054; --on-accent:#06192f;
+  --grad-brand:linear-gradient(100deg,#35b597 0%,#26977d 38%,#005d91 100%);
+  --info:#005d91; --good:#35b597; --warn:#f0844a; --bad:#c70067; --human:#667384;
+  --good-bg:#dcf2ec; --warn-bg:#fde8dc; --bad-bg:#f9dcea; --human-bg:#e6eaef; --info-bg:#d9e8f1;
+  --warn-bd:#f6cba8; --good-bd:#b3e0d3; --bad-bd:#f3b8d1;
+  --warn-ink:#b85f28; --good-ink:#0d7f65; --bad-ink:#c70067; --info-ink:#005d91; --human-ink:#667384;
 }
 *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Inter","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;line-height:1.65;font-weight:400;}
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",-apple-system,"Segoe UI",sans-serif;line-height:1.65;font-weight:300;}
 .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .wrap{max-width:1060px;margin:0 auto;padding:22px 22px 72px}
 
 /* top bar */
-.top{display:flex;align-items:center;gap:14px;padding:6px 0 18px;flex-wrap:wrap}
-.logo{width:34px;height:34px;border-radius:11px;background:var(--grad-brand);color:var(--on-accent);
-  display:grid;place-items:center;font-weight:700;font-size:18px;flex-shrink:0;box-shadow:var(--raise)}
-.brand b{font-size:17px;letter-spacing:.5px} .brand span{display:block;color:var(--ink-2);font-size:12px}
-.brand-link{display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;font-weight:600;
+.top{display:flex;align-items:flex-end;gap:14px;padding:6px 0 18px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;gap:3px}
+.brand h1{margin:1px 0 0;font-size:32px;line-height:1.15;font-weight:400;letter-spacing:.01em;color:var(--ink)}
+.brand-sub{color:var(--ink-2);font-size:12px}
+.brand-link{display:inline-flex;align-items:center;gap:5px;margin-top:3px;font-size:12px;font-weight:600;
   color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .15s}
 .brand-link:hover{border-bottom-color:var(--accent)}
 .brand-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
@@ -76,6 +76,9 @@ h2.sec{font-size:19px;margin:2px 0 3px;text-wrap:balance} .desc{color:var(--ink-
 .modecard p{font-size:13px;color:var(--ink-2);margin:0 0 12px;line-height:1.6}
 .modecard ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2);line-height:1.85}
 .modecard .go{margin-top:16px;font-size:13px;color:var(--accent);font-weight:600}
+.modecard.a .tag,.modecard.a .go{color:var(--accent-b)}
+.modecard.a:focus-visible{outline-color:var(--accent-b)}
+.eyebrow.a{color:var(--accent-b)}
 .badge-soon{font-size:10.5px;font-weight:700;color:var(--warn-ink);background:var(--warn-bg);border-radius:99px;padding:2px 9px;margin-left:8px}
 
 /* connection check (Step 00) */
@@ -112,8 +115,10 @@ select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px
 .btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;
   padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
 .btn:hover{border-color:var(--ink-3)}
-.btn.pri{background:var(--accent);color:var(--on-accent);border-color:var(--accent);box-shadow:var(--raise)}
+.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:var(--raise)}
 .btn.pri:hover{background:var(--accent-2);border-color:var(--accent-2)}
+.btn.pri.b{background:var(--accent-b);border-color:var(--accent-b);color:#fff}
+.btn.pri.b:hover{background:var(--accent-b-2);border-color:var(--accent-b-2)}
 .btn.ghost{background:none;border-color:transparent;color:var(--ink-2)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 
@@ -134,7 +139,7 @@ select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px
 .ov .name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
 .ov .bp{font-size:11px;color:var(--ink-2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-family:"IBM Plex Mono",monospace}
 .ov .scoreline{display:flex;align-items:baseline;gap:8px;margin:12px 0 4px}
-.ov .score{font-size:34px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.ov .score{font-size:34px;font-weight:600;line-height:1;letter-spacing:-.02em}
 .ov .verdict{font-size:12.5px;font-weight:600}
 .meter{height:6px;background:var(--line-2);border-radius:99px;overflow:hidden;margin:8px 0 14px}
 .meter i{display:block;height:100%;border-radius:99px}
@@ -153,7 +158,7 @@ select.inp{cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-size:12.5px
 /* kpi + legend */
 .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .kpi{flex:1;min-width:120px;background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
-.kpi b{display:block;font-size:28px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.kpi b{display:block;font-size:28px;font-weight:600;line-height:1.1;letter-spacing:-.02em}
 .kpi span{color:var(--ink-2);font-size:12px}
 .legend{font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:14px;padding:12px 14px;margin-top:14px;line-height:1.7}
 
@@ -208,7 +213,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
 .hrow .htitle{font-weight:700;font-size:15px}
 .hrow .hmeta{font-size:12px;color:var(--ink-2);margin-top:3px}
 .hrow .hmeta .mono{color:var(--ink-3)}
-.hrow .hscore{font-size:24px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.hrow .hscore{font-size:24px;font-weight:600;line-height:1;letter-spacing:-.02em}
 .hact{display:flex;gap:8px;flex-wrap:wrap}
 .empty{color:var(--ink-3);font-size:13px;text-align:center;padding:34px;border:1px dashed var(--line);border-radius:16px}
 .rgroup{margin-bottom:14px}
@@ -251,9 +256,12 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
 
 <div class="wrap">
   <div class="top">
-    <div class="logo">◎</div>
-    <div class="brand"><b>切版核對工具</b><span>Visual &amp; Spec QC · 交付前檢核 × 交付後比對</span>
-      <a class="brand-link" href="guide.html">📐 設計檔案規範 →</a></div>
+    <div class="brand">
+      <span class="eyebrow">Visual &amp; Spec QC</span>
+      <h1>切版核對工具</h1>
+      <span class="brand-sub">交付前檢核 × 交付後比對</span>
+      <a class="brand-link" href="guide.html">📐 設計檔案規範 →</a>
+    </div>
     <div class="hist clk" onclick="openHistory()" title="查看歷史紀錄">📜 已存紀錄 <span class="n" id="histN">0</span> 筆</div>
   </div>
 
@@ -278,7 +286,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
     <h2 class="sec">你要做哪一件事?</h2>
     <p class="desc">涵蓋「交付前的設計稿自我檢核」與「交付後的設計 × 切版比對」。選一個模式開始。</p>
     <div class="modegrid">
-      <button class="modecard" onclick="enterCheck('A')">
+      <button class="modecard a" onclick="enterCheck('A')">
         <div class="tag">MODE A · 交付前</div>
         <h3>🧹 設計稿規範檢核 <span class="badge-soon">Beta</span></h3>
         <p>交付前先讓 Figma 設計稿「自我健檢」,把不合規的地方在源頭修掉。</p>
@@ -343,7 +351,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
   <!-- ============ MODE A:設計稿規範檢核 ============ -->
   <section class="screen" id="scr-lint">
     <div class="card pad">
-      <div class="eyebrow">MODE A · 交付前</div>
+      <div class="eyebrow a">MODE A · 交付前</div>
       <h2 class="sec">設計稿規範檢核</h2>
       <p class="desc">貼上 Figma 檔案的 frame / section 連結,透過 Figma MCP 讀取圖層 JSON,執行自動化規範檢查。</p>
       <div class="field">
@@ -352,7 +360,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
       </div>
       <div class="foot">
         <span class="hint">檢查項目:命名語意化 · Token 綁定 · RWD/Auto Layout · 對比度(WCAG AA)。</span>
-        <button class="btn pri" onclick="runLint()">▶　執行規範檢核</button>
+        <button class="btn pri b" onclick="runLint()">▶　執行規範檢核</button>
       </div>
     </div>
     <div id="lintOut" style="margin-top:16px"></div>
@@ -520,8 +528,8 @@ function nav(id){
 }
 function goHome(){ currentMode=null; nav("scr-home"); }
 function setCtx(){ document.getElementById("ctxMode").innerHTML =
-  currentMode==="A" ? '模式 <b>A · 交付前</b> 設計稿規範檢核'
-                    : '模式 <b>B · 交付後</b> 設計與切版比對'; }
+  currentMode==="A" ? '模式 <b style="color:var(--accent-b)">A · 交付前</b> 設計稿規範檢核'
+                    : '模式 <b style="color:var(--accent)">B · 交付後</b> 設計與切版比對'; }
 
 // ---------- Step 00 連線檢查 ----------
 let conn={figma:null, browser:null};   // null=未檢測 / true / false
@@ -536,6 +544,7 @@ function paintConn(){
   document.getElementById("proceedBtn").disabled = !(conn.figma===true && conn.browser===true);
 }
 function enterCheck(mode){ currentMode=mode; store.mode=mode; persist(); setCtx();
+  document.getElementById("proceedBtn").classList.toggle("b", mode==="A");
   conn={figma:null,browser:null}; paintConn();
   const t=ghToken(); document.getElementById("ghTokenInp").value=t;
   document.getElementById("dotGh").className="dot"+(t?" ok":"");

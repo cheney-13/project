@@ -4,10 +4,10 @@ import html
 
 RESP_LABEL = {"CODE": "程式問題", "DESIGN": "設計問題",
               "NEEDS_HUMAN": "待人工確認", "PASS": "通過", "ACCEPTED": "已接受"}
-RESP_COLOR = {"CODE": "#d63d38", "DESIGN": "#1f6fe0",
-              "NEEDS_HUMAN": "#545667", "ACCEPTED": "#178a63"}
-SEV_COLOR = {"high": "#d63d38", "medium": "#a5690f", "low": "#a06b0d",
-             "info": "#545667", "pass": "#0e7a78", "accepted": "#178a63"}
+RESP_COLOR = {"CODE": "#c70067", "DESIGN": "#005d91",
+              "NEEDS_HUMAN": "#667384", "ACCEPTED": "#178a63"}
+SEV_COLOR = {"high": "#c70067", "medium": "#b85f28", "low": "#b56a2c",
+             "info": "#667384", "pass": "#0d7f65", "accepted": "#178a63"}
 STATUS_LIGHT = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
 STATUS_VERDICT = {"green": "可上線", "yellow": "建議修正後上線", "red": "不建議上線"}
 
@@ -28,17 +28,17 @@ def render(rep):
     return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Visual & Spec QC 報告</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
  /* 柔霧儀表板 · 淺灰底 × 白卡浮起 */
- :root{{--bg:#f4f6fb;--fg:#14151f;--mut:#666b7d;--line:#e3e2ec;--card:#ffffff;--card-2:#eceaf3;
-   --shadow:0 10px 26px -14px rgba(40,60,140,.13),0 2px 6px rgba(40,60,140,.04);}}
- *{{box-sizing:border-box}} body{{margin:0;font-family:"Inter","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:var(--bg);line-height:1.65}}
+ :root{{--bg:#f6f9fc;--fg:#06192f;--mut:#586a86;--line:#e3e8ee;--card:#ffffff;--card-2:#eef2f6;
+   --shadow:0 10px 26px -14px rgba(0,55,112,.13),0 2px 6px rgba(0,55,112,.04);}}
+ *{{box-sizing:border-box}} body{{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:var(--bg);line-height:1.65}}
  .wrap{{max-width:1080px;margin:0 auto;padding:24px}}
  h1{{font-size:22px;margin:0 0 2px;font-weight:700}} .sub{{color:var(--mut);font-size:13px;margin-bottom:20px}}
  .kpis{{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}}
  .kpi{{flex:1;min-width:130px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}}
- .kpi b{{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em}} .kpi span{{color:var(--mut);font-size:12px}}
+ .kpi b{{display:block;font-size:28px;font-weight:600;letter-spacing:-.02em}} .kpi span{{color:var(--mut);font-size:12px}}
  .frame{{border:1px solid var(--line);border-radius:18px;margin-bottom:14px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}}
  .fh{{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--card-2)}}
  .fh .name{{font-weight:700;font-size:16px}} .fh .verdict{{margin-left:auto;font-weight:700}}
@@ -67,9 +67,9 @@ def _kpis(rep):
                f'<span>已接受(基準線)</span></div>') if t.get("ACCEPTED") else ""
     return f"""<div class="kpis">
       <div class="kpi"><b>{t['score']}%</b><span>整體還原度</span></div>
-      <div class="kpi"><b style="color:#d63d38">{t['CODE']}</b><span>程式要修(前端)</span></div>
-      <div class="kpi"><b style="color:#1f6fe0">{t['DESIGN']}</b><span>設計要補(設計師)</span></div>
-      <div class="kpi"><b style="color:#545667">{t['NEEDS_HUMAN']}</b><span>待人工確認</span></div>
+      <div class="kpi"><b style="color:#c70067">{t['CODE']}</b><span>程式要修(前端)</span></div>
+      <div class="kpi"><b style="color:#005d91">{t['DESIGN']}</b><span>設計要補(設計師)</span></div>
+      <div class="kpi"><b style="color:#667384">{t['NEEDS_HUMAN']}</b><span>待人工確認</span></div>
       {acc_kpi}
     </div>"""
 
@@ -97,7 +97,7 @@ def _dev_view(rep):
                   <td>{spec_cell}</td>
                   <td>{act_cell}</td>
                   <td style="color:{sc}">{esc(r['detail'])}<br>
-                      <span style="color:#666b7d">{esc(r['resp_msg'])}</span></td>
+                      <span style="color:#586a86">{esc(r['resp_msg'])}</span></td>
                 </tr>""")
             body = f"""<div class="tbl-wrap"><table><thead><tr>
               <th>判定</th><th>元件 / 選擇器</th><th>屬性</th>
@@ -105,7 +105,7 @@ def _dev_view(rep):
             </tr></thead><tbody>{''.join(trs)}</tbody></table></div>"""
         blocks.append(f"""<div class="frame">
           <div class="fh"><span class="name">{esc(f['name'])}</span>
-            <span style="margin-left:auto;color:#666b7d">還原度 {f['score']}%　差異 {len(rows)} 項</span>
+            <span style="margin-left:auto;color:#586a86">還原度 {f['score']}%　差異 {len(rows)} 項</span>
           </div>{body}</div>""")
     return "".join(blocks)
 

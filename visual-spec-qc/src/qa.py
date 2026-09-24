@@ -33,9 +33,9 @@ import os, re, json, sys
 import figma_extract, auto_qa
 from report_html import render, esc
 
-STATUS = {"green": ("🟢", "#0e7a78", "可上線"),
-          "yellow": ("🟡", "#a5690f", "建議修正後上線"),
-          "red": ("🔴", "#d63d38", "不建議上線")}
+STATUS = {"green": ("🟢", "#0d7f65", "可上線"),
+          "yellow": ("🟡", "#b85f28", "建議修正後上線"),
+          "red": ("🔴", "#c70067", "不建議上線")}
 
 def slug(s):
     return re.sub(r'[^0-9A-Za-z]+', '_', s).strip('_').lower() or "pair"
@@ -96,11 +96,11 @@ def render_index(cfg, results):
         t = r["totals"]
         cov = r["coverage"][0] if r["coverage"] else {"design_only": [], "dom_only": []}
         chips = []
-        if t["CODE"]:  chips.append(f'<span class="chip" style="color:#d63d38;background:#ffeaea">程式 {t["CODE"]}</span>')
-        if t["DESIGN"]:chips.append(f'<span class="chip" style="color:#1f6fe0;background:#eaf3ff">設計 {t["DESIGN"]}</span>')
-        if t["NEEDS_HUMAN"]:chips.append(f'<span class="chip" style="color:#545667;background:#eef0f4">待確認 {t["NEEDS_HUMAN"]}</span>')
-        if t.get("ACCEPTED"):chips.append(f'<span class="chip" style="color:#178a63;background:#e2f7f6">已接受 {t["ACCEPTED"]}</span>')
-        chips.append(f'<span class="chip" style="color:#0e7a78;background:#e2f7f6">通過 {t["pass"]}</span>')
+        if t["CODE"]:  chips.append(f'<span class="chip" style="color:#c70067;background:#f9dcea">程式 {t["CODE"]}</span>')
+        if t["DESIGN"]:chips.append(f'<span class="chip" style="color:#005d91;background:#d9e8f1">設計 {t["DESIGN"]}</span>')
+        if t["NEEDS_HUMAN"]:chips.append(f'<span class="chip" style="color:#667384;background:#e6eaef">待確認 {t["NEEDS_HUMAN"]}</span>')
+        if t.get("ACCEPTED"):chips.append(f'<span class="chip" style="color:#178a63;background:#dcf2ec">已接受 {t["ACCEPTED"]}</span>')
+        chips.append(f'<span class="chip" style="color:#0d7f65;background:#dcf2ec">通過 {t["pass"]}</span>')
         covline = ""
         if cov.get("design_only"): covline += f'<div class="cov">⚠ 實作漏做:{", ".join(esc(k) for k in cov["design_only"])}</div>'
         if cov.get("dom_only"):    covline += f'<div class="cov">＋ 設計未定義:{", ".join(esc(k) for k in cov["dom_only"])}</div>'
@@ -115,13 +115,13 @@ def render_index(cfg, results):
             <div class="go">查看逐項報告 →</div>
           </div></a>""")
     return f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>核對總覽</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>核對總覽</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-:root{{--bg:#f4f6fb;--sf:#fff;--ink:#14151f;--mut:#666b7d;--line:#e3e2ec;--ac:#5468f5;
- --shadow:0 10px 26px -14px rgba(40,60,140,.13),0 2px 6px rgba(40,60,140,.04)}}
+:root{{--bg:#f6f9fc;--sf:#fff;--ink:#06192f;--mut:#586a86;--line:#e3e8ee;--ac:#35b597;
+ --shadow:0 10px 26px -14px rgba(0,55,112,.13),0 2px 6px rgba(0,55,112,.04)}}
 
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);
- font-family:"Inter","Noto Sans TC",-apple-system,"Segoe UI",sans-serif}}
+ font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",-apple-system,"Segoe UI",sans-serif}}
 .wrap{{max-width:920px;margin:0 auto;padding:28px 22px 60px}}
 h1{{font-size:22px;margin:0 0 2px;font-weight:700}}.sub{{color:var(--mut);font-size:13px;margin-bottom:22px}}
 .sub b{{color:var(--ink);font-family:"IBM Plex Mono",monospace}}
@@ -134,7 +134,7 @@ h1{{font-size:22px;margin:0 0 2px;font-weight:700}}.sub{{color:var(--mut);font-s
 .nm{{font-weight:700;font-size:15px}}.fr{{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--mut);
  border:1px solid var(--line);border-radius:8px;padding:1px 6px;margin-left:4px}}
 .sl{{display:flex;align-items:baseline;gap:8px;margin:10px 0 4px}}
-.sc{{font-size:30px;font-weight:800;letter-spacing:-.02em}}.sc small{{font-size:15px}}
+.sc{{font-size:30px;font-weight:600;letter-spacing:-.02em}}.sc small{{font-size:15px}}
 .vd{{font-size:12px;font-weight:600}}
 .meter{{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 12px}}
 .meter i{{display:block;height:100%}}

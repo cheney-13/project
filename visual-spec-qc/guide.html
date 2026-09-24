@@ -1,21 +1,21 @@
 <title>Figma 交付規範</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* 柔霧儀表板 · 淺灰底 × 白卡浮起 × 漸層點綴 */
 :root{
-  --bg:#f4f6fb; --surface:#ffffff; --surface-2:#eceaf3;
-  --raise:0 10px 26px -14px rgba(40,60,140,.13),0 2px 6px rgba(40,60,140,.04);
-  --ink:#14151f; --ink-2:#666b7d; --ink-3:#9ea3b4; --line:#e3e2ec; --line-2:#ecebf4;
-  --accent:#5468f5; --accent-2:#4152d1; --on-accent:#ffffff;
-  --info:#4da3ff; --good:#22c3c0; --bad:#f77878;
-  --good-bg:#e2f7f6; --bad-bg:#ffeaea; --info-bg:#eaf3ff; --accent-bg:#eaeeff;
-  --good-ink:#0e7a78; --bad-ink:#d63d38; --info-ink:#1f6fe0;
+  --bg:#f6f9fc; --surface:#ffffff; --surface-2:#eef2f6;
+  --raise:0 10px 26px -14px rgba(0,55,112,.13),0 2px 6px rgba(0,55,112,.04);
+  --ink:#06192f; --ink-2:#586a86; --ink-3:#9aa4b2; --line:#e3e8ee; --line-2:#eef1f5;
+  --accent:#35b597; --accent-2:#26977d; --accent-b:#c70067; --on-accent:#06192f;
+  --info:#005d91; --good:#35b597; --bad:#c70067;
+  --good-bg:#dcf2ec; --bad-bg:#f9dcea; --info-bg:#d9e8f1; --accent-bg:#dcf2ec;
+  --good-ink:#0d7f65; --bad-ink:#c70067; --info-ink:#005d91;
 }
 *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Inter","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;line-height:1.75;font-weight:400}
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",-apple-system,"Segoe UI",sans-serif;line-height:1.75;font-weight:300}
 .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .wrap{max-width:860px;margin:0 auto;padding:34px 22px 80px}
 
@@ -36,8 +36,9 @@ h1{font-size:30px;margin:8px 0 6px;letter-spacing:.5px;text-wrap:balance}
 /* section */
 section.rule{margin:0 0 30px}
 .rhead{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
-.rnum{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;color:var(--ink-2);
-  background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:2px 8px;flex-shrink:0}
+.rnum{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--accent);
+  background:var(--good-bg);border:1px solid transparent;border-radius:8px;padding:2px 8px;flex-shrink:0}
+.rnum.b{color:var(--accent-b);background:var(--bad-bg)}
 .rhead h2{font-size:19px;margin:0;letter-spacing:.3px;font-weight:600}
 .rhead .sub{color:var(--ink-3);font-size:13px;margin-left:auto;text-align:right}
 
@@ -141,7 +142,7 @@ td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;backgroun
 
   <!-- 02 結構 -->
   <section class="rule">
-    <div class="rhead"><span class="rnum">02</span><h2>檔案結構:一個 section 放全尺寸</h2><span class="sub">同一頁的各 RWD 尺寸並排在一個 section</span></div>
+    <div class="rhead"><span class="rnum b">02</span><h2>檔案結構:一個 section 放全尺寸</h2><span class="sub">同一頁的各 RWD 尺寸並排在一個 section</span></div>
     <div class="card pad">
 <div class="tree"><span class="pg">▚ Page：About</span>                <span class="cm"># 一個網站頁面 = 一個 Figma Page</span>
  └─ <span class="sec">▧ Section：about</span>          <span class="cm"># 這一頁的「全尺寸」都放這個 section</span>
@@ -178,7 +179,7 @@ td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;backgroun
 
   <!-- 04 現在改成 -->
   <section class="rule">
-    <div class="rhead"><span class="rnum">04</span><h2>現在 → 改成(依實際檔案)</h2></div>
+    <div class="rhead"><span class="rnum b">04</span><h2>現在 → 改成(依實際檔案)</h2></div>
     <div class="dd">
       <div class="ddcol no"><div class="h">現在的做法</div><ul>
         <li>命名不一致 <span class="mono">index_1440 / index / index_380</span>,寬度與斷點標籤對不上</li>
