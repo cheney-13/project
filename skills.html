@@ -47,16 +47,32 @@ section.cat{margin-top:34px}
 section.cat>h2{font-size:18px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
 section.cat>h2 i{width:10px;height:10px;border-radius:3px;display:inline-block}
 section.cat>p{margin:0 0 14px;color:var(--mut);font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
-.card{background:var(--sf);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--cc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;border-top:3px solid var(--cc);overflow:hidden}
+.card-main{padding:16px 16px 18px;display:flex;flex-direction:column;gap:12px}
 .card h3{margin:0;font-size:16px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .card h3 .src{font-size:11px;font-weight:500;color:var(--mut);background:var(--chip);padding:1px 8px;border-radius:999px;white-space:nowrap}
 .card .desc{margin:0;font-size:14px}
-.lbl{font-size:12px;color:var(--mut);font-weight:700;letter-spacing:.04em;margin-bottom:4px}
-.cmd{display:flex;align-items:flex-start;gap:6px;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin:4px 0}
+.lbl{font-size:12px;color:var(--mut);font-weight:700;letter-spacing:.04em;margin-bottom:6px}
+.cmd{display:flex;align-items:flex-start;gap:6px;border-radius:8px;padding:7px 8px 7px 10px;margin:4px 0}
 .cmd code{flex:1;white-space:pre-wrap;word-break:break-all}
-.cmd button{border:0;background:transparent;color:var(--mut);cursor:pointer;font-size:12px;padding:2px 4px;border-radius:4px;flex-shrink:0}
-.cmd button:hover{color:var(--ac)}
+.cmd button{border:0;background:transparent;color:var(--mut);cursor:pointer;font:inherit;font-size:12px;padding:2px 6px;border-radius:4px;flex-shrink:0;min-height:24px}
+.cmd button:hover,.cmd button:focus-visible{color:var(--ac)}
+/* 使用方法:主區,帶分類色調,每天會用 */
+.use .lbl{color:color-mix(in srgb,var(--cc) 75%,var(--ink))}
+.use .cmd{background:color-mix(in srgb,var(--cc) 9%,var(--sf));border:1px solid color-mix(in srgb,var(--cc) 28%,var(--line))}
+.use .cmd code{font-weight:500}
+/* 下載/安裝:卡片底部凹陷區,只用一次,降一階 */
+.card-foot{margin-top:auto;background:var(--code);border-top:1px dashed var(--line);padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.card-foot .lbl{margin-bottom:4px}
+.card-foot .cmd{background:transparent;border:0;padding:2px 0;margin:2px 0;font-size:12px}
+.card-foot .cmd::before{content:"$";color:var(--mut);font-family:"JetBrains Mono",monospace;font-size:.86em;line-height:1.65}
+.card-foot .cmd code{color:var(--ink)}
+.note{margin:2px 0;font-size:12px;color:var(--mut)}
+.ex{font-size:13px;color:var(--mut);margin:0}
+.links{font-size:12px;display:flex;flex-wrap:wrap;gap:4px 12px}
+.links a{color:var(--ac);text-decoration:none}
+.links a:hover{text-decoration:underline}
 .subs{display:flex;flex-wrap:wrap;gap:4px}
 .subs code{background:var(--chip);padding:1px 7px;border-radius:5px;font-size:12px}
 .ex{font-size:13px;color:var(--mut);margin:0}
@@ -223,16 +239,22 @@ let cat = 'all';
 function cmd(text){
   return `<div class="cmd"><code>${esc(text)}</code><button type="button" data-copy="${esc(text)}" aria-label="複製">複製</button></div>`;
 }
+function inst(text){
+  return text.startsWith('#') ? `<p class="note">${esc(text.replace(/^#\s*/,''))}</p>` : cmd(text);
+}
 function card(s, color){
-  const call = s.use.map(cmd).join('');
   return `<article class="card" style="--cc:${color}">
-    <h3><span class="mono">${esc(s.n)}</span><span class="src">${esc(s.src)}</span></h3>
-    <p class="desc">${s.d}</p>
-    <div><div class="lbl">使用方法${s.args?` · 參數 <code>${esc(s.args)}</code>`:''}</div>${call}</div>
-    ${s.subs?`<div><div class="lbl">子指令</div><div class="subs">${s.subs.map(x=>`<code>${esc(x)}</code>`).join('')}</div></div>`:''}
-    ${s.ex?`<p class="ex">${esc(s.ex)}</p>`:''}
-    <div><div class="lbl">下載 / 安裝</div>${s.i.map(cmd).join('')}</div>
-    <div class="links">${s.l.map(x=>`<a href="${x.u}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join('')}</div>
+    <div class="card-main">
+      <h3><span class="mono">${esc(s.n)}</span><span class="src">${esc(s.src)}</span></h3>
+      <p class="desc">${s.d}</p>
+      <div class="use"><div class="lbl">使用方法${s.args?` · 參數 <code>${esc(s.args)}</code>`:''}</div>${s.use.map(cmd).join('')}</div>
+      ${s.subs?`<div><div class="lbl">子指令</div><div class="subs">${s.subs.map(x=>`<code>${esc(x)}</code>`).join('')}</div></div>`:''}
+      ${s.ex?`<p class="ex">${esc(s.ex)}</p>`:''}
+    </div>
+    <div class="card-foot">
+      <div><div class="lbl">下載 / 安裝</div>${s.i.map(inst).join('')}</div>
+      <div class="links">${s.l.map(x=>`<a href="${x.u}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join('')}</div>
+    </div>
   </article>`;
 }
 function render(){
