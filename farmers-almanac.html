@@ -1,0 +1,620 @@
+<!doctype html>
+<!--
+THESIS: 線上農民曆就是牆上那本「每日一張」撕日曆。一天一頁、撕了才是明天；
+  拒絕紅金喜氣大圖＋月曆格子＋卡片堆的「農民曆網站」標配。
+OWN-WORLD: 水綠色水泥漆牆面整片鋪滿；紅紙燙金的日曆頭；薄白日曆紙上只有兩色印刷
+  ——墨黑與朱紅(週日、國定假日)，週六用綠墨。巨大的窄體阿拉伯數字、直排的農曆日期、
+  宜／忌兩欄。紙夠薄，透得出底下明天那一頁的數字。日曆本的厚度＝今年還剩幾張。
+STORY: 早上滑開手機，一眼看到今天國曆／農曆、宜忌、沖煞、離下個節氣幾天；
+  想看明天就把這頁撕掉，想翻回去就貼回來。
+FIRST VIEWPORT: 釘子掛著一整本日曆佔滿手機寬度；日曆頭下是當日頁，
+  數字佔頁寬六成；頁面下方是「前一天／撕一張」與本週七天的小條。
+FORM: 撕日曆(候選清單第 1 名；籤詩、春聯、火車票、中藥櫃、廟宇看板、郵票為其餘候選)。
+  seed：無(本機無 node，手動選定)。
+-->
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>每日農民曆</title>
+<meta name="description" content="一天一張的線上農民曆：國曆農曆對照、宜忌、沖煞、節氣。">
+<meta name="theme-color" content="#79b2a1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b3832" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wall:#79b2a1;          /* 水綠水泥漆 */
+  --wall-deep:#5f9886;
+  --wall-ink:#0f2c26;      /* 牆上的字 */
+  --wall-ink-2:#1f4a40;
+  --paper:#fdfdfa;
+  --paper-edge:#e4e3dc;
+  --ink:#171615;
+  --ink-2:#55524c;
+  --red:#cf1f2a;           /* 朱紅：週日、國定假日 */
+  --green:#1a7444;         /* 週六 */
+  --board:#c21d27;         /* 日曆頭紅紙 */
+  --board-deep:#8e121b;
+  --gold:#f2cf78;
+  --gold-soft:#fff1d2;
+  --nail:#3b3a37;
+  --day-ink:var(--ink);
+  --shadow:0 18px 30px -14px rgba(10,40,33,.55), 0 4px 8px -2px rgba(10,40,33,.25);
+  --font-num:"Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-serif:"Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --font-sans:"Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --wall:#1b3832; --wall-deep:#132a25; --wall-ink:#d7ebe4; --wall-ink-2:#a9cbc0;
+    --paper:#ebeae4; --paper-edge:#b9b8b0; --ink:#141312; --ink-2:#4c4a45;
+    --board:#9c1620; --board-deep:#650c13; --nail:#0b0b0a;
+    --shadow:0 18px 30px -14px rgba(0,0,0,.7), 0 4px 8px -2px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --wall:#1b3832; --wall-deep:#132a25; --wall-ink:#d7ebe4; --wall-ink-2:#a9cbc0;
+  --paper:#ebeae4; --paper-edge:#b9b8b0; --ink:#141312; --ink-2:#4c4a45;
+  --board:#9c1620; --board-deep:#650c13; --nail:#0b0b0a;
+  --shadow:0 18px 30px -14px rgba(0,0,0,.7), 0 4px 8px -2px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; min-height:100vh; min-height:100dvh;
+  background:var(--wall);
+  /* 滾筒刷過的牆：極淡的縱向不均勻，不是裝飾漸層 */
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 3px, transparent 3px 11px, rgba(0,0,0,.025) 11px 13px, transparent 13px 29px);
+  color:var(--wall-ink);
+  font-family:var(--font-sans);
+  overflow-x:hidden;
+}
+.wrap{
+  width:min(440px, 100% - 32px);
+  margin:0 auto;
+  padding:28px 0 40px;
+  padding-top:max(28px, env(safe-area-inset-top));
+}
+
+/* ── 釘子與掛繩 ── */
+.hang{position:relative; height:34px; display:flex; justify-content:center}
+.nail{width:12px; height:12px; border-radius:50%; background:var(--nail);
+  box-shadow:0 2px 2px rgba(0,0,0,.35), inset -2px -2px 0 rgba(255,255,255,.12); position:relative; z-index:2}
+.hang::before, .hang::after{content:""; position:absolute; top:6px; width:2px; height:40px; background:var(--board-deep); transform-origin:top center}
+.hang::before{left:50%; transform:rotate(38deg)}
+.hang::after{right:50%; transform:rotate(-38deg)}
+
+/* ── 日曆本 ── */
+.pad{position:relative; filter:drop-shadow(0 16px 18px rgba(10,40,33,.35))}
+:root[data-theme="dark"] .pad{filter:drop-shadow(0 16px 18px rgba(0,0,0,.55))}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pad{filter:drop-shadow(0 16px 18px rgba(0,0,0,.55))}}
+
+.board{
+  position:relative; z-index:3;
+  background:var(--board);
+  border-radius:6px 6px 2px 2px;
+  padding:12px 16px 12px;
+  color:var(--gold-soft);
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px;
+  box-shadow:inset 0 -3px 0 var(--board-deep);
+}
+.board .yr{font-family:var(--font-serif); font-weight:900; font-size:1.55rem; letter-spacing:.12em; color:var(--gold); text-align:center; line-height:1}
+.board .side{font-size:.75rem; line-height:1.35; letter-spacing:.06em}
+.board .side.r{text-align:right}
+.board .hole{position:absolute; top:6px; left:50%; width:10px; height:10px; margin-left:-5px; border-radius:50%; background:var(--wall-deep); box-shadow:inset 0 1px 2px rgba(0,0,0,.5)}
+.board .yr{padding-top:6px}
+
+/* 撕過殘留的紙根 */
+.stub{height:7px; background:var(--paper); position:relative; z-index:2;
+  clip-path:polygon(0 0,100% 0,100% 55%,96% 80%,92% 45%,88% 90%,83% 50%,79% 75%,74% 40%,70% 85%,65% 55%,61% 95%,56% 45%,52% 80%,47% 50%,43% 90%,38% 55%,34% 75%,29% 40%,25% 85%,20% 50%,16% 80%,11% 45%,7% 90%,3% 55%,0 75%)}
+
+.sheets{position:relative; touch-action:pan-y; user-select:none; -webkit-user-select:none; cursor:grab}
+.sheets.dragging{cursor:grabbing}
+/* 本子厚度＝今年還剩的張數 */
+.edges{height:var(--thick,10px); margin:0 3px;
+  background:repeating-linear-gradient(180deg, var(--paper) 0 1px, var(--paper-edge) 1px 2px);
+  border-radius:0 0 3px 3px}
+
+/* ── 一張日曆紙 ── */
+.page{
+  position:relative;
+  background:var(--paper);
+  color:var(--ink);
+  padding:14px 16px 12px;
+  aspect-ratio:3 / 4.15;
+  display:grid;
+  grid-template-columns:2.6rem 1fr 2.6rem;
+  grid-template-rows:auto 1fr auto auto auto;
+  grid-template-areas:
+    "top top top"
+    "lun num gz"
+    "term term term"
+    "yiji yiji yiji"
+    "foot foot foot";
+  contain:paint;
+}
+.page.sun, .page.holiday{--day-ink:var(--red)}
+.page.sat{--day-ink:var(--green)}
+.page.top-layer{position:absolute; inset:0 0 auto 0; z-index:5; will-change:transform; box-shadow:0 1px 0 rgba(0,0,0,.04)}
+
+.ghost{position:absolute; left:50%; top:20%; transform:translateX(-50%);
+  font-family:var(--font-num); font-size:12rem; line-height:1; color:var(--ink); opacity:.022; pointer-events:none}
+
+.top{grid-area:top; display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1.5px solid var(--day-ink); padding-bottom:8px}
+.top .ym{display:flex; align-items:baseline; gap:8px; color:var(--day-ink)}
+.top .ym b{font-family:var(--font-num); font-weight:400; font-size:1.6rem; line-height:1; letter-spacing:.01em}
+.top .ym span{font-family:var(--font-serif); font-weight:900; font-size:1.15rem}
+.top .ym small{font-size:.7rem; color:var(--ink-2); letter-spacing:.04em; margin-left:2px}
+.top .wd{text-align:right; color:var(--day-ink); line-height:1.1}
+.top .wd span{font-family:var(--font-serif); font-weight:900; font-size:1.15rem; letter-spacing:.08em}
+.top .wd small{display:block; font-size:.65rem; letter-spacing:.2em; font-weight:700}
+
+.lun{grid-area:lun; writing-mode:vertical-rl; font-family:var(--font-serif); font-weight:900; font-size:1.45rem; letter-spacing:.12em; color:var(--ink); align-self:center; justify-self:start; line-height:1}
+.lun small{font-size:.8rem; font-weight:600; color:var(--ink-2); letter-spacing:.1em}
+.gz{grid-area:gz; writing-mode:vertical-rl; font-family:var(--font-serif); font-weight:600; font-size:.88rem; letter-spacing:.18em; color:var(--ink-2); align-self:center; justify-self:end; line-height:1.5}
+.gz b{color:var(--ink); font-weight:900}
+
+.num{grid-area:num; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0; position:relative}
+.num .d{font-family:var(--font-num); font-weight:400; color:var(--day-ink); line-height:.86; font-size:clamp(8rem, 44vw, 11.5rem); letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.fest{display:flex; flex-wrap:wrap; justify-content:center; gap:4px 6px; margin-top:6px; min-height:1.5rem}
+.fest span{font-size:.78rem; font-weight:700; letter-spacing:.08em; padding:2px 8px; border:1.5px solid var(--ink); border-radius:2px; color:var(--ink); line-height:1.3}
+.fest span.red{background:var(--red); border-color:var(--red); color:#fff}
+
+.term{grid-area:term; text-align:center; font-size:.82rem; color:var(--ink-2); padding:6px 0 8px; letter-spacing:.04em}
+.term b{font-family:var(--font-serif); font-weight:900; font-size:1rem; color:var(--ink); letter-spacing:.1em; margin:0 2px}
+.term.today b{color:var(--red)}
+
+.yiji{grid-area:yiji; display:grid; grid-template-columns:1fr 1fr; border-top:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink)}
+.yiji > div{display:grid; grid-template-columns:auto 1fr; gap:8px; padding:9px 0 9px; align-items:start}
+.yiji > div + div{border-left:1px solid var(--ink); padding-left:10px}
+.yiji > div:first-child{padding-right:8px}
+.mark{width:1.85rem; height:1.85rem; display:grid; place-items:center; font-family:var(--font-serif); font-weight:900; font-size:1.15rem; border-radius:50%}
+.mark.yi{background:var(--red); color:#fff}
+.mark.ji{background:var(--ink); color:var(--paper)}
+.words{font-family:var(--font-serif); font-weight:600; font-size:.92rem; line-height:1.55; color:var(--ink); display:flex; flex-wrap:wrap; gap:0 .6em}
+.words .more{font-family:var(--font-sans); font-size:.72rem; font-weight:700; color:var(--ink-2); background:none; border:0; padding:0 2px; cursor:pointer; text-decoration:underline; text-underline-offset:2px}
+.words .more:focus-visible{outline:2px solid var(--red); outline-offset:2px}
+
+.foot{grid-area:foot; display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding-top:8px; font-size:.78rem; color:var(--ink-2)}
+.foot .chong{color:var(--ink); font-weight:500}
+.foot .chong b{font-family:var(--font-serif); font-weight:900; font-size:.95rem; letter-spacing:.06em}
+.foot .left{white-space:nowrap}
+
+.err{grid-column:1/-1; grid-row:2/-1; align-self:center; text-align:center; font-size:.95rem; line-height:1.7; color:var(--ink)}
+.err button{margin-top:10px}
+
+/* ── 牆上的操作 ── */
+.controls{display:grid; grid-template-columns:1fr 1.35fr; gap:10px; margin-top:22px}
+.btn{
+  appearance:none; font:inherit; font-weight:700; font-size:.98rem; letter-spacing:.06em;
+  min-height:48px; padding:0 14px; border-radius:4px; cursor:pointer;
+  border:2px solid var(--wall-ink); background:transparent; color:var(--wall-ink);
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  transition:background-color .16s ease-out, color .16s ease-out, transform .12s ease-out;
+}
+.btn:hover{background:color-mix(in srgb, var(--wall-ink) 10%, transparent)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:3px solid var(--gold); outline-offset:2px}
+.btn.primary{background:var(--paper); color:var(--ink); border-color:var(--paper); box-shadow:0 3px 0 var(--paper-edge)}
+.btn.primary:hover{background:#fff}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn .k{font-family:var(--font-num); font-weight:400; font-size:1.1rem; line-height:1}
+
+.subrow{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap}
+.jump{display:flex; align-items:center; gap:8px; font-size:.88rem; font-weight:500}
+.jump input{font:inherit; font-size:.92rem; min-height:40px; padding:0 8px; border-radius:4px; border:2px solid var(--wall-ink); background:color-mix(in srgb, var(--paper) 85%, transparent); color:var(--ink); color-scheme:light}
+.jump input:focus-visible{outline:3px solid var(--gold); outline-offset:1px}
+.today-link{font:inherit; font-size:.88rem; font-weight:700; background:none; border:0; color:var(--wall-ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer; min-height:40px; padding:0 4px}
+.today-link[hidden]{display:none}
+.today-link:focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:2px}
+
+/* ── 本週小條 ── */
+.week{margin-top:26px}
+.week h2{font-size:.78rem; font-weight:700; letter-spacing:.14em; margin:0 0 8px; color:var(--wall-ink-2)}
+.week ol{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+.week button{
+  width:100%; appearance:none; font:inherit; cursor:pointer;
+  background:color-mix(in srgb, var(--paper) 22%, transparent); color:var(--wall-ink);
+  border:0; border-radius:3px; padding:7px 0 6px; display:flex; flex-direction:column; align-items:center; gap:2px; line-height:1.1;
+  transition:background-color .16s ease-out;
+}
+.week button:hover{background:color-mix(in srgb, var(--paper) 45%, transparent)}
+.week button:focus-visible{outline:3px solid var(--gold); outline-offset:1px}
+.week .w{font-size:.68rem; font-weight:700}
+.week .n{font-family:var(--font-num); font-size:1.35rem}
+.week .l{font-size:.64rem; white-space:nowrap}
+.week .sun .n, .week .hol .n{color:var(--red)}
+.week .sat .n{color:var(--green)}
+.week [aria-current="date"]{background:var(--paper); color:var(--ink); box-shadow:0 3px 0 var(--paper-edge)}
+.week .is-today .w::after{content:"・今"; color:var(--red)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .week .sun .n, :root:not([data-theme="light"]) .week .hol .n{color:#ff8a8f} :root:not([data-theme="light"]) .week .sat .n{color:#7fd6a4}
+  :root:not([data-theme="light"]) .week [aria-current="date"] .n{color:inherit}}
+:root[data-theme="dark"] .week .sun .n, :root[data-theme="dark"] .week .hol .n{color:#ff8a8f}
+:root[data-theme="dark"] .week .sat .n{color:#7fd6a4}
+.week [aria-current="date"].sun .n, .week [aria-current="date"].hol .n{color:var(--red)!important}
+.week [aria-current="date"].sat .n{color:var(--green)!important}
+
+.hint{margin:16px 0 0; font-size:.8rem; color:var(--wall-ink-2); text-align:center}
+.notes{margin-top:34px; padding-top:14px; border-top:1px solid color-mix(in srgb, var(--wall-ink) 25%, transparent); font-size:.76rem; line-height:1.75; color:var(--wall-ink-2)}
+.notes p{margin:0 0 4px}
+.notes a{color:inherit}
+.sr{position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+@media (max-width:360px){
+  .page{padding:12px 12px 10px; grid-template-columns:2.2rem 1fr 2.2rem}
+  .lun{font-size:1.15rem}
+  .lun small{display:none}
+  .gz{font-size:.74rem; letter-spacing:.1em}
+  .words{font-size:.86rem}
+  .board .side{font-size:.68rem}
+}
+@media (min-width:700px){
+  .wrap{padding-top:56px}
+  .num .d{font-size:12.5rem}
+}
+@media (prefers-reduced-motion: reduce){
+  .btn, .week button{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1 class="sr">每日農民曆</h1>
+
+  <div class="hang" aria-hidden="true"><span class="nail"></span></div>
+
+  <section class="pad" aria-label="日曆">
+    <div class="board">
+      <span class="hole" aria-hidden="true"></span>
+      <div class="side" id="bLeft">民國——年</div>
+      <div class="yr" id="bYear">農民曆</div>
+      <div class="side r" id="bRight">——年<br>屬—</div>
+    </div>
+    <div class="stub" aria-hidden="true"></div>
+    <div class="sheets" id="sheets">
+      <article class="page" id="page" aria-live="polite" aria-atomic="true"></article>
+    </div>
+    <div class="edges" id="edges" aria-hidden="true"></div>
+  </section>
+
+  <div class="controls">
+    <button class="btn" id="prev" type="button"><span class="k" aria-hidden="true">‹</span> 前一天</button>
+    <button class="btn primary" id="next" type="button">撕一張 <span class="k" aria-hidden="true">›</span></button>
+  </div>
+  <div class="subrow">
+    <label class="jump">翻到 <input type="date" id="pick" min="1901-01-01" max="2099-12-31"></label>
+    <button class="today-link" id="toToday" type="button" hidden>回到今天</button>
+  </div>
+
+  <nav class="week" aria-labelledby="weekTitle">
+    <h2 id="weekTitle">這一週</h2>
+    <ol id="week"></ol>
+  </nav>
+
+  <p class="hint">在日曆紙上往下拉或往左滑，就撕下一張；往右滑貼回前一天。鍵盤 ← → 也能翻。</p>
+
+  <footer class="notes">
+    <p>農曆、干支、節氣、宜忌與沖煞依傳統曆法推算(<a href="https://github.com/6tail/lunar-javascript" rel="noopener">lunar-javascript</a>，MIT)。各家通書擇日流派不同，宜忌略有出入屬正常。</p>
+    <p>節氣時刻為台灣時間(UTC+8)。紅字為週日與國定假日，不含補假與調整放假。</p>
+  </footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js" defer></script>
+<script>
+(function(){
+'use strict';
+
+/* 曆書庫輸出簡體，這裡只轉它會用到的字 */
+var S2T = {'开':'開','绘':'繪','齐':'齊','斋':'齋','庙':'廟','谢':'謝','订':'訂','纳':'納','问':'問','归':'歸','宁':'寧','帐':'帳','进':'進','坟':'墳','启':'啟','钻':'鑽','寿':'壽','殓':'殮','门':'門','动':'動','竖':'豎','坏':'壞','补':'補','厕':'廁','仓':'倉','涂':'塗','桥':'橋','筑':'築','扫':'掃','饰':'飾','墙':'牆','马':'馬','挂':'掛','财':'財','买':'買','车':'車','产':'產','佣':'傭','货':'貨','机':'機','经':'經','络':'絡','酝':'醞','酿':'釀','铸':'鑄','渔':'漁','结':'結','网':'網','养':'養','习':'習','艺':'藝','学':'學','发':'髮','贵':'貴','针':'針','头':'頭','猎':'獵','会':'會','亲':'親','医':'醫','词':'詞','讼':'訟','疗':'療','诸':'諸','馀':'餘','丧':'喪','断':'斷','蚁':'蟻','无':'無','冲':'沖','东':'東','龙':'龍','鸡':'雞','猪':'豬','惊':'驚','蛰':'蟄','谷':'穀','满':'滿','种':'種','处':'處','腊':'臘','闰':'閏','见':'見','盖':'蓋','执':'執','闭':'閉','岁':'歲'};
+function t(s){ return String(s).replace(/[一-鿿]/g, function(c){ return S2T[c] || c; }); }
+
+var WD = ['日','一','二','三','四','五','六'];
+var WD_EN = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+var MON_CN = ['一','二','三','四','五','六','七','八','九','十','十一','十二'];
+var LMON = ['正','二','三','四','五','六','七','八','九','十','十一','十二'];
+var CN_DIGIT = ['〇','一','二','三','四','五','六','七','八','九'];
+
+/* 台灣國定假日(放假日)＝紅字；其他是節日標籤 */
+var SOLAR_HOL = {'1-1':'開國紀念日','2-28':'和平紀念日','4-4':'兒童節','5-1':'勞動節','9-28':'教師節','10-10':'國慶日','10-25':'光復節','12-25':'行憲紀念日'};
+var SOLAR_FEST = {'2-14':'情人節','3-8':'婦女節','3-12':'植樹節','3-29':'青年節','8-8':'父親節','11-12':'國父誕辰','12-31':'跨年'};
+var LUNAR_HOL = {'1-1':'春節','1-2':'春節','1-3':'春節','5-5':'端午節','8-15':'中秋節'};
+var LUNAR_FEST = {'1-9':'天公生','1-15':'元宵節','2-2':'頭牙','3-23':'媽祖生','7-7':'七夕','7-15':'中元節','9-9':'重陽節','12-8':'臘八','12-16':'尾牙','12-24':'送神'};
+
+function cnYear(n){ return String(n).split('').map(function(d){ return CN_DIGIT[+d]; }).join(''); }
+function pad2(n){ return (n<10?'0':'')+n; }
+function iso(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function addDays(d,n){ var x=new Date(d.getFullYear(), d.getMonth(), d.getDate()+n); return x; }
+function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function startOfToday(){ var n=new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+function lunarDayName(l){ return t(l.getDayInChinese()); }
+function lunarMonthName(l){ var m=l.getMonth(); return (m<0?'閏':'') + LMON[Math.abs(m)-1] + '月'; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+function info(date){
+  var y=date.getFullYear(), m=date.getMonth()+1, d=date.getDate(), w=date.getDay();
+  var l = Solar.fromYmd(y,m,d).getLunar();
+  var lm = l.getMonth(), ld = l.getDay();
+  var hol = [], fest = [];
+  var sk = m+'-'+d, lk = lm+'-'+ld;
+  if (SOLAR_HOL[sk]) hol.push(SOLAR_HOL[sk]);
+  if (lm>0 && LUNAR_HOL[lk]) hol.push(LUNAR_HOL[lk]);
+  var tomorrow = Solar.fromYmd(y,m,d).next(1).getLunar();
+  if (tomorrow.getMonth()===1 && tomorrow.getDay()===1) hol.push('除夕');
+  var cur = l.getCurrentJieQi();
+  var curName = cur ? t(cur.getName()) : '';
+  if (curName==='清明') hol.push('民族掃墓節');
+  if (SOLAR_FEST[sk]) fest.push(SOLAR_FEST[sk]);
+  if (m===5 && w===0 && d>7 && d<=14) fest.push('母親節');
+  if (lm>0 && LUNAR_FEST[lk]) fest.push(LUNAR_FEST[lk]);
+  if (curName==='冬至') fest.push('冬至');
+  var term;
+  if (cur){
+    var ts = cur.getSolar();
+    term = {today:true, name:curName, time:pad2(ts.getHour())+':'+pad2(ts.getMinute())};
+  } else {
+    var nx = l.getNextJieQi(true), ns = nx.getSolar();
+    var nd = new Date(ns.getYear(), ns.getMonth()-1, ns.getDay());
+    term = {today:false, name:t(nx.getName()), days:Math.round((nd - date)/864e5), date:ns.getMonth()+'/'+ns.getDay()};
+  }
+  var jan1 = new Date(y,0,1), dec31 = new Date(y,11,31);
+  return {
+    date:date, y:y, m:m, d:d, w:w,
+    lunarMonth:lunarMonthName(l), lunarDay:lunarDayName(l), ld:ld,
+    yearGZ:l.getYearInGanZhi(), monthGZ:l.getMonthInGanZhi(), dayGZ:l.getDayInGanZhi(),
+    zodiac:t(l.getYearShengXiao()),
+    yi:l.getDayYi().map(t), ji:l.getDayJi().map(t),
+    chong:t(l.getDayChongDesc()), sha:t(l.getDaySha()), zhixing:t(l.getZhiXing()),
+    hol:hol, fest:fest, term:term,
+    left:Math.round((dec31 - date)/864e5), dayOfYear:Math.round((date - jan1)/864e5)+1,
+    yearDays:Math.round((dec31 - jan1)/864e5)+1
+  };
+}
+
+var LIMIT = 9;
+function wordsHTML(list, kind){
+  var clean = list.length ? list : ['無'];
+  var shown = clean.length > LIMIT+2 ? clean.slice(0, LIMIT) : clean;
+  var h = shown.map(function(w){ return '<span>'+esc(w)+'</span>'; }).join('');
+  if (shown.length < clean.length) h += '<button class="more" type="button" data-kind="'+kind+'" aria-label="顯示全部 '+clean.length+' 項">+'+(clean.length-shown.length)+' 項</button>';
+  return h;
+}
+
+function pageHTML(i, ghost){
+  var chong = i.chong.match(/^\((.+)\)(.+)$/);
+  var chongTxt = chong ? '沖<b>'+esc(chong[2])+'</b>（'+esc(chong[1])+'）' : esc(i.chong);
+  var termHTML = i.term.today
+    ? '今日 <b>'+esc(i.term.name)+'</b> '+i.term.time+' 交節'
+    : '距 <b>'+esc(i.term.name)+'</b> 還有 '+i.term.days+' 天 · '+i.term.date;
+  var tags = i.hol.map(function(n){ return '<span class="red">'+esc(n)+'</span>'; })
+    .concat(i.fest.map(function(n){ return '<span>'+esc(n)+'</span>'; })).join('');
+  return ''
+    + (ghost ? '<div class="ghost" aria-hidden="true">'+ghost+'</div>' : '')
+    + '<div class="top"><div class="ym"><b>'+i.y+'</b><span>'+MON_CN[i.m-1]+'月</span><small>'+i.dayOfYear+' / '+i.yearDays+'</small></div>'
+    + '<div class="wd"><span>星期'+WD[i.w]+'</span><small>'+WD_EN[i.w]+'</small></div></div>'
+    + '<div class="lun" aria-label="農曆'+esc(i.lunarMonth+i.lunarDay)+'">'+esc(i.lunarMonth)+esc(i.lunarDay)+'<small>　農曆</small></div>'
+    + '<div class="num"><div class="d">'+i.d+'</div><div class="fest">'+tags+'</div></div>'
+    + '<div class="gz"><b>'+esc(i.dayGZ)+'</b>日　'+esc(i.monthGZ)+'月　'+esc(i.zhixing)+'日</div>'
+    + '<div class="term'+(i.term.today?' today':'')+'">'+termHTML+'</div>'
+    + '<div class="yiji"><div><span class="mark yi" aria-label="宜">宜</span><div class="words" data-for="yi">'+wordsHTML(i.yi,'yi')+'</div></div>'
+    + '<div><span class="mark ji" aria-label="忌">忌</span><div class="words" data-for="ji">'+wordsHTML(i.ji,'ji')+'</div></div></div>'
+    + '<div class="foot"><span class="chong">'+chongTxt+' 煞<b>'+esc(i.sha)+'</b></span><span class="left">今年還剩 '+i.left+' 張</span></div>';
+}
+
+function pageClass(i){
+  return 'page' + (i.w===0?' sun':'') + (i.w===6?' sat':'') + (i.hol.length?' holiday':'');
+}
+
+/* ── 狀態與畫面 ── */
+var $ = function(id){ return document.getElementById(id); };
+var page = $('page'), sheets = $('sheets');
+var today = startOfToday();
+var current = today;
+var currentInfo = null;
+var busy = false;
+var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function inRange(d){ return d.getFullYear()>=1901 && d.getFullYear()<=2099; }
+
+function paint(el, i){
+  var next = info(addDays(i.date, 1));
+  el.className = pageClass(i) + (el.classList.contains('top-layer') ? ' top-layer' : '');
+  el.innerHTML = pageHTML(i, next.d);
+  el.setAttribute('aria-label', i.y+'年'+i.m+'月'+i.d+'日 星期'+WD[i.w]+'，農曆'+i.lunarMonth+i.lunarDay
+    + (i.hol.length ? '，'+i.hol.join('、') : '')
+    + '。宜：'+(i.yi.join('、')||'無')+'。忌：'+(i.ji.join('、')||'無')+'。');
+}
+
+function render(){
+  currentInfo = info(current);
+  var i = currentInfo;
+  paint(page, i);
+  $('bYear').textContent = i.yearGZ + '年';
+  $('bLeft').innerHTML = '中華民國<br>'+(i.y>1911 ? cnYear(i.y-1911) : '前'+cnYear(1912-i.y))+'年';
+  $('bRight').innerHTML = '農民曆<br>屬'+esc(i.zodiac);
+  $('edges').style.setProperty('--thick', (3 + Math.round(i.left/i.yearDays*16))+'px');
+  $('pick').value = iso(current);
+  $('toToday').hidden = sameDay(current, today);
+  $('prev').disabled = !inRange(addDays(current,-1));
+  $('next').disabled = !inRange(addDays(current,1));
+  document.title = i.m+'月'+i.d+'日 · 農曆'+i.lunarMonth+i.lunarDay+'｜每日農民曆';
+  renderWeek();
+  var q = sameDay(current, today) ? location.pathname : location.pathname+'?d='+iso(current);
+  try{ history.replaceState(null, '', q); }catch(e){}
+}
+
+function renderWeek(){
+  var start = addDays(current, -current.getDay());
+  var h = '';
+  for (var k=0;k<7;k++){
+    var d = addDays(start,k);
+    if (!inRange(d)) { h += '<li></li>'; continue; }
+    var i = info(d);
+    var lab = i.term.today ? i.term.name : (i.ld===1 ? i.lunarMonth : i.lunarDay);
+    var cls = (i.w===0?'sun ':'')+(i.w===6?'sat ':'')+(i.hol.length?'hol ':'')+(sameDay(d,today)?'is-today':'');
+    h += '<li><button type="button" class="'+cls+'" data-d="'+iso(d)+'"'+(sameDay(d,current)?' aria-current="date"':'')
+      + ' aria-label="'+i.m+'月'+i.d+'日 星期'+WD[i.w]+' 農曆'+esc(i.lunarMonth+i.lunarDay)+'">'
+      + '<span class="w">'+WD[i.w]+'</span><span class="n">'+i.d+'</span><span class="l">'+esc(lab)+'</span></button></li>';
+  }
+  $('week').innerHTML = h;
+}
+
+/* ── 撕紙 ── */
+var TEAR = 'polygon(0 1.4%,4% 0.4%,8% 1.6%,12% 0.3%,17% 1.3%,21% 0.2%,26% 1.5%,30% 0.5%,35% 1.6%,39% 0.2%,44% 1.2%,48% 0.4%,53% 1.6%,57% 0.3%,62% 1.4%,66% 0.2%,71% 1.5%,75% 0.5%,80% 1.3%,84% 0.2%,89% 1.6%,93% 0.4%,97% 1.2%,100% 0.3%,100% 100%,0 100%)';
+
+function liftCurrent(){
+  var layer = document.createElement('article');
+  layer.className = page.className + ' top-layer';
+  layer.innerHTML = page.innerHTML;
+  layer.setAttribute('aria-hidden','true');
+  layer.style.clipPath = TEAR;
+  sheets.appendChild(layer);
+  return layer;
+}
+
+function go(delta, opts){
+  if (busy) return;
+  var target = addDays(current, delta);
+  if (!inRange(target)) return;
+  if (delta === 1) tearForward(opts && opts.layer, opts && opts.from);
+  else if (delta === -1) putBack();
+  else { current = target; render(); }
+}
+
+function tearForward(layer, from){
+  busy = true;
+  layer = layer || liftCurrent();
+  current = addDays(current, 1);
+  render();
+  if (reduceMotion){
+    layer.animate([{opacity:1},{opacity:0}], {duration:180, easing:'ease-out'}).onfinish = function(){ layer.remove(); busy=false; };
+    return;
+  }
+  var f = from || {x:0, y:0, r:0};
+  var anim = layer.animate([
+    {transform:'translate('+f.x+'px,'+f.y+'px) rotate('+f.r+'deg)', offset:0},
+    {transform:'translate('+(f.x-6)+'px,'+(f.y+18)+'px) rotate('+(f.r-7)+'deg)', offset:.28},
+    {transform:'translate('+(f.x-60)+'px,'+(window.innerHeight)+'px) rotate('+(f.r-32)+'deg)'}
+  ], {duration:720, easing:'cubic-bezier(.45,0,.8,.35)'});
+  layer.style.transformOrigin = '0 0';
+  anim.onfinish = function(){ layer.remove(); busy=false; };
+}
+
+function putBack(){
+  busy = true;
+  current = addDays(current, -1);
+  var i = info(current);
+  var layer = document.createElement('article');
+  layer.className = 'page top-layer';
+  paint(layer, i);
+  layer.setAttribute('aria-hidden','true');
+  sheets.appendChild(layer);
+  var done = function(){ layer.remove(); render(); busy=false; };
+  if (reduceMotion){ done(); return; }
+  layer.animate([
+    {transform:'translateY(-26px)', opacity:0, clipPath:'inset(0 0 100% 0)'},
+    {transform:'translateY(0)', opacity:1, clipPath:'inset(0 0 0 0)'}
+  ], {duration:300, easing:'cubic-bezier(.16,1,.3,1)'}).onfinish = done;
+}
+
+/* 拖曳：往下或往左＝撕；往右＝貼回 */
+var drag = null;
+sheets.addEventListener('pointerdown', function(e){
+  if (busy || e.button !== 0 || e.target.closest('button')) return;
+  drag = {x:e.clientX, y:e.clientY, id:e.pointerId, layer:null, moved:false};
+});
+sheets.addEventListener('pointermove', function(e){
+  if (!drag || e.pointerId !== drag.id) return;
+  var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.moved){
+    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+    if (dy < 0 && Math.abs(dy) > Math.abs(dx)) { drag = null; return; } /* 往上滑留給頁面捲動 */
+    drag.moved = true;
+    try{ sheets.setPointerCapture(e.pointerId); }catch(err){}
+    sheets.classList.add('dragging');
+    if (dx > 0 && Math.abs(dx) > Math.abs(dy)) { drag.back = true; return; }
+    if (!inRange(addDays(current,1))) { drag = null; return; }
+    drag.layer = liftCurrent();
+    drag.layer.style.transformOrigin = '0 0';
+  }
+  if (drag.layer){
+    var pull = Math.max(0, dy) + Math.max(0, -dx);
+    var r = -Math.min(14, pull * 0.06);
+    drag.f = {x:Math.min(0,dx)*0.35, y:Math.max(0,dy)*0.55, r:r};
+    drag.layer.style.transform = 'translate('+drag.f.x+'px,'+drag.f.y+'px) rotate('+r+'deg)';
+  }
+  drag.dx = dx; drag.dy = dy;
+});
+function endDrag(e){
+  if (!drag || (e && e.pointerId !== drag.id)) return;
+  var d = drag; drag = null;
+  sheets.classList.remove('dragging');
+  if (d.back){ if ((d.dx||0) > 60) go(-1); return; }
+  if (!d.layer) return;
+  var pull = Math.max(0, d.dy||0) + Math.max(0, -(d.dx||0));
+  if (pull > 70 && e && e.type === 'pointerup'){
+    go(1, {layer:d.layer, from:d.f});
+  } else {
+    var lay = d.layer;
+    lay.animate([{transform:lay.style.transform},{transform:'none'}], {duration:220, easing:'cubic-bezier(.16,1,.3,1)'}).onfinish = function(){ lay.remove(); };
+  }
+}
+sheets.addEventListener('pointerup', endDrag);
+sheets.addEventListener('pointercancel', endDrag);
+
+/* 宜忌展開 */
+sheets.addEventListener('click', function(e){
+  var b = e.target.closest('.more');
+  if (!b || !currentInfo) return;
+  var list = b.dataset.kind === 'yi' ? currentInfo.yi : currentInfo.ji;
+  b.parentNode.innerHTML = list.map(function(w){ return '<span>'+esc(w)+'</span>'; }).join('');
+});
+
+$('prev').addEventListener('click', function(){ go(-1); });
+$('next').addEventListener('click', function(){ go(1); });
+$('toToday').addEventListener('click', function(){ current = today; render(); });
+$('pick').addEventListener('change', function(e){
+  var v = e.target.value; if (!v) return;
+  var p = v.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]);
+  if (inRange(d)) { current = d; render(); }
+});
+$('week').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-d]'); if (!b) return;
+  var p = b.dataset.d.split('-').map(Number);
+  current = new Date(p[0], p[1]-1, p[2]); render();
+});
+document.addEventListener('keydown', function(e){
+  if (e.target.matches('input, textarea')) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+});
+/* 跨過午夜時把「今天」更新 */
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState !== 'visible' || !window.Solar) return;
+  var n = startOfToday();
+  if (!sameDay(n, today)){ var wasToday = sameDay(current, today); today = n; if (wasToday) current = n; render(); }
+});
+
+function fail(){
+  page.className = 'page';
+  page.innerHTML = '<div class="err">曆書資料沒有載入成功。<br>請確認網路連線後再試一次。<br><button class="btn primary" type="button" onclick="location.reload()">重新載入</button></div>';
+  ['prev','next','pick'].forEach(function(id){ $(id).disabled = true; });
+}
+
+function boot(){
+  if (!window.Solar || !window.Lunar){ fail(); return; }
+  var q = new URLSearchParams(location.search).get('d');
+  if (q && /^\d{4}-\d{2}-\d{2}$/.test(q)){
+    var p = q.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]);
+    if (inRange(d) && d.getMonth() === p[1]-1) current = d;
+  }
+  render();
+}
+window.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
+</body>
+</html>
