@@ -11,21 +11,21 @@
   --bg:#f4f2ec; --sf:#fff; --ink:#1f1d1a; --mut:#6f6a61; --line:#e7e3da;
   --ac:#c70067; --code:#f7f5f0; --chip:#efebe2;
   --c-uiux:#3f5b7a; --c-ds:#5e7d5a; --c-fe:#b98a34; --c-doc:#b4453a;
-  --c-str:#7a4f8a; --c-me:#8f887c; --c-cc:#1f1d1a;
+  --c-str:#7a4f8a; --c-me:#8f887c; --c-cc:#1f1d1a; --c-seo:#1b7f72;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#16151a; --sf:#1f1e24; --ink:#ece9e2; --mut:#a39d92; --line:#302e36;
     --ac:#ff4fa0; --code:#26252c; --chip:#2a2930;
     --c-uiux:#86a6cc; --c-ds:#9cc496; --c-fe:#e0b560; --c-doc:#e88a7f;
-    --c-str:#c39ad4; --c-me:#b0a99d; --c-cc:#ece9e2;
+    --c-str:#c39ad4; --c-me:#b0a99d; --c-cc:#ece9e2; --c-seo:#5fd3c4;
   }
 }
 :root[data-theme="dark"]{
   --bg:#16151a; --sf:#1f1e24; --ink:#ece9e2; --mut:#a39d92; --line:#302e36;
   --ac:#ff4fa0; --code:#26252c; --chip:#2a2930;
   --c-uiux:#86a6cc; --c-ds:#9cc496; --c-fe:#e0b560; --c-doc:#e88a7f;
-  --c-str:#c39ad4; --c-me:#b0a99d; --c-cc:#ece9e2;
+  --c-str:#c39ad4; --c-me:#b0a99d; --c-cc:#ece9e2; --c-seo:#5fd3c4;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Noto Sans TC",system-ui,sans-serif}
@@ -77,7 +77,7 @@ footer{margin-top:48px;font-size:13px;color:var(--mut)}
   <header>
     <h1>CHENEY的skill清單</h1>
     <p>Claude Code/claude.ai 目前可用的所有 skill:它是做什麼的、怎麼叫、去哪裡下載。</p>
-    <div class="meta">盤點日期 2026-09-24 · 來源:<code>~/.claude/skills</code>、claude.ai 同步 skill、已安裝外掛、Claude Code 內建</div>
+    <div class="meta">盤點日期 2026-10-07 · 來源:<code>~/.claude/skills</code>、claude.ai 同步 skill、已安裝外掛、Claude Code 內建</div>
   </header>
 
   <div class="howto">
@@ -112,6 +112,7 @@ const CATS = [
   {id:'str',  name:'策略 · 寫作 · 品牌', color:'var(--c-str)', note:'提案、prompt、品牌規範類。'},
   {id:'me',   name:'個人助理', color:'var(--c-me)', note:'claude.ai 內建範例 skill。'},
   {id:'cc',   name:'Claude Code 內建', color:'var(--c-cc)', note:'隨 Claude Code 附帶,不用另外下載;更新 Claude Code 即更新。'},
+  {id:'seo',  name:'SEO 分析', color:'var(--c-seo)', note:'外掛 claude-seo(AgriciDaniel),一套 hub skill 底下掛 26 個子 skill + 19 個子 agent。'},
 ];
 
 const L = {
@@ -124,6 +125,8 @@ const L = {
   ccDocs:{t:'Claude Code Skills 文件',u:'https://docs.claude.com/en/docs/claude-code/skills'},
   hc:n=>({t:'GitHub · harrychuang/cursor-skills/'+n,u:'https://github.com/harrychuang/cursor-skills/tree/master/'+n}),
   sbAddon:{t:'GitHub · storybook-addons(figma-export)',u:'https://github.com/harrychuang/storybook-addons/tree/main/packages/figma-export'},
+  seoRepo:{t:'GitHub · AgriciDaniel/claude-seo',u:'https://github.com/AgriciDaniel/claude-seo'},
+  seoSite:{t:'claude-seo.md 官網',u:'https://claude-seo.md'},
 };
 
 const I = {
@@ -133,6 +136,7 @@ const I = {
   anth:['/plugin marketplace add anthropics/skills','/plugin install document-skills@anthropic-agent-skills','# 或 claude.ai › 設定 › Capabilities › Skills 開啟'],
   claudeai:['# claude.ai 內建範例 skill:設定 › Capabilities › Skills 開啟即同步'],
   builtin:['# 內建,無需安裝;更新:claude update'],
+  seo:['/plugin marketplace add AgriciDaniel/claude-seo','/plugin install claude-seo@agricidaniel-claude-seo'],
 };
 
 const S = [
@@ -218,6 +222,14 @@ const S = [
   {c:'cc',n:'workflow-authoring',src:'內建',d:'撰寫多 agent 平行工作流程(Workflow)腳本的參考手冊。',use:['「用 workflow 平行審查這 5 個模組」'],i:I.builtin,l:[L.ccDocs]},
   {c:'cc',n:'dataviz',src:'內建',d:'做任何圖表/儀表板前的視覺化規範:選圖型、配色公式、無障礙、深淺色一致。',use:['「把這份銷售數據做成儀表板」'],i:I.builtin,l:[L.ccDocs]},
   {c:'cc',n:'artifact-design / -diagramming / -capabilities',src:'內建',d:'發佈 claude.ai Artifact 網頁時的設計規範、圖解畫法、以及可用的執行期能力(共享資料、表單、檔案)。',use:['「做一個可分享的追蹤表網頁」'],i:I.builtin,l:[L.ccDocs]},
+
+  // ── SEO 分析
+  {c:'seo',n:'seo',src:'外掛 · AgriciDaniel · MIT',d:'全方位 SEO 分析 hub skill:全站稽核、單頁深度分析、技術 SEO(爬取/索引/Core Web Vitals)、Schema 結構化資料、內容品質(E-E-A-T)、圖片 SEO、sitemap、在地 SEO、反向連結、語意分群、SXO,以及 GEO(AI Overviews/ChatGPT/Perplexity 的 AI 引用優化)。依產業(SaaS/電商/在地/媒體/代理商)自動判斷切入角度,另有 9 個可選 MCP 擴充(DataForSEO、Google Search Console/PageSpeed/GA4 等)接即時資料。',
+   use:['/seo audit https://example.com','/seo page https://example.com/pricing','/seo geo https://example.com'],
+   args:'[command] [url]',
+   subs:[['seo-audit','全站稽核,回傳評分與優先順序報告'],['seo-page','單一 URL 深度分析'],['seo-technical','技術 SEO:爬取/索引/安全/URL/行動裝置/CWV/渲染'],['seo-content','內容品質、E-E-A-T、可讀性、AI 引用準備度'],['seo-content-brief','競品導向內容簡報,含分段字數與關鍵字密度'],['seo-schema','Schema.org JSON-LD 偵測、驗證、產生'],['seo-sitemap','XML sitemap 分析與產生'],['seo-images','圖片 SEO:alt、檔案大小、格式、CLS、圖片 SERP'],['seo-image-gen','AI 產生 OG/社群預覽圖、英雄圖等視覺素材'],['seo-backlinks','反向連結輪廓、錨文字、毒性訊號、競品缺口'],['seo-cluster','關鍵字語意分群,設計 hub-and-spoke 內容架構'],['seo-local','在地 SEO:Google Business Profile、NAP、評論、在地 schema'],['seo-maps','地圖情報:geo-grid 排名、GBP 稽核、評論、競品半徑'],['seo-geo','AI 搜尋/GEO:AI Overviews、ChatGPT、Perplexity 可引用性'],['seo-agentic','AI agent 可讀性:Lighthouse Agentic Browsing、llms.txt、WebMCP'],['seo-ecommerce','電商 SEO:商品 schema、Google Shopping、行銷市集訊號'],['seo-hreflang','多語系/多地區 hreflang 稽核與產生'],['seo-sxo','搜尋體驗/意圖錯配診斷,依 SERP 版面類型反推'],['seo-drift','建立 SEO 元素基準,追蹤變化與回歸'],['seo-plan','新/既有網站的 SEO 策略規劃與內容日曆'],['seo-programmatic','大量生成頁面的程式化 SEO 規劃'],['seo-competitor-pages','競品比較頁/替代方案頁產生'],['seo-flow','FLOW 框架(Find→Leverage→Optimize→Win)證據導向提示庫'],['seo-google','Google API:Search Console、PageSpeed、CrUX、GA4'],['seo-dataforseo','DataForSEO 即時資料:SERP、關鍵字量、反向連結、AI 能見度']],
+   ex:'先裝主外掛才有 /seo 與各子 skill;部分子 skill(seo-google、seo-dataforseo、seo-maps 等)要另外裝對應 MCP 擴充並設定 API 金鑰才能跑即時資料。',
+   i:I.seo,l:[L.seoRepo,L.seoSite]},
 ];
 
 const $ = s=>document.querySelector(s);
