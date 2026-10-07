@@ -98,9 +98,12 @@ td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;backgroun
 .check li.on .txt b{color:var(--ink-3)}
 
 .tip{font-size:12.5px;color:var(--ink-2);background:var(--info-bg);border-radius:14px;padding:12px 14px;margin-top:14px;line-height:1.65}
-.foot{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);text-align:center}
+.foot{margin-top:36px;padding:18px 0 8px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px}
 .foot a{color:var(--accent);text-decoration:none;font-weight:600}
 .foot a:hover{text-decoration:underline}
+.foot-by{display:flex;align-items:center;gap:8px;color:var(--ink-3)}
+.foot-by img{display:block;height:20px;width:auto}
 /* 回工具頁導線 */
 .topnav{margin-bottom:18px}
 .backtool{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--ink);
@@ -213,7 +216,10 @@ td code,.k-code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;backgroun
     </div>
   </section>
 
-  <div class="foot">Visual &amp; Spec QC · 設計交付規範 v1 · 與「切版核對工具」搭配使用　·　<a href="index.html">← 回切版核對工具</a></div>
+  <div class="foot">
+    <span>Visual &amp; Spec QC · 設計交付規範 v1.0 · 與「切版核對工具」搭配使用　·　<a href="index.html">← 回切版核對工具</a></span>
+    <span class="foot-by"><span>Made by</span><img src="assets/mx-digi-logo.png" alt="創意思境 MX Digi Co., Ltd."></span>
+  </div>
 </div>
 
 <script>

@@ -31,7 +31,7 @@ config.json:
 """
 import os, re, json, sys
 import figma_extract, auto_qa
-from report_html import render, esc
+from report_html import render, esc, footer_html, FOOTER_CSS
 
 STATUS = {"green": ("🟢", "#0d7f65", "可上線"),
           "yellow": ("🟡", "#b85f28", "建議修正後上線"),
@@ -142,10 +142,11 @@ h1{{font-size:22px;margin:0 0 2px;font-weight:700}}.sub{{color:var(--mut);font-s
 .chip{{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px}}
 .cov{{font-size:12px;color:var(--mut);margin-top:8px}}
 .go{{margin-top:11px;font-size:12px;color:var(--ac);font-weight:600}}
-</style></head><body><div class="wrap">
+{FOOTER_CSS}</style></head><body><div class="wrap">
 <h1>切版核對總覽</h1>
 <div class="sub">整體還原度 <b>{avg}%</b>　·　共 {len(results)} 組配對　·　點卡片看逐項明細</div>
 <div class="grid">{''.join(cards)}</div>
+{footer_html()}
 </div></body></html>"""
 
 def print_summary(results, idx, threshold):

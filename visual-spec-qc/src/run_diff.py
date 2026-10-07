@@ -16,7 +16,7 @@ run_diff.py — 執行差異(Run Diff):比較兩輪核對,只標「動了什麼�
 """
 import json, sys
 import auto_qa
-from report_html import esc
+from report_html import esc, footer_html, FOOTER_CSS
 
 FAIL = {"CODE", "DESIGN", "NEEDS_HUMAN"}
 RESP = {"CODE": ("程式", "#c70067"), "DESIGN": ("設計", "#005d91"), "NEEDS_HUMAN": ("待人工", "#667384")}
@@ -121,13 +121,14 @@ td{{padding:10px 16px;border-top:1px solid var(--line);vertical-align:top}}
 td b{{font-weight:600}} .k{{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--mut);display:block;margin-top:2px}}
 .mono{{font-variant-numeric:tabular-nums}}
 .empty{{text-align:center;color:var(--mut);padding:40px;background:var(--sf);border:1px solid var(--line);border-radius:18px}}
-</style></head><body><div class="wrap">
+{FOOTER_CSS}</style></head><body><div class="wrap">
 <h1>執行差異　Round Diff</h1>
 <div class="delta"><span class="a">還原度</span>
   <span class="big" style="color:var(--mut)">{sp}%</span><span class="a">→</span>
   <span class="big" style="color:{dcol}">{sc}%</span>
   <span class="big" style="color:{dcol};font-size:18px">{darrow} {abs(delta)}</span></div>
 {body}
+{footer_html()}
 </div></body></html>"""
 
 if __name__ == "__main__":

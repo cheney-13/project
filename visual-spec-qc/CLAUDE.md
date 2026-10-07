@@ -84,6 +84,31 @@ python3 -m unittest discover -s tests           # 全綠才算沒改壞
   (`reports.config.json` 決定實際比對哪個 Figma/網站);協作/歷史的 save/load 若要跨人共用,
   一樣可比照這個模式改打某個雲端 API。
 
+## demo.html(展示用原型,免設定)
+`index.html` 的獨立副本,給發表 / Demo 場合用:不需 GitHub Token、不需真實 Figma / 網站連結,
+點哪個按鈕都直接show預先寫好的範例資料,體驗跟正式版一樣的畫面與操作流程。
+- Step 00 連線檢查:GitHub Actions 列改成寫死的「已連線」靜態列(無輸入框);`enterCheck()` 直接
+  呼叫 `recheckConn()`,免點「重新檢測」。
+- `runLint()`:不打 API,`setTimeout` 後直接 `renderLint(DEMO_LINT, true)`(`DEMO_LINT` 是寫在檔案
+  裡的假資料)。
+- `startRun()`:不打 API,`renderGhRun()` 播放假的 queued→in_progress→completed 動畫後,
+  `RESULTS=null` 讓 `showResult()` fallback 到原本就內建的 `DATA`(示範資料集)。
+- 已移除 `ghToken()`/`ghApi()`/`dispatchAndWait()`/`verifyGhToken()`/`loadLatestReport()` 等真連線
+  專用的函式(demo.html 用不到,保留在 `index.html`)。
+- **兩份檔案要分開維護**:改 `index.html` 的畫面結構/CSS/非觸發邏輯時,通常也要同步改
+  `demo.html`(兩者目前是各自獨立的檔案,不是互相 include)。只有觸發/輪詢/讀真實報告那幾段
+  邏輯是刻意不同步的。
+- 互相連結:`index.html` 右上角「🎬 示範版」連到 `demo.html`;`demo.html` 的「← 回正式工具」連回
+  `index.html`。
+
+## 頁尾(Made by MX)
+`index.html`/`guide.html` 的 `.proto`/`.foot`,以及 `report_html.py`/`qa.py`/`run_diff.py` 共用的
+`footer_html()`(定義在 `report_html.py`,`qa.py`/`run_diff.py` 皆 `import`),都放了左側版本號
+(目前 `v1.0`,改版時記得同步四處的版本字串)+ 右側「Made by」+ MX Digi logo。`index.html`/
+`guide.html`/`demo.html` 用相對路徑 `assets/mx-digi-logo.png`(檔案在 `visual-spec-qc/assets/`);
+三支 Python 模板的輸出資料夾不固定,改用 base64 內嵌(`report_html.py` 的 `MX_LOGO_B64`),
+確保報告產到哪裡 logo 都看得到。
+
 ## 視覺系統(柔霧儀表板 · 單一亮色)
 所有 HTML 輸出共用同一套 token,改樣式要同步四處(`report_html.py`、`qa.py`、`run_diff.py`、根層 `index.html` / `guide.html`)。
 每個語意色分「鮮明層」(裝飾用,如 `.dot`/漸層/大膽色塊)與「`-ink` 可讀層」(文字/pill 底色,已核對 WCAG 對比 ≥4.5:1,`--bad`/`--good`/`--warn`/`--info`/`--human` 皆同構):

@@ -1,4 +1,4 @@
-<title>切版核對工具</title>
+<title>切版核對工具(示範版)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -27,6 +27,8 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .brand{display:flex;flex-direction:column;gap:3px}
 .brand h1{margin:1px 0 0;font-size:32px;line-height:1.15;font-weight:400;letter-spacing:.01em;color:var(--ink)}
 .brand-sub{color:var(--ink-2);font-size:12px}
+.demo-badge{display:inline-block;margin-left:10px;vertical-align:middle;font-size:11px;font-weight:700;letter-spacing:1px;
+  color:#fff;background:var(--accent-b);border-radius:999px;padding:3px 10px}
 .brand-link{display:inline-flex;align-items:center;gap:5px;margin-top:3px;font-size:12px;font-weight:600;
   color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .15s}
 .brand-link:hover{border-bottom-color:var(--accent)}
@@ -261,12 +263,9 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
   <div class="top">
     <div class="brand">
       <span class="eyebrow">Visual &amp; Spec QC</span>
-      <h1>切版核對工具</h1>
-      <span class="brand-sub">交付前檢核 × 交付後比對</span>
-      <span style="display:flex;gap:14px;flex-wrap:wrap;margin-top:3px">
-        <a class="brand-link" href="guide.html" style="margin-top:0">📐 設計檔案規範 →</a>
-        <a class="brand-link" href="demo.html" style="margin-top:0">🎬 示範版(免設定快速看流程)→</a>
-      </span>
+      <h1>切版核對工具<span class="demo-badge">DEMO</span></h1>
+      <span class="brand-sub">交付前檢核 × 交付後比對 · 免設定,一鍵看完整流程</span>
+      <a class="brand-link" href="index.html">← 回正式工具</a>
     </div>
     <div class="hist clk" onclick="openHistory()" title="查看歷史紀錄">📜 已存紀錄 <span class="n" id="histN">0</span> 筆</div>
   </div>
@@ -338,12 +337,9 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
           <span class="stt" id="sttBrowser">尚未檢測</span>
         </div>
         <div class="connrow" id="rowGh">
-          <span class="dot" id="dotGh"></span>
-          <span class="nm">GitHub Actions<small>觸發真實比對 / 規範檢核的 CI 執行(必要)· 團隊共用同一組 Token,跟專案負責人索取,不要自己另外申請</small></span>
-          <span style="margin-left:auto;display:flex;gap:8px;align-items:center">
-            <input class="inp" id="ghTokenInp" type="password" placeholder="貼上團隊共用的 GitHub Token" style="width:190px">
-            <button class="btn" onclick="verifyGhToken()">驗證並儲存</button>
-          </span>
+          <span class="dot ok"></span>
+          <span class="nm">GitHub Actions<small>示範模式:已自動連線,無需 Token</small></span>
+          <span class="stt">已連線</span>
         </div>
       </div>
       <div class="foot">
@@ -386,8 +382,7 @@ td.judge{white-space:nowrap} .badge{font-size:11px;font-weight:700;padding:2px 9
       <button class="addrow" onclick="addPair()">＋ 新增比對項目</button>
 
       <div class="foot">
-        <span class="hint">連結僅供讀取結構;不會送出任何帳密或個資。</span>
-        <button class="btn" onclick="loadLatestReport()">📥 只看最新報告(不重跑)</button>
+        <span class="hint">示範模式:連結內容僅供展示,點擊「進行核對測試」即顯示範例結果。</span>
         <button class="btn pri" id="runBtn" onclick="startRun()">▶　進行核對測試</button>
       </div>
     </div>
@@ -549,15 +544,12 @@ function paintConn(){
   set("dotFigma","sttFigma",conn.figma);
   set("dotBrowser","sttBrowser",conn.browser);
   document.getElementById("connNote").innerHTML =
-    `⚠ <b>Figma / Browser MCP 兩列仍為示範動作</b>(「重新檢測」不做真實連線)。<b>GitHub Actions 這列是真的</b>:貼上團隊共用的 Token 並驗證成功後,下方「執行規範檢核」/「進行核對測試」才能真正觸發 CI 跑出結果。Token 每人瀏覽器各自存一份(localStorage),只用來直接呼叫 api.github.com,不會互相看到、也不會被送到其他地方。`;
+    `🎬 <b>這是示範版</b>:所有連線與比對結果皆為預先準備的範例資料,免 Token、免真實連線即可完整體驗操作流程。正式版請見上方「← 回正式工具」。`;
   document.getElementById("proceedBtn").disabled = !(conn.figma===true && conn.browser===true);
 }
 function enterCheck(mode){ currentMode=mode; store.mode=mode; persist(); setCtx();
   document.getElementById("proceedBtn").classList.toggle("b", mode==="A");
-  conn={figma:null,browser:null}; paintConn();
-  const t=ghToken(); document.getElementById("ghTokenInp").value=t;
-  document.getElementById("dotGh").className="dot"+(t?" ok":"");
-  nav("scr-check"); }
+  nav("scr-check"); recheckConn(); }
 function recheckConn(){
   conn={figma:"wait",browser:"wait"}; paintConn();
   const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -572,28 +564,23 @@ function proceedFromCheck(){
 // ============================================================ //
 //  Mode A:設計稿規範檢核(示範骨架)
 // ============================================================ //
+const DEMO_LINT={name:"MX 官網 / about 頁 Figma 稿",generated:"2026-10-07 14:30",checks:[
+  {icon:"🏷️",title:"圖層命名語意化",count:3,items:[
+    "<b>Frame 5443</b> <span class='mut'>(FRAME)</span> 仍是預設命名",
+    "<b>Group 646</b> <span class='mut'>(GROUP)</span> 仍是預設命名",
+    "<b>line</b> <span class='mut'>(FRAME)</span> 仍是預設命名"]},
+  {icon:"🎯",title:"Design Token 綁定",count:5,items:[
+    "<b>about</b> · fill = <code>#D1D1D1</code> 未綁 Variable(hardcode)",
+    "<b>text</b> · gap = <code>24.0px</code> 未綁 Variable(hardcode)",
+    "<b>Ellipse 47</b> · fill = <code>#FFFFFF</code> 未綁 Variable(hardcode)"]},
+  {icon:"📐",title:"RWD 斷點與佈局",count:2,items:[
+    "<b>kv</b> 有 3 個子元素卻未開 Auto Layout",
+    "<b>BG</b> 有 5 個子元素卻未開 Auto Layout"]},
+  {icon:"👁️",title:"無障礙對比度(WCAG AA 4.5:1)",count:0,items:[]},
+]};
 function runLint(){
-  if(!ghToken()){ toast("請先到「連線狀態檢查」設定 GitHub Token"); nav("scr-check"); return; }
-  const url=(document.getElementById("lintUrl").value||"").trim();
-  const {fileKey,nodeId}=url?parseFigma(url):{fileKey:null,nodeId:null};
-  const inputs={}; if(fileKey) inputs.fileKey=fileKey; if(nodeId) inputs.nodeId=nodeId;
-  document.getElementById("lintOut").innerHTML=`<div class="legend">觸發 GitHub Actions「Design Spec Lint」…</div>`;
-  runLintFlow(inputs);
-}
-async function runLintFlow(inputs){
-  try{
-    await dispatchAndWait("lint.yml", inputs, (status)=>{
-      document.getElementById("lintOut").innerHTML=
-        `<div class="legend">GitHub Actions ${status==="completed"?"執行完成,載入結果…":"執行中…("+status+")"}</div>`;
-    });
-    await sleep(6000); // 等 GitHub Pages 重新部署
-    const r=await fetch("reports/lint.json",{cache:"no-store"});
-    if(!r.ok) throw new Error("讀取 reports/lint.json 失敗("+r.status+")");
-    renderLint(await r.json(), true);
-  }catch(e){
-    document.getElementById("lintOut").innerHTML=`<div class="demoNote">❌ ${e.message}</div>`;
-    toast("❌ "+e.message);
-  }
+  document.getElementById("lintOut").innerHTML=`<div class="legend">讀取設計稿規範檢核…</div>`;
+  setTimeout(()=>renderLint(DEMO_LINT,true), 700);
 }
 function renderLint(j,real){
   const cats=j.checks||[];
@@ -605,9 +592,7 @@ function renderLint(j,real){
         <span class="cnt" style="color:${col(c.count)};background:${bg(c.count)}">${c.count||0} 項待改</span></div>
       ${(c.items&&c.items.length)?`<ul>${c.items.map(i=>`<li>${i}</li>`).join("")}</ul>`:`<div class="ok">✓ 此類全數符合</div>`}
     </div>`).join("");
-  const note=real
-    ? `<div class="demoNote real">✅ <b>真實檢核結果</b> · ${j.name||""} · ${j.generated||""}　由 GitHub Actions 讀 Figma 圖層 JSON 產生。</div>`
-    : `<div class="demoNote">⚠ <b>示範資料</b>:尚未讀到 CI 檢核結果(reports/lint.json)。到 GitHub Actions 執行「Design Spec Lint」一次即會顯示真結果。</div>`;
+  const note=`<div class="demoNote real">🎬 <b>示範資料</b> · ${j.name||""} · ${j.generated||""}　正式版由 GitHub Actions 讀 Figma 圖層 JSON 即時產生。</div>`;
   document.getElementById("lintOut").innerHTML=`${note}
     <div class="kpis">
       <div class="kpi"><b style="color:${total?'var(--bad-ink)':'var(--good-ink)'}">${total}</b><span>規範待改項</span></div>
@@ -641,29 +626,17 @@ function refreshRun(){
   document.getElementById("runBtn").disabled=!ok;
 }
 
-// ---------- Mode B:執行核對(觸發 GitHub Actions 真跑)----------
-function parseFigma(u){
-  const fk=(u.match(/\/(?:design|file)\/([0-9A-Za-z]{10,})/)||[])[1]||null;
-  let nid=(u.match(/node-id=([^&]+)/)||[])[1]||null;
-  if(nid) nid=decodeURIComponent(nid);
-  return {fileKey:fk, nodeId:nid};
-}
-const WIDTH_MAP={"桌機 1440":"1440","平板 768":"768","手機 375":"375","多尺寸（全部）":""};
+// ---------- Mode B:執行核對(示範:直接顯示範例結果)----------
 async function startRun(){
   const active=seed.filter(p=>p.figma.trim()&&p.web.trim());
   if(!active.length){ toast("請至少填一組 Figma 連結 + 測試網頁"); return; }
-  if(!ghToken()){ toast("請先到「連線狀態檢查」設定 GitHub Token"); nav("scr-check"); return; }
-  const p0=active[0], {fileKey,nodeId}=parseFigma(p0.figma);
-  if(!fileKey||!nodeId){ toast("Figma 連結需含 node-id"); return; }
-  const inputs={fileKey, nodeId, siteUrl:p0.web.trim(), widths:WIDTH_MAP[p0.bp]||""};
   RESULTS=null; goto("running");
-  document.getElementById("runCount").textContent=`(${active.length} 組配對,以第 1 組觸發 CI)`;
-  try{
-    await dispatchAndWait("qc.yml", inputs, (status)=>renderGhRun("Visual Spec QC(Mode B 真實比對)",status));
-    renderGhRun("Visual Spec QC(Mode B 真實比對)","completed");
-    await sleep(6000); // 等 GitHub Pages 重新部署
-    loadLatestReport();
-  }catch(e){ showError(e.message); }
+  document.getElementById("runCount").textContent=`(${active.length} 組配對 · 示範資料)`;
+  renderGhRun("Visual Spec QC(示範)","queued"); await sleep(500);
+  renderGhRun("Visual Spec QC(示範)","in_progress"); await sleep(1100);
+  renderGhRun("Visual Spec QC(示範)","completed"); await sleep(400);
+  showResult();
+  toast("🎬 示範資料 · 正式版由 GitHub Actions 真實比對產生");
 }
 function renderGhRun(label,status){
   const M={queued:["等待 Runner 排程…",10],in_progress:["GitHub Actions 執行中(讀 Figma REST × Playwright 抓 DOM × 引擎比對)…",65],
@@ -677,65 +650,7 @@ function renderGhRun(label,status){
     </div>`;
 }
 function showError(msg){ goto("setup"); toast("❌ "+msg); }
-
-// ---- GitHub Actions API(觸發 workflow_dispatch 並輪詢到完成)----
-const GH_OWNER="cheney-13", GH_REPO="project", GH_BRANCH="project";
-function ghToken(){ return localStorage.getItem("vsqc.ghtoken")||""; }
-function saveGhToken(v){ v?localStorage.setItem("vsqc.ghtoken",v):localStorage.removeItem("vsqc.ghtoken"); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-async function ghApi(path,opts){
-  opts=opts||{};
-  const token=ghToken(); if(!token) throw new Error("尚未設定 GitHub Token");
-  const headers=Object.assign({"Accept":"application/vnd.github+json","Authorization":"Bearer "+token,
-    "X-GitHub-Api-Version":"2022-11-28"}, opts.body?{"Content-Type":"application/json"}:{}, opts.headers||{});
-  const res=await fetch("https://api.github.com"+path, Object.assign({},opts,{headers}));
-  if(!res.ok){ const t=await res.text().catch(()=>""); throw new Error("GitHub API "+res.status+" "+t.slice(0,150)); }
-  return res.status===204?null:res.json();
-}
-async function verifyGhToken(){
-  const v=(document.getElementById("ghTokenInp").value||"").trim();
-  if(v) saveGhToken(v);
-  const dot=document.getElementById("dotGh"); dot.className="dot wait";
-  try{ await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO); dot.className="dot ok"; toast("✅ GitHub Token 驗證成功"); }
-  catch(e){ dot.className="dot bad"; toast("❌ "+e.message); }
-}
-async function dispatchAndWait(file, inputs, onTick){
-  const since=Date.now()-4000;
-  await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO+"/actions/workflows/"+file+"/dispatches",
-    {method:"POST", body:JSON.stringify({ref:GH_BRANCH, inputs:inputs||{}})});
-  let runId=null;
-  for(let i=0;i<12&&!runId;i++){
-    await sleep(1500);
-    const runs=await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO+"/actions/workflows/"+file+"/runs?event=workflow_dispatch&per_page=5");
-    const hit=(runs.workflow_runs||[]).find(r=>new Date(r.created_at).getTime()>=since);
-    if(hit) runId=hit.id;
-  }
-  if(!runId) throw new Error("已觸發,但找不到對應的 workflow run,請到 GitHub Actions 頁面查看");
-  for(;;){
-    const run=await ghApi("/repos/"+GH_OWNER+"/"+GH_REPO+"/actions/runs/"+runId);
-    onTick && onTick(run.status);
-    if(run.status==="completed"){
-      if(run.conclusion!=="success") throw new Error("GitHub Actions 執行失敗("+run.conclusion+"),請到 "+run.html_url+" 查看 log");
-      return run;
-    }
-    await sleep(4000);
-  }
-}
-
-// ---- 載入 GitHub Actions 產出的真實報告(reports/latest.json,同源)----
-function loadLatestReport(){
-  toast("讀取最新 CI 報告…");
-  fetch("reports/latest.json",{cache:"no-store"})
-   .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
-   .then(j=>{
-     const res=(j.results||[]).map((r,i)=>({id:"sz"+i, name:r.name, bp:(r.width?r.width+"px":""),
-       score:r.score, status:r.status, counts:r.counts, rows:r.rows||[], coverage:r.coverage||{},
-       checks:r.checks, empty:r.empty}));
-     if(!res.length){ toast("CI 報告沒有結果"); return; }
-     RESULTS=res; showResult(); toast("已載入真實報告 · "+(j.generated||"")+"("+(j.section||"")+")");
-   })
-   .catch(()=>toast("尚無 CI 報告 — 請先到 GitHub Actions 執行「Visual Spec QC」一次"));
-}
 
 // ---------- Mode B:總覽(單欄卡片) ----------
 function showResult(){
