@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>網頁動態術語表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: specimen-book grid — each term is a card with a live "stage" on top, text below; sticky filter bar. */
+:root{
+  --bg:#eceee9; --surface:#f9faf7; --stage:#e2e5de; --ink:#15171a; --mut:#5c615d; --line:#d3d7cf;
+  --accent:#2f43c9; --accent-soft:#dde2fb; --on-accent:#ffffff;
+  --obj:#2f43c9; --obj2:#eea03a; --on-obj2:#211607;
+  --danger:#c4372b; --ok:#2c8a57;
+  --neu-bg:#e2e5de; --neu-hi:#ffffff; --neu-lo:#bfc4ba;
+  --shadow:rgba(20,24,30,.14);
+  --f-display:"Bricolage Grotesque","Noto Sans TC",system-ui,sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --surface:#1a1d21; --stage:#212429; --ink:#e8eae5; --mut:#9ba19c; --line:#2d3137;
+  --accent:#8e9cff; --accent-soft:#262c55; --on-accent:#0d1024;
+  --obj:#7f8eff; --obj2:#f0b25a; --on-obj2:#211607;
+  --danger:#ff7b6f; --ok:#6fd39b;
+  --neu-bg:#212429; --neu-hi:#2d3137; --neu-lo:#121417;
+  --shadow:rgba(0,0,0,.5); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#121417; --surface:#1a1d21; --stage:#212429; --ink:#e8eae5; --mut:#9ba19c; --line:#2d3137;
+  --accent:#8e9cff; --accent-soft:#262c55; --on-accent:#0d1024;
+  --obj:#7f8eff; --obj2:#f0b25a; --on-obj2:#211607;
+  --danger:#ff7b6f; --ok:#6fd39b;
+  --neu-bg:#212429; --neu-hi:#2d3137; --neu-lo:#121417;
+  --shadow:rgba(0,0,0,.5); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 var(--f-body);padding-inline:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono)}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+
+/* hero */
+.hero{padding-block:56px 28px;display:grid;gap:14px;max-width:780px}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0}
+.hero h1{font-size:clamp(34px,6vw,58px);font-weight:800;letter-spacing:-.02em;line-height:1.08}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:17px;color:var(--mut);margin:0;max-width:62ch}
+.stats{display:flex;flex-wrap:wrap;gap:8px;font:13px var(--f-mono);color:var(--mut)}
+.stats span{border:1px solid var(--line);border-radius:99px;padding:3px 10px}
+
+/* top 6 */
+.top6{display:grid;gap:14px;padding-block:8px 28px}
+.top6 h2{font-size:20px}
+.top6-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:10px}
+.t6{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:baseline;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;text-decoration:none;color:inherit}
+.t6:hover{border-color:var(--accent)}
+.t6 b{font:600 15px var(--f-display);grid-column:2}
+.t6 .n{font:500 12px var(--f-mono);color:var(--accent);grid-row:1/3}
+.t6 span:last-child{grid-column:2;color:var(--mut);font-size:13.5px}
+
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);border-radius:7px;padding:8px 14px;cursor:pointer;font-weight:500;font-size:14px;line-height:1.2}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:5px 10px;font-size:13px}
+
+/* toolbar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bar input{max-width:300px;flex:1 1 200px;background:var(--surface)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 11px;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip small{font-family:var(--f-mono);opacity:.6;margin-left:4px}
+.bar .pause{margin-left:auto}
+
+/* sections + cards */
+.cat{padding-block:36px 8px;display:grid;gap:16px}
+.cat-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.cat-h h2{font-size:28px;font-weight:700}
+.cat-h .en{font:500 13px var(--f-mono);color:var(--mut);text-transform:uppercase;letter-spacing:.1em}
+.cat-h p{flex-basis:100%;margin:0;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.term{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0;scroll-margin-top:80px}
+.term:target{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.t-body{padding:14px 16px 16px;display:grid;gap:9px;min-width:0}
+.names{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.names h3{font-size:19px;font-weight:700}
+.names .en{font:500 13px var(--f-mono);color:var(--accent)}
+.t-say{margin:0;font-size:13px;color:var(--mut)}
+.t-say q{color:var(--ink)}
+.def{margin:0}
+.aka{display:flex;flex-wrap:wrap;gap:4px}
+.aka span{font-size:12px;border:1px solid var(--line);border-radius:4px;padding:0 6px;color:var(--mut)}
+.ai{background:var(--accent-soft);border-radius:8px;padding:9px 11px;display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:start}
+.ai .lb{font:500 11px var(--f-mono);letter-spacing:.08em;color:var(--accent);grid-column:1}
+.ai p{margin:0;font-size:14px;grid-column:1}
+.ai button{grid-column:2;grid-row:1/3;border:0;background:var(--surface);color:var(--accent);border-radius:6px;padding:4px 9px;font-size:12px;cursor:pointer}
+.plat{margin:0;font-size:12px;color:var(--mut)}
+.plat b{font-weight:500;color:var(--ink)}
+.empty{color:var(--mut);padding:24px 0}
+
+/* stage */
+.stage{position:relative;height:172px;background:var(--stage);border-bottom:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center;gap:12px;flex-shrink:0}
+.stage.browser{padding-top:22px}
+.stage.browser::before{content:"";position:absolute;top:0;left:0;right:0;height:22px;background:var(--surface);border-bottom:1px solid var(--line);z-index:3;
+  background-image:radial-gradient(circle 3.5px at 12px 11px,var(--line) 3px,transparent 3.5px),radial-gradient(circle 3.5px at 24px 11px,var(--line) 3px,transparent 3.5px),radial-gradient(circle 3.5px at 36px 11px,var(--line) 3px,transparent 3.5px)}
+.stage.browser>.sx{position:absolute;inset:22px 0 0 0}
+.sx{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px}
+.replay{position:absolute;top:6px;right:6px;z-index:5;border:1px solid var(--line);background:var(--surface);border-radius:6px;font-size:11px;padding:2px 7px;cursor:pointer;color:var(--mut)}
+.stage.browser .replay{top:2px;padding:0 7px}
+.hint{position:absolute;left:8px;bottom:6px;z-index:4;font:500 11px var(--f-mono);color:var(--mut);background:var(--surface);border-radius:4px;padding:1px 6px;pointer-events:none}
+.paused .stage *,.paused .stage *::before,.paused .stage *::after{animation-play-state:paused!important}
+
+/* demo primitives */
+.o{width:40px;height:40px;border-radius:8px;background:var(--obj);flex-shrink:0}
+.o.sm{width:26px;height:26px;border-radius:6px}
+.o.b{background:var(--obj2)}
+.mini{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px}
+.ln{display:block;height:8px;border-radius:4px;background:var(--line)}
+.pad{padding:12px 14px;display:grid;gap:8px}
+.sc{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.col{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr}
+.col .sc,.spy .sc{position:relative;inset:auto;min-height:0}
+.ctl{display:flex;gap:6px;padding:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--surface)}
+.ctl button{border:1px solid var(--line);background:var(--bg);border-radius:5px;font-size:12px;padding:2px 8px;cursor:pointer}
+.c1{background:var(--obj);color:var(--on-accent)} .c2{background:var(--obj2);color:var(--on-obj2)} .c3{background:var(--ink);color:var(--bg)} .c4{background:var(--accent-soft);color:var(--accent)}
+
+/* scroll */
+.par{position:relative;height:470px}
+.par-bk{position:absolute;inset:0;will-change:transform}
+.par-bk i{position:absolute;border-radius:50%;background:var(--obj2);opacity:.6}
+.par-fr{position:relative;padding:14px;display:grid;gap:16px;width:58%}
+.stk{position:sticky;top:0;margin:0;background:var(--accent);color:var(--on-accent);padding:4px 12px;font:500 12px var(--f-mono)}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
+.rv.in{opacity:1;transform:none}
+.snap{position:absolute;inset:0;display:flex;align-items:center;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:18%;scrollbar-width:none}
+.snap-i{flex:0 0 64%;height:110px;scroll-snap-align:center;border-radius:10px;display:grid;place-items:center;font:700 34px var(--f-display);background:var(--surface);border:1px solid var(--line);color:var(--mut)}
+.pbar{position:absolute;top:0;left:0;right:0;height:4px;z-index:3;background:transparent}
+.pbar b{display:block;height:100%;width:0;background:var(--accent)}
+.scrub{height:520px}
+.pin{position:sticky;top:0;height:150px;display:flex;align-items:center;justify-content:center;gap:16px;overflow:hidden}
+.pin .mono{font-size:12px;color:var(--mut);width:40px}
+.hs-row{display:flex;gap:10px;padding-inline:14px;will-change:transform}
+.hs-row div{flex:0 0 110px;height:96px;border-radius:8px;display:grid;place-items:center;font-weight:700}
+.sec{padding:10px 14px;display:grid;gap:7px;min-height:110px;border-bottom:1px dashed var(--line)}
+.sec b{font-size:13px}
+.btt{position:absolute;right:10px;bottom:10px;z-index:4;width:34px;height:34px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent);cursor:pointer;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
+.btt.show{opacity:1;transform:none;pointer-events:auto}
+.inf-l{text-align:center;font-size:11px;color:var(--mut);padding:8px}
+.spy{position:absolute;inset:0;display:grid;grid-template-columns:70px 1fr}
+.spy nav{display:grid;align-content:start;gap:4px;padding:10px 6px;border-right:1px solid var(--line);background:var(--surface)}
+.spy nav a{font-size:12px;text-decoration:none;color:var(--mut);padding:2px 6px;border-radius:4px}
+.spy nav a.on{background:var(--accent);color:var(--on-accent)}
+
+/* slide */
+.car,.sw{position:absolute;inset:0;overflow:hidden}
+.car-t,.sw-t{display:flex;height:100%;transition:transform .5s cubic-bezier(.65,0,.35,1)}
+.car-s{flex:0 0 100%;display:grid;place-items:center;font:700 22px var(--f-display)}
+.car-a{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:0;background:var(--surface);cursor:pointer;font-size:18px;line-height:1}
+.car-p{left:8px}.car-n{right:8px}
+.dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+.dots button{width:8px;height:8px;padding:0;border-radius:50%;border:0;background:var(--surface);opacity:.55;cursor:pointer}
+.dots button.on{opacity:1;width:20px;border-radius:4px;transition:width .3s}
+.fs-i{position:absolute;inset:0;display:grid;place-items:center;font:700 22px var(--f-display);opacity:0;transition:opacity .8s}
+.fs-i.on{opacity:1}
+.mq{width:100%;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.mq-t{display:flex;gap:12px;width:max-content;animation:mq 14s linear infinite}
+.mq:hover .mq-t{animation-play-state:paused}
+.mq-i{font:700 16px var(--f-display);padding:10px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);white-space:nowrap}
+@keyframes mq{to{transform:translateX(calc(-50% - 6px))}}
+.sw{touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.sw:active{cursor:grabbing}
+.sw-t>div{flex:0 0 100%;display:grid;place-items:center;font:700 22px var(--f-display)}
+.pk{position:absolute;inset:0;display:flex;align-items:center;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:14px;scroll-padding-inline:14px;scrollbar-width:none}
+.pk-i{flex:0 0 78%;height:116px;border-radius:10px;scroll-snap-align:start;display:grid;place-items:center;font:700 22px var(--f-display)}
+.ba{position:absolute;inset:0;--p:50%}
+.ba-a,.ba-b{position:absolute;inset:0;display:flex;align-items:flex-start;padding:10px;font:500 11px var(--f-mono)}
+.ba-a{background:radial-gradient(circle at 70% 60%,var(--obj2) 0 22%,transparent 23%),linear-gradient(160deg,var(--obj),var(--accent-soft));justify-content:flex-end;color:var(--on-accent)}
+.ba-b{background:radial-gradient(circle at 70% 60%,var(--mut) 0 22%,transparent 23%),repeating-linear-gradient(45deg,var(--line) 0 6px,var(--stage) 6px 12px);clip-path:inset(0 calc(100% - var(--p)) 0 0);color:var(--mut)}
+.ba-line{position:absolute;top:0;bottom:0;left:var(--p);width:2px;margin-left:-1px;background:var(--surface);pointer-events:none}
+.ba-line::after{content:"⇔";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:13px;color:var(--ink);box-shadow:0 2px 6px var(--shadow)}
+.ba-r{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:ew-resize}
+.th{display:grid;gap:8px;width:80%}
+.th-m{height:100px;border-radius:8px;display:grid;place-items:center;font:700 22px var(--f-display)}
+.th-r{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.th-t{height:30px;border-radius:5px;border:2px solid transparent;cursor:pointer;padding:0}
+.th-t.on{border-color:var(--ink)}
+
+/* hover */
+.lift{width:150px;height:90px;transition:transform .25s ease-out,box-shadow .25s ease-out;cursor:pointer}
+.lift:hover,.lift:active{transform:translateY(-6px);box-shadow:0 14px 24px -10px var(--shadow)}
+.hz{position:relative;width:190px;height:116px;border-radius:10px;overflow:hidden;cursor:pointer}
+.hz-i{position:absolute;inset:0;background:radial-gradient(circle at 30% 70%,var(--obj2) 0 18%,transparent 19%),radial-gradient(circle at 72% 35%,var(--accent-soft) 0 14%,transparent 15%),linear-gradient(135deg,var(--obj),var(--ink));transition:transform .6s ease-out}
+.hz:hover .hz-i{transform:scale(1.15)}
+.hz-cap{position:absolute;left:10px;bottom:8px;color:#fff;font-size:12px;font-weight:500}
+.tl{position:relative;width:180px;height:110px;border-radius:12px;background:linear-gradient(135deg,var(--obj),var(--ink));color:#fff;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s ease-out;overflow:hidden;box-shadow:0 12px 24px -12px var(--shadow)}
+.tl b{font-family:var(--f-display);letter-spacing:.1em}
+.tl span{font:12px var(--f-mono);opacity:.8}
+.tl-g{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,50%) var(--gy,30%),rgba(255,255,255,.35),transparent 55%);pointer-events:none}
+.mg{transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.rp{position:relative;overflow:hidden}
+.rp i{position:absolute;border-radius:50%;background:currentColor;opacity:.35;transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.uls{display:flex;gap:22px;font-size:15px}
+.ul{position:relative;text-decoration:none;color:var(--ink);padding-bottom:3px}
+.ul::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);transform:scaleX(0);transition:transform .25s ease-out}
+.ul-l::after{transform-origin:left}.ul-c::after{transform-origin:center}
+.ul:hover::after,.ul:focus-visible::after{transform:scaleX(1)}
+.fp{width:150px;height:100px;perspective:700px;cursor:pointer}
+.fp-i{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.65,0,.35,1)}
+.fp:hover .fp-i,.fp.on .fp-i{transform:rotateY(180deg)}
+.fp-f,.fp-b{position:absolute;inset:0;border-radius:10px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-weight:500}
+.fp-f{background:var(--obj);color:var(--on-accent)}
+.fp-b{background:var(--obj2);color:var(--on-obj2);transform:rotateY(180deg)}
+.cf{position:absolute;inset:0;cursor:none}
+.cf-t{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:13px}
+.cf-d,.cf-r{position:absolute;left:0;top:0;border-radius:50%;pointer-events:none}
+.cf-d{width:8px;height:8px;margin:-4px 0 0 -4px;background:var(--accent)}
+.cf-r{width:36px;height:36px;margin:-18px 0 0 -18px;border:1.5px solid var(--accent)}
+.tt{position:relative;width:36px;height:36px;border-radius:50%;padding:0}
+.tip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translate(-50%,6px);white-space:nowrap;background:var(--ink);color:var(--bg);font-size:12px;padding:5px 9px;border-radius:6px;opacity:0;transition:.2s ease-out;pointer-events:none}
+.tip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:var(--ink)}
+.tt:hover .tip,.tt:focus-visible .tip{opacity:1;transform:translate(-50%,0);transition-delay:.15s}
+.spot{position:absolute;inset:0;--x:50%;--y:50%;background-image:radial-gradient(circle 90px at var(--x) var(--y),color-mix(in srgb,var(--accent) 38%,transparent),transparent 72%),radial-gradient(var(--mut) 1.1px,transparent 1.5px);background-size:auto,14px 14px}
+.fsw{position:relative;overflow:hidden;background:transparent;color:var(--accent)}
+.fsw::before{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s ease-out}
+.fsw span{position:relative;transition:color .3s}
+.fsw:hover::before{transform:scaleX(1)}
+.fsw:hover span{color:var(--on-accent)}
+
+/* enter (looping with hold) */
+.a-fade{animation:a-fade 3s ease-out infinite}
+.a-up{animation:a-up 3s ease-out infinite;animation-delay:calc(var(--i,0) * 90ms)}
+.a-scale{animation:a-scale 3s cubic-bezier(.34,1.56,.64,1) infinite}
+@keyframes a-fade{0%{opacity:0}20%,85%{opacity:1}100%{opacity:0}}
+@keyframes a-up{0%{opacity:0;transform:translateY(24px)}22%,85%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes a-scale{0%{opacity:0;transform:scale(.6)}20%,85%{opacity:1;transform:none}100%{opacity:0}}
+.row{display:flex;gap:8px}
+.big{font:800 30px var(--f-display);letter-spacing:-.01em}
+.split span{display:inline-block;animation:a-up 3.2s ease-out infinite;animation-delay:calc(var(--i) * 45ms);white-space:pre}
+.tw{font:600 20px var(--f-display);display:flex;align-items:center}
+.caret{display:inline-block;width:2px;height:1.1em;background:var(--accent);margin-left:3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.cnt{display:grid;justify-items:center}
+.cnt b{font:800 40px var(--f-display);font-variant-numeric:tabular-nums}
+.cnt span{color:var(--mut);font-size:13px}
+.scr{font-size:20px;font-weight:500;letter-spacing:.06em}
+.mask{animation:a-mask 3.2s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes a-mask{0%{clip-path:inset(0 100% 0 0)}25%,82%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 100%)}}
+.rw{font:600 20px var(--f-display);display:flex;gap:8px;align-items:center}
+.rw-w{display:inline-block;height:1.4em;overflow:hidden;color:var(--accent)}
+.rw-w b{display:inline-block;animation:rw-in .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes rw-in{from{transform:translateY(100%);opacity:0}}
+.gt{background:linear-gradient(90deg,var(--accent),var(--obj2),var(--accent));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gt 3s linear infinite}
+@keyframes gt{to{background-position:-200% 0}}
+
+/* nav */
+.hdr{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-bottom:1px solid var(--line);padding:14px 14px;transition:padding .25s,box-shadow .25s,transform .25s}
+.hdr b{font:700 15px var(--f-display);transition:font-size .25s}
+.hdr span{display:flex;gap:8px}.hdr span i{width:22px;height:6px;border-radius:3px;background:var(--line);display:block}
+.hdr.sm{padding:6px 14px;box-shadow:0 6px 12px -8px var(--shadow)}
+.hdr.sm b{font-size:12px}
+.hdr.hid{transform:translateY(-100%)}
+.hb{width:46px;height:46px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;display:grid;place-content:center;gap:5px}
+.hb i{display:block;width:20px;height:2px;background:var(--ink);border-radius:2px;transition:transform .3s,opacity .2s}
+.hb.on i:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hb.on i:nth-child(2){opacity:0}
+.hb.on i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.ov{position:absolute;inset:0;z-index:6;background:color-mix(in srgb,var(--ink) 45%,transparent);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.open>.ov,.ov.open{opacity:1;visibility:visible}
+.dr-p{position:absolute;top:0;bottom:0;left:0;width:62%;z-index:7;background:var(--surface);padding:14px;display:grid;gap:9px;align-content:start;transform:translateX(-100%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.open>.dr-p{transform:none}
+.mm{position:absolute;inset:0}
+.mm-bar{display:flex;gap:14px;align-items:center;padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line);font-size:13px}
+.mm-bar b{font-family:var(--f-display);margin-right:auto}
+.mm-b{border:0;background:none;cursor:pointer;font-size:13px;padding:0}
+.mm-p{position:absolute;top:44px;left:10px;right:10px;z-index:3;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:.2s ease-out;box-shadow:0 10px 24px -12px var(--shadow)}
+.mm-it:hover .mm-p,.mm-it.open .mm-p,.mm-it:focus-within .mm-p{opacity:1;visibility:visible;transform:none}
+.mm-p div{display:grid;gap:5px;font-size:12px}
+.ac{width:88%;display:grid;gap:5px}
+.ac-h{width:100%;display:flex;justify-content:space-between;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:13px}
+.ac-h i{font-style:normal;transition:transform .3s}
+.ac-i.open .ac-h i{transform:rotate(180deg)}
+.ac-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease-out}
+.ac-i.open .ac-b{grid-template-rows:1fr}
+.ac-b>div{overflow:hidden}
+.ac-b p{margin:0;padding:6px 10px;font-size:12px;color:var(--mut)}
+.tb{width:86%;display:grid;gap:10px}
+.tb-bar{position:relative;display:flex;border-bottom:1px solid var(--line)}
+.tb-bar button{flex:1;border:0;background:none;padding:6px;cursor:pointer;font-size:13px;color:var(--mut)}
+.tb-bar button.on{color:var(--ink);font-weight:500}
+.tb-ind{position:absolute;bottom:-1px;height:2px;background:var(--accent);transition:left .3s cubic-bezier(.65,0,.35,1),width .3s}
+.tb-c{height:56px;border-radius:8px;display:grid;place-items:center;font-weight:500}
+.md{position:absolute;top:50%;left:50%;z-index:7;width:72%;background:var(--surface);border-radius:12px;padding:14px;display:grid;gap:6px;transform:translate(-50%,-50%) scale(.92);opacity:0;visibility:hidden;transition:.25s cubic-bezier(.2,.8,.2,1);box-shadow:0 20px 40px -10px var(--shadow)}
+.open>.md{opacity:1;visibility:visible;transform:translate(-50%,-50%)}
+.md p{margin:0;font-size:12px;color:var(--mut)}
+.lbg{display:grid;grid-template-columns:repeat(4,46px);gap:8px}
+.lbg button{height:46px;border:0;border-radius:6px;cursor:zoom-in}
+.lb{position:absolute;inset:0;z-index:7;background:color-mix(in srgb,#000 82%,transparent);display:grid;place-items:center;opacity:0;visibility:hidden;transition:.25s}
+.lb.open{opacity:1;visibility:visible}
+.lb-im{width:58%;height:110px;border-radius:6px;transform:scale(.9);transition:transform .3s}
+.lb.open .lb-im{transform:none}
+.lb>button{position:absolute;border:0;background:none;color:#fff;font-size:24px;cursor:pointer}
+.lb-x{top:4px;right:10px}.lb-p{left:8px}.lb-n{right:8px}
+.lb-c{position:absolute;bottom:6px;color:#fff;font-size:11px}
+.ms{position:absolute;inset:10px;columns:4;column-gap:6px;overflow:hidden}
+.ms i{display:block;margin-bottom:6px;border-radius:5px;break-inside:avoid}
+.bn{width:88%;height:130px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:6px}
+.bn i{border-radius:8px;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:500}
+.bn .b1{grid-column:span 2;grid-row:span 2}.bn .b2{grid-column:span 2}
+
+/* feedback */
+.sk{position:relative;width:80%;height:80px}
+.sk>div{position:absolute;inset:0;display:flex;gap:12px;align-items:center;transition:opacity .4s}
+.sk .r{opacity:0}.sk.done .r{opacity:1}.sk.done .s{opacity:0}
+.sk .av{width:48px;height:48px;border-radius:50%;flex-shrink:0}
+.sk .tx{display:grid;gap:8px;flex:1}
+.shim{background:linear-gradient(90deg,var(--line) 0,var(--surface) 50%,var(--line) 100%);background-size:200% 100%;animation:shim 1.3s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+.sp{display:flex;gap:30px;align-items:center}
+.sp-ring{width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sp-dots{display:flex;gap:5px}
+.sp-dots i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:bob .9s ease-in-out infinite;animation-delay:calc(var(--i) * 120ms)}
+@keyframes bob{0%,60%,100%{transform:none}30%{transform:translateY(-9px)}}
+.sp-bars{display:flex;gap:3px;align-items:center;height:28px}
+.sp-bars i{width:4px;height:100%;background:var(--obj2);border-radius:2px;animation:bars 1s ease-in-out infinite;animation-delay:calc(var(--i) * 110ms)}
+@keyframes bars{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+.ts{position:absolute;bottom:14px;left:50%;transform:translate(-50%,160%);background:var(--ink);color:var(--bg);font-size:13px;padding:7px 14px;border-radius:8px;transition:transform .35s cubic-bezier(.2,.8,.2,1);white-space:nowrap}
+.ts.show{transform:translate(-50%,0)}
+.pg{width:86%;display:grid;gap:14px}
+.pg-row{display:grid;grid-template-columns:92px 1fr 36px;gap:8px;align-items:center;font-size:11px;color:var(--mut)}
+.pg-t{height:6px;border-radius:3px;background:var(--line);overflow:hidden;position:relative}
+.pg-d{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.pg-i{position:absolute;top:0;bottom:0;width:35%;background:var(--accent);border-radius:3px;animation:indet 1.4s ease-in-out infinite}
+@keyframes indet{from{left:-35%}to{left:100%}}
+.sh{display:grid;grid-template-columns:1fr auto;gap:6px;width:84%}
+.sh input.err{border-color:var(--danger);animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.sh p{grid-column:1/-1;margin:0;font-size:12px;min-height:1.4em}
+.sh p.e{color:var(--danger)}.sh p.k{color:var(--ok)}
+.tgl{display:flex;gap:10px;align-items:center;cursor:pointer;font-size:14px}
+.tgl input{position:absolute;opacity:0;width:1px;height:1px}
+.tg{width:46px;height:26px;border-radius:13px;background:var(--line);position:relative;transition:background .2s}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px var(--shadow);transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.tgl input:checked+.tg{background:var(--accent)}
+.tgl input:checked+.tg::after{transform:translateX(20px)}
+.tgl input:focus-visible+.tg{outline:2px solid var(--accent);outline-offset:2px}
+.lk{position:relative;width:56px;height:56px;border:0;background:none;cursor:pointer;padding:0}
+.lk svg{width:38px;height:38px;fill:none;stroke:var(--mut);stroke-width:1.8;transition:fill .2s,stroke .2s}
+.lk.on svg{fill:var(--danger);stroke:var(--danger);animation:pop .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(.6)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.lk-p i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--obj2);opacity:0}
+.lk.on .lk-p i{animation:burst .6s ease-out}
+@keyframes burst{0%{opacity:1;transform:rotate(var(--a)) translateY(0)}100%{opacity:0;transform:rotate(var(--a)) translateY(-30px)}}
+.pl{position:relative;width:14px;height:14px;border-radius:50%;background:var(--danger)}
+.pl::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--danger);animation:ping 1.5s cubic-bezier(0,0,.2,1) infinite}
+@keyframes ping{75%,100%{transform:scale(2.6);opacity:0}}
+
+/* style */
+.gls{position:absolute;inset:0;display:grid;place-items:center}
+.gls i{position:absolute;border-radius:50%}
+.gb1{width:90px;height:90px;background:var(--obj);left:22%;top:20px}
+.gb2{width:70px;height:70px;background:var(--obj2);right:24%;bottom:18px}
+.gl{position:relative;width:62%;height:84px;border-radius:12px;background:color-mix(in srgb,var(--surface) 45%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--surface) 70%,transparent);display:grid;place-items:center;font:600 16px var(--f-display)}
+.neu{position:absolute;inset:0;background:var(--neu-bg);display:flex;align-items:center;justify-content:center;gap:28px}
+.neu div{width:78px;height:78px;border-radius:18px;display:grid;place-items:center;color:var(--mut);font-size:13px}
+.nu-r{box-shadow:7px 7px 14px var(--neu-lo),-7px -7px 14px var(--neu-hi)}
+.nu-p{box-shadow:inset 6px 6px 12px var(--neu-lo),inset -6px -6px 12px var(--neu-hi)}
+.ga{position:absolute;inset:0;background:linear-gradient(120deg,var(--obj),var(--obj2),var(--accent-soft),var(--obj));background-size:300% 300%;animation:ga 8s ease-in-out infinite alternate}
+@keyframes ga{from{background-position:0% 50%}to{background-position:100% 50%}}
+.gr{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.gr>div{position:relative;background:linear-gradient(160deg,var(--obj),var(--obj2));display:flex;align-items:flex-end;padding:8px}
+.gr span{position:relative;z-index:1;font:500 11px var(--f-mono);color:#fff}
+.gr-n::after{content:"";position:absolute;inset:0;opacity:.45;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.dt{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.dt-im{position:relative;background:radial-gradient(circle at 50% 42%,#f2c9a4 0 16%,transparent 17%),radial-gradient(ellipse at 50% 100%,#3d7a5a 0 38%,transparent 39%),linear-gradient(#7fb6e0,#e8d9a8);display:flex;align-items:flex-end;padding:8px;isolation:isolate}
+.dt-im.duo{filter:grayscale(1) contrast(1.15)}
+.dt-w{position:relative;isolation:isolate}
+.dt-w::before,.dt-w::after{content:"";position:absolute;inset:0;pointer-events:none}
+.dt-w::before{background:var(--obj);mix-blend-mode:lighten}
+.dt-w::after{background:var(--obj2);mix-blend-mode:multiply}
+.dt span{position:absolute;left:8px;bottom:6px;z-index:2;font:500 11px var(--f-mono);color:#fff}
+.blb{width:110px;height:110px;background:linear-gradient(135deg,var(--obj),var(--obj2));animation:blob 8s ease-in-out infinite}
+@keyframes blob{0%,100%{border-radius:42% 58% 63% 37%/41% 44% 56% 59%}33%{border-radius:68% 32% 38% 62%/55% 63% 37% 45%;transform:rotate(40deg)}66%{border-radius:35% 65% 52% 48%/66% 35% 65% 34%;transform:rotate(-20deg)}}
+.ev{display:flex;gap:16px}
+.ev i{width:52px;height:52px;border-radius:8px;background:var(--surface);display:grid;place-items:center;font:500 12px var(--f-mono);font-style:normal;color:var(--mut)}
+.ev .e0{border:1px solid var(--line)}
+.ev .e1{box-shadow:0 1px 3px var(--shadow)}
+.ev .e2{box-shadow:0 6px 12px -2px var(--shadow)}
+.ev .e3{box-shadow:0 16px 30px -6px var(--shadow)}
+
+/* motion */
+.lanes{width:90%;display:grid;gap:7px}
+.lane{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;font-size:11px;color:var(--mut)}
+.tr{position:relative;height:12px;border-radius:6px;background:var(--line)}
+.tr i{position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.lanes.css .tr i{animation:lane 1.8s infinite alternate}
+@keyframes lane{to{left:calc(100% - 12px)}}
+.lanes.tx .tr i{transition-property:left;transition-timing-function:ease-out}
+.lanes.tx.go .tr i{left:calc(100% - 12px)}
+.sprw{display:flex;gap:40px;text-align:center;font-size:11px;color:var(--mut)}
+.sprw>div{display:grid;gap:10px;justify-items:center}
+.a-ease{animation:k-ease 2.4s ease-out infinite}
+.a-spr{animation:k-spr 2.4s linear infinite}
+@keyframes k-ease{0%{transform:scale(.3)}25%,100%{transform:scale(1)}}
+@keyframes k-spr{0%{transform:scale(.3)}12%{transform:scale(1.18)}20%{transform:scale(.9)}27%{transform:scale(1.05)}33%{transform:scale(.98)}38%,100%{transform:scale(1)}}
+.og{display:flex;gap:34px}
+.og div{position:relative;width:40px;height:40px}
+.og .o{animation:rot 2.4s ease-in-out infinite}
+.og b{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:var(--danger);z-index:1}
+.og span{position:absolute;top:52px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10px;color:var(--mut)}
+@keyframes rot{0%,15%{transform:rotate(0)}45%,65%{transform:rotate(90deg)}95%,100%{transform:rotate(0)}}
+.trg{display:flex;gap:12px}
+.trg div{width:74px;height:74px;border-radius:10px;border:1px dashed var(--mut);display:grid;place-items:center;font-size:12px;color:var(--mut);cursor:pointer;transition:background .3s,color .3s,transform .3s}
+.trg .t-load{animation:a-scale 1s ease-out 1}
+.trg .t-hover:hover,.trg .t-click.on{background:var(--accent);color:var(--on-accent);border-style:solid;transform:scale(1.06)}
+
+footer{padding-block:24px 48px;color:var(--mut);font-size:13px;border-top:1px solid var(--line);margin-top:20px}
+
+@media (max-width:760px){
+  .bar .pause{margin-left:0}
+  .chips{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none}
+  .chip{white-space:nowrap}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="root">
+
+<header class="hero">
+  <p class="eyebrow">Web Motion &amp; UI Glossary · 團隊協作用</p>
+  <h1>網頁動態<em>術語表</em></h1>
+  <p class="lede">「滑下來的時候帥一點」AI 只能用猜的。這些效果其實都有名字，報出名字、再補上時長與緩動，一句話就講清楚。每個術語都附即時示意、別名、可直接複製的描述句，以及在常見架站平台上的對應名稱。</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section class="top6" aria-labelledby="top6-h">
+  <h2 id="top6-h">先記這 6 個：描述捲動動畫最常用</h2>
+  <div class="top6-g" id="top6"></div>
+</section>
+
+<div class="bar" role="search">
+  <input id="q" type="search" placeholder="搜尋：中文、英文、別名，例如 sticky、輪播、hover" aria-label="搜尋術語">
+  <div class="chips" id="chips"></div>
+  <button class="btn ghost sm pause" id="pause" type="button" aria-pressed="false">暫停示意動畫</button>
+</div>
+
+<main id="cats"></main>
+<p class="empty" id="empty" hidden>找不到符合的術語。換個關鍵字試試，或改用英文名稱搜尋。</p>
+
+<footer>
+  平台名稱以 Elementor、Webflow、Framer、Wix 與常見前端套件（Swiper、GSAP）的介面用語為準，版本更新可能改名。示意皆以 CSS／原生 JS 製作，可直接檢視原始碼取用。
+</footer>
+</div>
+
+<script>
+/* ---------- data ---------- */
+const CATS=[
+ {id:'scroll',zh:'捲動效果',en:'Scroll',d:'隨使用者捲動頁面而觸發或連動的效果。'},
+ {id:'slide',zh:'輪播與滑動',en:'Slider',d:'同一區塊內左右切換多張內容。'},
+ {id:'hover',zh:'滑鼠與點擊互動',en:'Hover & Click',d:'滑鼠移入、點擊、拖曳時的即時回饋。'},
+ {id:'enter',zh:'進場與文字動畫',en:'Entrance & Text',d:'元素出現時的動畫與文字特效。'},
+ {id:'nav',zh:'導覽與版面元件',en:'Navigation & Layout',d:'架站平台上常見的模組／Widget。'},
+ {id:'feedback',zh:'狀態與回饋',en:'Feedback',d:'載入、成功、錯誤等狀態的提示方式。'},
+ {id:'style',zh:'視覺風格',en:'Visual Style',d:'描述質感與風格的名詞。'},
+ {id:'motion',zh:'動態參數',en:'Motion Parameters',d:'描述任何動畫都用得到的參數，搭配上面的術語使用。'},
+];
+const TOP6=['reveal','scrub','parallax','sticky','snap','hscroll'];
+// 新增術語：在此陣列加一筆物件；demo 對應下方 DEMOS 的 key（可省略）
+const TERMS=[
+ // scroll
+ {id:'reveal',cat:'scroll',zh:'捲動觸發',en:'Scroll-triggered',say:'滑到才播，卡片一張張浮出來',aka:['Scroll reveal','Animate on Scroll (AOS)','Scroll into view','進場動畫'],def:'元素捲進視窗時才播放一次進場動畫，播完就結束，和捲動速度無關。',ai:'每張卡片進入視窗 20% 時淡入上移 24px，600ms ease-out，交錯 100ms，只播一次。',plat:'Elementor：Entrance Animation／Webflow：Scroll into view／Framer：Appear',demo:'reveal',browser:1},
+ {id:'scrub',cat:'scroll',zh:'捲動連動',en:'Scroll-linked',say:'滑多少動多少，手停它也停',aka:['Scrubbing','Scroll-driven animation','Scroll Transform'],def:'動畫進度直接綁定捲動位置；往回捲，動畫就倒轉。',ai:'產品圖隨捲動旋轉 0→360° 並放大到 1.5 倍，動畫進度綁定該區塊的捲動進度（scrub），不是播一次。',plat:'GSAP：ScrollTrigger scrub／Framer：Scroll Transform／Webflow：While scrolling in view／CSS：animation-timeline: scroll()',demo:'scrub',browser:1},
+ {id:'parallax',cat:'scroll',zh:'視差滾動',en:'Parallax',say:'背景跑得比前景慢，畫面多了景深',aka:['Parallax scrolling','視差效果'],def:'背景與前景以不同速度捲動，產生景深。背景速度通常是前景的 0.3–0.6 倍。',ai:'首頁主視覺背景做視差滾動，捲動時背景以前景 0.5 倍速移動，手機版關閉。',plat:'Elementor：Motion Effects › Vertical Scroll／Wix：Scroll Effects › Parallax',demo:'parallax',browser:1},
+ {id:'sticky',cat:'scroll',zh:'固定置頂',en:'Sticky',say:'滑到頂端就黏住，導覽列最常見',aka:['Pin','釘選','position: sticky'],def:'元素捲到指定位置後固定不動，直到所屬區塊捲完才一起離開。',ai:'章節標題設為 sticky，距頂 0 固定，該章節捲完後被下一個標題推走。',plat:'Elementor：Motion Effects › Sticky／Framer：Sticky／GSAP：ScrollTrigger pin',demo:'sticky',browser:1},
+ {id:'snap',cat:'scroll',zh:'捲動吸附',en:'Scroll Snap',say:'一次滑一整頁，跟刷 Reels 一樣',aka:['捲動對齊','Full-page scroll（整頁版）','scroll-snap-type'],def:'捲動停止時自動對齊到最近的項目，不會停在一半。',ai:'作品列表橫向捲動，啟用 scroll-snap（x mandatory），每張卡片置中對齊。',demo:'snap',browser:1},
+ {id:'hscroll',cat:'scroll',zh:'橫向滾動',en:'Horizontal Scroll',say:'手指往下，內容往旁邊走',aka:['Pinned horizontal scroll','水平捲動區'],def:'區塊固定在畫面中，使用者往下捲時，內容改成水平移動，整列走完才放行。',ai:'案例區做 pin＋水平捲動：區塊固定，往下捲時卡片列向左平移，整列捲完才釋放。',plat:'GSAP：ScrollTrigger pin + scrub',demo:'hscroll',browser:1},
+ {id:'progress-bar',cat:'scroll',zh:'閱讀進度條',en:'Scroll Progress Indicator',say:'上面一條線跟著看到哪裡變長',aka:['Reading progress','Scroll indicator'],def:'頁面頂端一條隨閱讀進度增長的細線。',ai:'文章頁頂部加 3px 閱讀進度條，寬度等於已捲動比例，顏色用主色。',demo:'progress',browser:1},
+ {id:'smooth',cat:'scroll',zh:'平滑捲動',en:'Smooth Scroll',say:'按選單會滑過去，不是瞬間跳',aka:['Anchor link 錨點','scroll-behavior: smooth'],def:'點錨點連結時以動畫捲到目標位置，而不是瞬間跳過去。',ai:'導覽連結點擊後平滑捲動到對應區塊，並預留固定導覽列 72px 的偏移。',demo:'smooth',browser:1},
+ {id:'btt',cat:'scroll',zh:'回到頂端',en:'Back to Top',say:'右下角那顆往上的箭頭',aka:['Scroll to top','Go to top'],def:'往下捲一段距離後出現的按鈕，點擊平滑回到頁首。',ai:'捲動超過一個螢幕高度後，右下角淡入「回到頂端」按鈕，點擊平滑捲回頁首。',demo:'btt',browser:1},
+ {id:'infinite',cat:'scroll',zh:'無限載入',en:'Infinite Scroll',say:'滑到底自動跑出更多',aka:['Infinite loading','Load more（按鈕版）'],def:'捲到列表底部時自動載入下一批內容，取代分頁。',ai:'商品列表改無限載入：距底部 200px 時載入下一批 12 筆，載入中顯示骨架屏。',demo:'infinite',browser:1},
+ {id:'scrollspy',cat:'scroll',zh:'捲動監聽',en:'Scrollspy',say:'目錄會跟著看到的段落亮起來',aka:['Active section highlight','目錄跟隨'],def:'導覽或目錄依目前看到的區塊，自動標示所在位置。',ai:'側邊目錄做 scrollspy：哪個章節在視窗上半部，就把對應項目設為選取狀態。',demo:'scrollspy',browser:1},
+ // slide
+ {id:'carousel',cat:'slide',zh:'輪播',en:'Carousel / Slider',say:'會自己換的橫幅',aka:['Slideshow','Banner 輪播','圓點＝Pagination dots','箭頭＝Navigation arrows'],def:'同一位置輪流顯示多張內容，用箭頭、圓點或自動播放切換。',ai:'主視覺做 4 張輪播：左右箭頭＋底部圓點、每 5 秒自動播放、滑鼠移入暫停、水平滑動轉場 500ms。',plat:'Elementor：Image Carousel／Webflow：Slider／Framer：Slideshow／套件：Swiper',demo:'carousel'},
+ {id:'crossfade',cat:'slide',zh:'淡入淡出輪播',en:'Crossfade Slider',say:'不是滑過去，是慢慢換',aka:['Fade carousel','Crossfade'],def:'多張內容疊在同一位置，用透明度交替，沒有位移。',ai:'見證區改淡入淡出輪播（crossfade），每張停留 4 秒、轉場 800ms，不要左右滑動。',demo:'crossfade'},
+ {id:'marquee',cat:'slide',zh:'跑馬燈',en:'Marquee',say:'Logo 一直往旁邊跑',aka:['Ticker','Logo loop','Infinite slider'],def:'一列內容不間斷地水平循環移動，首尾無縫接上，常用在合作品牌 Logo。',ai:'合作品牌 Logo 做無限跑馬燈，等速向左約 40px/s，首尾無縫銜接，滑鼠移入暫停。',plat:'Framer：Ticker',demo:'marquee'},
+ {id:'swipe',cat:'slide',zh:'拖曳滑動',en:'Swipe / Drag',say:'可以用手指撥',aka:['Draggable carousel','滑動手勢'],def:'用手指或滑鼠拖曳切換，放開後吸附到最近一張。',ai:'卡片輪播支援拖曳與觸控滑動（swipe），拖超過 40px 才換頁，放開後回彈吸附。',demo:'swipe'},
+ {id:'peek',cat:'slide',zh:'露出下一張',en:'Peek',say:'旁邊露一點點，讓人知道可以滑',aka:['Partial slide','Slides per view 1.2'],def:'輪播每次顯示一張多一點，露出下一張的邊緣，暗示可以滑動。',ai:'手機版卡片橫向排列，每張寬 80%，露出下一張約 15%（peek），配 scroll-snap。',plat:'Swiper：slidesPerView: 1.2',demo:'peek'},
+ {id:'before-after',cat:'slide',zh:'前後對比滑桿',en:'Before / After Slider',say:'中間有條線可以拉，比較改之前改之後',aka:['Image comparison slider','Juxtapose'],def:'兩張圖疊在一起，拖動中間的分隔線比較差異。',ai:'改造前後對照用 before/after 滑桿，預設在 50%，可左右拖動分隔線，兩側標示 BEFORE／AFTER。',demo:'beforeafter'},
+ {id:'thumbs',cat:'slide',zh:'縮圖導覽',en:'Thumbnail Gallery',say:'大圖下面一排小圖可以點',aka:['Thumbnail navigation','Product gallery'],def:'大圖下方一排縮圖，點縮圖切換大圖，常見於商品頁。',ai:'商品圖做主圖＋縮圖導覽：點縮圖切換主圖並加外框標示目前項目，主圖淡入切換 300ms。',demo:'thumbs'},
+ // hover
+ {id:'hover-lift',cat:'hover',zh:'懸浮上浮',en:'Hover Lift',say:'滑鼠移上去會浮起來',aka:['Raise on hover','Elevate'],def:'滑鼠移入時元素微微上浮、陰影加深，暗示可以點。',ai:'卡片 hover 時上浮 6px、陰影加深，250ms ease-out；觸控裝置不套用。',demo:'lift'},
+ {id:'hover-zoom',cat:'hover',zh:'圖片放大',en:'Hover Zoom',say:'框不動，裡面的圖變大',aka:['Image zoom','Ken Burns（自動緩慢縮放版）'],def:'外框尺寸不變，裡面的圖片放大，邊緣被裁掉。',ai:'作品縮圖 hover 時圖片放大到 1.1 倍、外框固定裁切（overflow hidden），600ms ease-out。',demo:'zoom'},
+ {id:'tilt',cat:'hover',zh:'3D 傾斜',en:'Tilt',say:'卡片跟著滑鼠歪來歪去',aka:['3D hover','Parallax tilt'],def:'卡片依滑鼠位置往不同方向傾斜，常加一層跟著移動的反光。',ai:'會員卡做 3D tilt：依滑鼠位置最多傾斜 8°，加一層跟著移動的反光，離開後回正。',demo:'tilt'},
+ {id:'magnetic',cat:'hover',zh:'磁吸按鈕',en:'Magnetic Button',say:'滑鼠靠近按鈕會被吸過去',aka:['Magnet effect'],def:'游標靠近時按鈕朝游標位移，離開後彈回原位。',ai:'主要 CTA 做磁吸效果：游標在 100px 內時按鈕朝游標位移 35%，離開時彈回。',demo:'magnetic'},
+ {id:'ripple',cat:'hover',zh:'點擊漣漪',en:'Ripple',say:'點下去有水波紋',aka:['Material ripple','Ink ripple'],def:'從點擊位置擴散出一圈圓形波紋，源自 Material Design。',ai:'按鈕點擊時從點擊位置擴散半透明圓形漣漪，600ms 淡出。',demo:'ripple'},
+ {id:'underline',cat:'hover',zh:'底線滑入',en:'Underline Slide',say:'連結底線會長出來',aka:['Link hover','Underline animation'],def:'連結 hover 時底線從一側或中間展開。',ai:'導覽連結 hover 時底線由左向右展開（scaleX 0→1），2px、主色、250ms。',demo:'underline'},
+ {id:'flip',cat:'hover',zh:'翻牌卡片',en:'Flip Card',say:'卡片會翻到背面',aka:['Flip box','翻轉卡'],def:'卡片 3D 翻轉，正面與背面顯示不同內容。',ai:'團隊成員卡做 flip card：hover（手機改點擊）沿 Y 軸翻轉 180°，背面顯示簡介，600ms。',plat:'Elementor Pro：Flip Box',demo:'flip'},
+ {id:'cursor',cat:'hover',zh:'游標跟隨',en:'Custom Cursor',say:'滑鼠旁邊有個圈圈跟著跑',aka:['Cursor follower','游標特效'],def:'用自訂圖形取代或跟隨系統游標，外圈通常延遲跟上。',ai:'桌機版加自訂游標：小圓點即時跟隨、外圈延遲跟隨（lerp 0.15），移到連結上外圈放大。',demo:'cursor'},
+ {id:'tooltip',cat:'hover',zh:'提示框',en:'Tooltip',say:'停在上面會跑出小說明',aka:['Hint','Popover（較大、可互動的版本）'],def:'滑鼠停留或鍵盤聚焦時，在元素旁顯示簡短說明。',ai:'圖示按鈕加 tooltip：hover 或 focus 150ms 後在上方淡入說明文字，含小箭頭。',demo:'tooltip'},
+ {id:'spotlight',cat:'hover',zh:'聚光燈',en:'Spotlight Hover',say:'滑鼠在的地方會發光',aka:['Glow follow','Radial hover'],def:'游標周圍出現一圈光暈，照亮背後的格線或邊框。',ai:'功能卡片區加 spotlight hover：游標位置出現半徑 120px 的主色光暈。',demo:'spotlight'},
+ {id:'fill-sweep',cat:'hover',zh:'按鈕填色',en:'Fill Sweep',say:'按鈕顏色從旁邊刷過去',aka:['Fill button','Background slide'],def:'hover 時背景色從一側掃過填滿按鈕，文字反白。',ai:'外框按鈕 hover 時主色從左向右填滿（fill sweep），文字轉白，300ms ease-out。',demo:'fillsweep'},
+ // enter
+ {id:'fade-in',cat:'enter',zh:'淡入',en:'Fade In',say:'慢慢出現',aka:['Fade','Opacity'],def:'透明度 0→1，最基本的進場，沒有位移。',ai:'標題載入時淡入，400ms ease-out，不位移。',demo:'fade'},
+ {id:'fade-up',cat:'enter',zh:'淡入上移',en:'Fade Up',say:'從下面浮上來',aka:['Slide up','Fade in up','Slide in left / right（左右方向）'],def:'淡入同時從下方往上移動一小段距離，最常用的進場。',ai:'區塊標題淡入上移 24px，600ms ease-out。',demo:'up'},
+ {id:'scale-in',cat:'enter',zh:'縮放進場',en:'Scale In',say:'從小變大跳出來',aka:['Zoom in','Pop in','Scale up'],def:'從較小尺寸放大到原尺寸，同時淡入。',ai:'彈出的優惠卡從 0.9 倍放大到 1 並淡入，300ms，帶一點回彈。',demo:'scale'},
+ {id:'stagger',cat:'enter',zh:'交錯動畫',en:'Stagger',say:'一個接一個出來',aka:['Cascade','依序出現','Sequence'],def:'一組元素依序播放同一個動畫，每個之間有固定間隔。',ai:'6 張卡片進場時依序交錯 80ms 淡入上移，而不是同時出現。',demo:'stagger'},
+ {id:'typewriter',cat:'enter',zh:'打字機',en:'Typewriter',say:'字一個一個打出來',aka:['Typing effect'],def:'文字一個字一個字出現，常帶閃爍游標，可打完再刪除輪替。',ai:'主標語做打字機效果：每字 80ms，打完停 2 秒後刪除，輪替三組文案，游標閃爍。',plat:'Elementor：Animated Headline（Typing）',demo:'typewriter'},
+ {id:'split-text',cat:'enter',zh:'逐字動畫',en:'Split Text',say:'標題的字一個個跳上來',aka:['Letter animation','By char / by word','GSAP SplitText'],def:'把文字拆成字母或單字，各自做動畫並交錯播放。',ai:'主標題拆成逐字（split text），每個字從下方淡入上移，交錯 40ms。',demo:'split'},
+ {id:'counter',cat:'enter',zh:'數字滾動',en:'Count Up',say:'數字從 0 跑上去',aka:['Number counter','數字跳動'],def:'數字從 0 跑到目標值，常用於成果數據。',ai:'成果數字進入視窗時從 0 跑到目標值，1.6 秒，ease-out，含千分位逗號。',plat:'Elementor：Counter',demo:'counter'},
+ {id:'scramble',cat:'enter',zh:'亂碼解碼',en:'Text Scramble',say:'字先亂跳再變成正確的',aka:['Decode effect','Glitch text（加色偏抖動的變體）'],def:'文字先以亂碼字元閃爍，再由左至右逐字解出正確內容。',ai:'標題做 text scramble：亂碼字元閃動後由左至右逐字解出正確文字，約 1 秒。',demo:'scramble'},
+ {id:'mask-reveal',cat:'enter',zh:'遮罩揭示',en:'Mask Reveal',say:'像拉開布簾一樣露出來',aka:['Clip reveal','Wipe 擦除','Curtain reveal'],def:'內容被遮罩擋住，遮罩移開時逐步露出，邊緣是硬的，不是淡入。',ai:'大標題用遮罩揭示（clip-path）由左至右露出，700ms ease-in-out。',demo:'mask'},
+ {id:'rotate-words',cat:'enter',zh:'輪替文字',en:'Rotating Words',say:'句子裡有個詞一直換',aka:['Text loop','Word rotator'],def:'句子中某個詞固定位置輪流替換。',ai:'標語中「網站」一詞輪替成「品牌／體驗」，每 2 秒由下往上換字。',plat:'Elementor：Animated Headline（Rotating）',demo:'rotate'},
+ {id:'gradient-text',cat:'enter',zh:'流光漸層文字',en:'Animated Gradient Text',say:'字裡面的顏色會流動',aka:['Shimmer text','漸層文字'],def:'漸層填入文字並持續流動。',ai:'主標題填入主色到橘色的漸層，漸層持續向左流動，週期 3 秒。',demo:'gradtext'},
+ // nav
+ {id:'sticky-header',cat:'nav',zh:'固定導覽列',en:'Sticky Header',say:'選單一直在上面，往下滑會變小',aka:['Fixed header','Shrink header'],def:'導覽列固定在頂端，捲動後縮小高度或加陰影。',ai:'頂部導覽列 sticky，往下捲超過 10px 時高度從 72 縮成 56、加底部陰影。',demo:'stickyheader',browser:1},
+ {id:'hide-header',cat:'nav',zh:'捲動隱藏導覽',en:'Hide on Scroll',say:'往下滑選單收起來，往上滑又出現',aka:['Headroom','Smart header','Auto-hide navbar'],def:'往下捲時導覽列收起，往上捲立刻出現，騰出閱讀空間。',ai:'導覽列往下捲時向上滑出隱藏，往上捲時滑回顯示（headroom），200ms。',demo:'hideheader',browser:1},
+ {id:'hamburger',cat:'nav',zh:'漢堡選單',en:'Hamburger Menu',say:'三條線那個按鈕',aka:['Menu toggle','Burger'],def:'三條線的選單按鈕，點擊後通常變形成 X。',ai:'手機版漢堡按鈕點擊後三條線變形成 X（morph），300ms。',demo:'hamburger'},
+ {id:'drawer',cat:'nav',zh:'側滑選單',en:'Off-canvas / Drawer',say:'選單從旁邊滑出來',aka:['Side menu','Bottom sheet（由下方滑出的版本）'],def:'從畫面邊緣滑出的面板，背後加半透明遮罩。',ai:'手機選單做左側 off-canvas 抽屜：從左滑入、寬 80%、背後半透明遮罩，點遮罩關閉。',demo:'drawer'},
+ {id:'mega',cat:'nav',zh:'巨型選單',en:'Mega Menu',say:'下拉出來是一整大片',aka:['Dropdown（單欄小型版）'],def:'展開後是多欄大型面板的下拉選單，可放分類與圖片。',ai:'「產品」導覽項目 hover 時展開全寬 mega menu，三欄分類，淡入下移 8px。',plat:'Elementor：Mega Menu',demo:'mega'},
+ {id:'accordion',cat:'nav',zh:'手風琴',en:'Accordion',say:'點標題展開，再點收起來',aka:['Collapse','FAQ toggle','展開收合'],def:'點標題展開／收合內容，常用於 FAQ。',ai:'FAQ 做手風琴：點問題展開答案、高度動畫 300ms、一次只開一題，箭頭旋轉 180°。',plat:'Elementor：Accordion／Toggle',demo:'accordion'},
+ {id:'tabs',cat:'nav',zh:'頁籤',en:'Tabs',say:'上面幾個按鈕切換下面內容',aka:['Tab','Segmented control（膠囊外觀版）'],def:'同一區塊用頁籤切換不同內容，選取指示線會滑過去。',ai:'方案比較做頁籤切換：底線指示器滑動到選取項，內容淡入切換 200ms。',plat:'Elementor：Tabs／Webflow：Tabs',demo:'tabs'},
+ {id:'modal',cat:'nav',zh:'彈窗',en:'Modal / Popup',say:'跳出一個視窗蓋住畫面',aka:['Dialog','Popup','Lightbox（看圖專用）'],def:'蓋在頁面上的對話框，背景加遮罩，要關掉才能回到頁面。',ai:'點「預約」開啟 modal：背景遮罩 50% 黑、視窗從 0.95 放大淡入，Esc 或點遮罩可關閉。',plat:'Elementor Pro：Popup',demo:'modal'},
+ {id:'lightbox',cat:'nav',zh:'燈箱',en:'Lightbox',say:'點圖片會全螢幕放大',aka:['Gallery viewer'],def:'點縮圖後在全螢幕遮罩中顯示大圖，可左右切換。',ai:'作品集縮圖點擊開啟 lightbox，可左右切換，顯示「1 / 12」張數，Esc 關閉。',plat:'Webflow：Lightbox',demo:'lightbox'},
+ {id:'masonry',cat:'nav',zh:'瀑布流',en:'Masonry',say:'像 Pinterest 那樣高低錯落',aka:['Pinterest layout','Masonry grid'],def:'等寬不等高的卡片錯落排列，像磚牆。',ai:'作品集做瀑布流三欄，寬度一致、高度依圖片比例，手機改兩欄。',demo:'masonry'},
+ {id:'bento',cat:'nav',zh:'便當盒版型',en:'Bento Grid',say:'大小格子拼在一起很整齊',aka:['Bento box'],def:'大小不一的方格組成整齊網格，像便當盒分隔。',ai:'功能介紹做 bento grid：4 欄網格，主功能佔 2×2，其餘 1×1 或 2×1，間距 12px。',demo:'bento'},
+ // feedback
+ {id:'skeleton',cat:'feedback',zh:'骨架屏',en:'Skeleton Loading',say:'載入時先出現灰灰的框',aka:['Skeleton screen','Placeholder shimmer'],def:'內容載入前先顯示灰色輪廓，通常帶流光。',ai:'列表載入中顯示骨架屏：與實際卡片同尺寸的灰塊，帶左至右流光，載入完淡入真實內容。',demo:'skeleton'},
+ {id:'spinner',cat:'feedback',zh:'讀取動畫',en:'Spinner / Loader',say:'轉圈圈',aka:['Loading indicator'],def:'表示「處理中」的循環動畫，在不知道剩餘時間時使用。',ai:'按下送出後按鈕文字換成 16px 旋轉載入圈，按鈕變不可點擊。',demo:'spinner'},
+ {id:'toast',cat:'feedback',zh:'輕提示',en:'Toast / Snackbar',say:'角落跳一下小訊息就消失',aka:['Notification','Flash message'],def:'畫面角落短暫出現的訊息，幾秒後自動消失，不打斷操作。',ai:'儲存成功後在底部中央顯示 toast「已儲存」，由下滑入，2.5 秒後自動淡出。',demo:'toast'},
+ {id:'progress',cat:'feedback',zh:'進度條',en:'Progress Bar',say:'跑到幾 % 的那條',aka:['Determinate 確定進度','Indeterminate 不定進度'],def:'顯示完成比例的長條；不知道進度時用循環移動的不定進度條。',ai:'上傳時顯示確定進度條（determinate）與百分比；等待伺服器回應時改為不定進度條（indeterminate）。',demo:'progressbar'},
+ {id:'shake',cat:'feedback',zh:'錯誤抖動',en:'Error Shake',say:'打錯會搖一搖',aka:['Wiggle','錯誤回饋'],def:'輸入錯誤時欄位左右快速晃動，模仿搖頭。',ai:'Email 格式錯誤時輸入框左右抖動（±6px，400ms）並變紅框，下方顯示錯誤訊息。',demo:'shake'},
+ {id:'toggle',cat:'feedback',zh:'開關',en:'Toggle Switch',say:'那種左右撥的開關',aka:['Switch'],def:'二選一的開關，切換時圓鈕滑到另一側並變色。',ai:'通知設定用 toggle switch，開啟時圓鈕右移、底色變主色，200ms 帶一點回彈。',demo:'toggle'},
+ {id:'micro',cat:'feedback',zh:'微互動',en:'Micro-interaction',say:'按讚時愛心會彈一下',aka:['Pop','Burst'],def:'針對單一小動作的細緻回饋，讓操作有「手感」。',ai:'按讚時愛心放大到 1.3 倍再彈回、填滿紅色，並噴出 6 個小圓點粒子。',demo:'like'},
+ {id:'pulse',cat:'feedback',zh:'脈衝',en:'Pulse / Ping',say:'紅點一直往外擴散',aka:['Heartbeat','呼吸燈'],def:'從中心持續向外擴散的光圈，用來吸引注意。',ai:'未讀通知紅點加 pulse：外圈從 1 倍擴散到 2.5 倍並淡出，每 1.5 秒一次。',demo:'pulse'},
+ // style
+ {id:'glass',cat:'style',zh:'毛玻璃',en:'Glassmorphism',say:'半透明霧霧的玻璃',aka:['Frosted glass','Backdrop blur'],def:'半透明、帶背景模糊的面板，像磨砂玻璃。',ai:'導覽列做毛玻璃：白色 60% 透明、backdrop blur 12px、1px 半透明白邊。',demo:'glass'},
+ {id:'neu',cat:'style',zh:'新擬態',en:'Neumorphism',say:'跟背景同色、凸出來的軟按鈕',aka:['Soft UI'],def:'元素與背景同色，靠一亮一暗兩道陰影呈現凸起或凹陷。對比低，需注意可讀性。',ai:'控制面板按鈕做新擬態：與背景同色，左上亮陰影、右下暗陰影，按下時改為內凹。',demo:'neu'},
+ {id:'grad-anim',cat:'style',zh:'流動漸層',en:'Animated Gradient',say:'背景顏色會慢慢流動',aka:['Mesh gradient（多點漸層）','Aurora'],def:'大面積漸層色緩慢流動，常用在主視覺背景。',ai:'Hero 背景用三色漸層緩慢流動，週期 8 秒，往返循環。',demo:'gradanim'},
+ {id:'grain',cat:'style',zh:'顆粒雜訊',en:'Grain / Noise',say:'有點像底片的顆粒感',aka:['Film grain','Noise texture'],def:'在色塊上疊細小雜訊，讓平面看起來像印刷或底片。',ai:'背景漸層疊一層 8% 不透明的顆粒雜訊（grain），讓色塊不死平。',demo:'grain'},
+ {id:'duotone',cat:'style',zh:'雙色調',en:'Duotone',say:'照片變成兩種顏色',aka:['Two-tone','Color overlay'],def:'把圖片轉成只由兩種顏色構成的色調：暗部一色、亮部一色。',ai:'團隊照片全部轉雙色調：暗部用深藍、亮部用橘色，統一視覺。',demo:'duotone'},
+ {id:'blob',cat:'style',zh:'液態形狀',en:'Blob / Morphing Shape',say:'會變形的果凍圓',aka:['Organic shape'],def:'圓角不斷變化的有機形狀，常當裝飾背景。',ai:'Hero 右側放一個液態 blob，形狀持續緩慢變形，週期 8 秒。',demo:'blob'},
+ {id:'elevation',cat:'style',zh:'層級陰影',en:'Elevation',say:'陰影越深代表越浮在上面',aka:['Shadow level','Depth','Z 軸'],def:'用陰影深淺表示元素離畫面多「高」，越高越在上層。',ai:'卡片預設 elevation 1，hover 時升到 3，modal 用 4。',demo:'elevation'},
+ // motion
+ {id:'easing',cat:'motion',zh:'緩動曲線',en:'Easing',say:'動起來的「感覺」，快慢節奏',aka:['Timing function','cubic-bezier'],def:'動畫速度隨時間變化的方式，是決定質感的關鍵參數。',ai:'進場用 ease-out（快進慢停），離場用 ease-in，位置來回移動用 ease-in-out。',demo:'easing'},
+ {id:'duration',cat:'motion',zh:'時長',en:'Duration',say:'動畫跑多久',aka:['Speed'],def:'動畫從開始到結束的時間。小元件 150–300ms，大面積 400–700ms。',ai:'hover 回饋 150ms、彈窗 250ms、整頁轉場 500ms。',demo:'duration'},
+ {id:'delay',cat:'motion',zh:'延遲',en:'Delay',say:'等一下再動',aka:['Offset'],def:'觸發之後等多久才開始播放。',ai:'主標先出現，副標延遲 200ms、按鈕延遲 400ms 再進場。',demo:'delay'},
+ {id:'spring',cat:'motion',zh:'回彈',en:'Spring / Overshoot',say:'會 Q 彈一下',aka:['Bounce','Back easing','彈簧動畫'],def:'衝過終點再彈回，逐漸停下，模擬彈簧的物理感。',ai:'加入購物車圖示用 spring：放大衝過 1.15 倍後彈回 1，帶兩次小幅回盪。',demo:'spring'},
+ {id:'origin',cat:'motion',zh:'變形原點',en:'Transform Origin',say:'從哪個角開始轉／放大',aka:['Pivot','錨點'],def:'縮放與旋轉的支點位置，預設在中心。',ai:'下拉選單從右上角（transform-origin: top right）放大展開。',demo:'origin'},
+ {id:'loop',cat:'motion',zh:'循環方式',en:'Loop / Yoyo',say:'播一次、一直重播，還是來回',aka:['Iteration','Alternate','Infinite'],def:'動畫結束後怎麼繼續：只播一次、重頭循環，或來回往返。',ai:'向下箭頭做往返循環（yoyo）上下浮動 6px，週期 1.2 秒，無限次。',demo:'loop'},
+ {id:'trigger',cat:'motion',zh:'觸發時機',en:'Trigger',say:'什麼時候開始動',aka:['Event','觸發條件'],def:'動畫何時開始：頁面載入、進入視窗、hover、點擊，或隨捲動連動。',ai:'這段動畫在區塊進入視窗 30% 時觸發，不是頁面載入時。',plat:'Webflow：Page load／Scroll into view／Mouse hover／Mouse click',demo:'trigger'},
+];
+
+/* ---------- helpers ---------- */
+const state={paused:false};
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const L=n=>Array.from({length:n},(_,i)=>`<i class="ln" style="width:${[92,78,85,60,88,70][i%6]}%"></i>`).join('');
+const every=(ms,fn)=>{const id=setInterval(()=>{if(!state.paused)fn()},ms);return()=>clearInterval(id)};
+const N=(n,f)=>Array.from({length:n},(_,i)=>f(i)).join('');
+const pct=sc=>sc.scrollTop/Math.max(1,sc.scrollHeight-sc.clientHeight);
+
+/* ---------- demos: h = html, i = init(root) -> optional cleanup ---------- */
+const DEMOS={
+ reveal:{h:`<div class="sc"><div class="pad">${N(9,i=>`<div class="mini rv">項目 ${i+1}</div>`)}</div></div><span class="hint">↕ 在框內捲動</span>`,
+  i(r){const sc=$('.sc',r);const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{root:sc,threshold:.3});$$('.rv',r).forEach((el,i)=>{el.style.transitionDelay=(i%3)*80+'ms';io.observe(el)});return()=>io.disconnect()}},
+ scrub:{h:`<div class="sc"><div class="scrub"><div class="pin"><div class="o"></div><span class="mono">0%</span></div></div></div><span class="hint">↕ 捲動＝播放進度</span>`,
+  i(r){const sc=$('.sc',r),o=$('.o',r),t=$('.mono',r);sc.addEventListener('scroll',()=>{const p=pct(sc);o.style.transform=`rotate(${p*360}deg) scale(${.7+p*.9})`;o.style.borderRadius=8+p*12+'px';t.textContent=Math.round(p*100)+'%'})}},
+ parallax:{h:`<div class="sc"><div class="par"><div class="par-bk"><i style="left:60%;top:16px;width:70px;height:70px"></i><i style="left:70%;top:150px;width:100px;height:100px"></i><i style="left:58%;top:290px;width:56px;height:56px"></i><i style="left:80%;top:380px;width:44px;height:44px"></i></div><div class="par-fr">${N(6,i=>`<div class="mini">前景 ${i+1}</div>`)}</div></div></div><span class="hint">↕ 背景圓形較慢</span>`,
+  i(r){const sc=$('.sc',r),bk=$('.par-bk',r);sc.addEventListener('scroll',()=>{bk.style.transform=`translateY(${sc.scrollTop*.6}px)`})}},
+ sticky:{h:`<div class="sc">${['A','B','C'].map(x=>`<section><h5 class="stk">章節 ${x}</h5><div class="pad">${L(7)}</div></section>`).join('')}</div><span class="hint">↕ 標題黏在頂端</span>`},
+ snap:{h:`<div class="snap">${N(5,i=>`<div class="snap-i">${i+1}</div>`)}</div><span class="hint">⇆ 橫向滑動</span>`},
+ hscroll:{h:`<div class="sc"><div class="scrub" style="height:560px"><div class="pin" style="justify-content:flex-start"><div class="hs-row">${N(6,i=>`<div class="c${i%4+1}">${i+1}</div>`)}</div></div></div></div><span class="hint">↕ 往下捲，卡片往左</span>`,
+  i(r){const sc=$('.sc',r),row=$('.hs-row',r),pin=$('.pin',r);sc.addEventListener('scroll',()=>{const max=row.scrollWidth-pin.clientWidth;row.style.transform=`translateX(${-pct(sc)*Math.max(0,max)}px)`})}},
+ progress:{h:`<div class="pbar"><b></b></div><div class="sc"><div class="pad">${L(30)}</div></div><span class="hint">↕ 看頂端色條</span>`,
+  i(r){const sc=$('.sc',r),b=$('.pbar b',r);sc.addEventListener('scroll',()=>{b.style.width=pct(sc)*100+'%'})}},
+ smooth:{h:`<div class="col"><div class="ctl"><button data-b="smooth">平滑捲到 D</button><button data-b="auto">瞬間跳到 D</button><button data-b="top">回頂</button></div><div class="sc">${['A','B','C','D'].map(x=>`<section class="sec" data-s="${x}"><b>區塊 ${x}</b>${L(3)}</section>`).join('')}</div></div>`,
+  i(r){const sc=$('.sc',r),d=$('[data-s="D"]',r);$$('[data-b]',r).forEach(b=>b.onclick=()=>{const m=b.dataset.b;sc.scrollTo({top:m==='top'?0:d.offsetTop,behavior:m==='auto'?'auto':'smooth'})})}},
+ btt:{h:`<div class="sc"><div class="pad">${L(30)}</div></div><button class="btt" aria-label="回到頂端">↑</button><span class="hint">↕ 往下捲</span>`,
+  i(r){const sc=$('.sc',r),b=$('.btt',r);sc.addEventListener('scroll',()=>b.classList.toggle('show',sc.scrollTop>60));b.onclick=()=>sc.scrollTo({top:0,behavior:'smooth'})}},
+ infinite:{h:`<div class="sc"><div class="pad inf"></div><div class="inf-l mono">往下捲載入更多</div></div>`,
+  i(r){const sc=$('.sc',r),box=$('.inf',r),l=$('.inf-l',r);let n=0,busy=false;const add=()=>{box.insertAdjacentHTML('beforeend',N(5,()=>`<div class="mini">商品 ${++n}</div>`))};add();
+   sc.addEventListener('scroll',()=>{if(busy||n>=30||sc.scrollHeight-sc.scrollTop-sc.clientHeight>20)return;busy=true;l.textContent='載入中…';setTimeout(()=>{add();busy=false;l.textContent=n>=30?'已全部載入':'往下捲載入更多'},500)})}},
+ scrollspy:{h:`<div class="spy"><nav>${['A','B','C','D'].map((x,i)=>`<a href="#" data-t="${x}"${i?'':' class="on"'}>章節 ${x}</a>`).join('')}</nav><div class="sc">${['A','B','C','D'].map(x=>`<section class="sec" data-s="${x}"><b>章節 ${x}</b>${L(4)}</section>`).join('')}</div></div>`,
+  i(r){const sc=$('.sc',r),secs=$$('.sec',r),as=$$('nav a',r);sc.addEventListener('scroll',()=>{let c='A';secs.forEach(s=>{if(s.offsetTop-sc.scrollTop<=40)c=s.dataset.s});if(sc.scrollTop+sc.clientHeight>=sc.scrollHeight-2)c='D';as.forEach(a=>a.classList.toggle('on',a.dataset.t===c))});
+   as.forEach(a=>a.onclick=e=>{e.preventDefault();sc.scrollTo({top:$(`[data-s="${a.dataset.t}"]`,r).offsetTop,behavior:'smooth'})})}},
+ carousel:{h:`<div class="car"><div class="car-t">${N(4,i=>`<div class="car-s c${i+1}">Slide ${i+1}</div>`)}</div><button class="car-a car-p" aria-label="上一張">‹</button><button class="car-a car-n" aria-label="下一張">›</button><div class="dots">${N(4,i=>`<button aria-label="第 ${i+1} 張"></button>`)}</div></div>`,
+  i(r){const t=$('.car-t',r),ds=$$('.dots button',r),car=$('.car',r);let i=0,hov=false;const go=n=>{i=(n+4)%4;t.style.transform=`translateX(${-i*100}%)`;ds.forEach((d,k)=>d.classList.toggle('on',k===i))};go(0);
+   $('.car-p',r).onclick=()=>go(i-1);$('.car-n',r).onclick=()=>go(i+1);ds.forEach((d,k)=>d.onclick=()=>go(k));car.onmouseenter=()=>hov=true;car.onmouseleave=()=>hov=false;return every(3000,()=>{if(!hov)go(i+1)})}},
+ crossfade:{h:`<div class="sx" style="inset:0">${N(3,i=>`<div class="fs-i c${i+1}${i?'':' on'}">Slide ${i+1}</div>`)}</div>`,
+  i(r){const s=$$('.fs-i',r);let i=0;return every(2400,()=>{s[i].classList.remove('on');i=(i+1)%s.length;s[i].classList.add('on')})}},
+ marquee:{h:`<div class="mq"><div class="mq-t">${(()=>{const w=['Studio','Nordic','Atlas','Kumo','Orbit','Pixel'].map(x=>`<span class="mq-i">${x}</span>`).join('');return w+w})()}</div></div><span class="hint">滑鼠移入暫停</span>`},
+ swipe:{h:`<div class="sw"><div class="sw-t">${N(4,i=>`<div class="c${i+1}">${i+1} / 4</div>`)}</div></div><span class="hint">⇆ 拖曳或滑動</span>`,
+  i(r){const w=$('.sw',r),t=$('.sw-t',r);let i=0,x0=null,dx=0;const set=()=>t.style.transform=`translateX(calc(${-i*100}% + ${dx}px))`;
+   w.addEventListener('pointerdown',e=>{x0=e.clientX;dx=0;t.style.transition='none';w.setPointerCapture(e.pointerId)});
+   w.addEventListener('pointermove',e=>{if(x0===null)return;dx=e.clientX-x0;if((i===0&&dx>0)||(i===3&&dx<0))dx*=.3;set()});
+   const up=()=>{if(x0===null)return;if(dx<-40)i=Math.min(i+1,3);if(dx>40)i=Math.max(i-1,0);x0=null;dx=0;t.style.transition='';set()};w.addEventListener('pointerup',up);w.addEventListener('pointercancel',up)}},
+ peek:{h:`<div class="pk">${N(5,i=>`<div class="pk-i c${i%4+1}">${i+1}</div>`)}</div><span class="hint">⇆ 露出下一張</span>`},
+ beforeafter:{h:`<div class="ba"><div class="ba-a">AFTER</div><div class="ba-b">BEFORE</div><div class="ba-line"></div><input class="ba-r" type="range" min="0" max="100" value="50" aria-label="比較位置"></div>`,
+  i(r){const b=$('.ba',r);$('.ba-r',r).oninput=e=>b.style.setProperty('--p',e.target.value+'%')}},
+ thumbs:{h:`<div class="th"><div class="th-m c1">1</div><div class="th-r">${N(4,i=>`<button class="th-t c${i+1}${i?'':' on'}" data-n="${i+1}" aria-label="第 ${i+1} 張"></button>`)}</div></div>`,
+  i(r){const m=$('.th-m',r);$$('.th-t',r).forEach(b=>b.onclick=()=>{$$('.th-t',r).forEach(x=>x.classList.toggle('on',x===b));m.className='th-m c'+b.dataset.n;m.textContent=b.dataset.n;m.animate([{opacity:0},{opacity:1}],{duration:300})})}},
+ lift:{h:`<div class="mini lift">卡片</div><span class="hint">滑鼠移入</span>`},
+ zoom:{h:`<div class="hz"><div class="hz-i"></div><span class="hz-cap">作品名稱</span></div><span class="hint">滑鼠移入</span>`},
+ tilt:{h:`<div class="tl"><b>MEMBER</b><span>0000 1234 5678</span><i class="tl-g"></i></div><span class="hint">在框內移動滑鼠</span>`,
+  i(r){const s=r.closest('.stage'),c=$('.tl',r);s.addEventListener('pointermove',e=>{const b=c.getBoundingClientRect();const x=Math.max(-.5,Math.min(.5,(e.clientX-b.left)/b.width-.5)),y=Math.max(-.5,Math.min(.5,(e.clientY-b.top)/b.height-.5));c.style.transform=`perspective(600px) rotateX(${-y*16}deg) rotateY(${x*16}deg)`;c.style.setProperty('--gx',(x+.5)*100+'%');c.style.setProperty('--gy',(y+.5)*100+'%')});s.addEventListener('pointerleave',()=>c.style.transform='')}},
+ magnetic:{h:`<button class="btn mg">立即預約</button><span class="hint">游標靠近按鈕</span>`,
+  i(r){const s=r.closest('.stage'),b=$('.mg',r);s.addEventListener('pointermove',e=>{const k=b.getBoundingClientRect();const dx=e.clientX-(k.left+k.width/2),dy=e.clientY-(k.top+k.height/2);b.style.transform=Math.hypot(dx,dy)<110?`translate(${dx*.35}px,${dy*.35}px)`:''});s.addEventListener('pointerleave',()=>b.style.transform='')}},
+ ripple:{h:`<button class="btn rp">點我看漣漪</button>`,
+  i(r){const b=$('.rp',r);b.onclick=e=>{const k=b.getBoundingClientRect(),d=Math.max(k.width,k.height)*2,i=document.createElement('i');i.style.cssText=`width:${d}px;height:${d}px;left:${(e.clientX||k.left+k.width/2)-k.left-d/2}px;top:${(e.clientY||k.top+k.height/2)-k.top-d/2}px`;b.appendChild(i);setTimeout(()=>i.remove(),650)}}},
+ underline:{h:`<div class="uls"><a href="#" class="ul ul-l">由左展開</a><a href="#" class="ul ul-c">由中間展開</a></div><span class="hint">滑鼠移入連結</span>`,i(r){$$('a',r).forEach(a=>a.onclick=e=>e.preventDefault())}},
+ flip:{h:`<div class="fp" tabindex="0" role="button" aria-label="翻牌卡片"><div class="fp-i"><div class="fp-f">正面</div><div class="fp-b">背面：簡介</div></div></div><span class="hint">hover 或點擊</span>`,
+  i(r){const f=$('.fp',r);const t=()=>f.classList.toggle('on');f.onclick=t;f.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}}}},
+ cursor:{h:`<div class="cf"><span class="cf-t">在此區移動滑鼠</span><i class="cf-r"></i><i class="cf-d"></i></div>`,
+  i(r){const a=$('.cf',r),d=$('.cf-d',r),g=$('.cf-r',r);let tx=0,ty=0,rx=0,ry=0,raf;const place=()=>{tx=rx=a.clientWidth/2;ty=ry=a.clientHeight*.72};place();
+   const tick=()=>{rx+=(tx-rx)*.15;ry+=(ty-ry)*.15;d.style.transform=`translate(${tx}px,${ty}px)`;g.style.transform=`translate(${rx}px,${ry}px)`;raf=requestAnimationFrame(tick)};tick();
+   a.addEventListener('pointermove',e=>{const b=a.getBoundingClientRect();tx=e.clientX-b.left;ty=e.clientY-b.top});return()=>cancelAnimationFrame(raf)}},
+ tooltip:{h:`<button class="btn ghost tt" aria-describedby="tip-demo">?<span class="tip" id="tip-demo" role="tooltip">這是提示文字</span></button><span class="hint">hover 或 Tab 聚焦</span>`},
+ spotlight:{h:`<div class="spot"></div><span class="hint">在框內移動滑鼠</span>`,
+  i(r){const s=$('.spot',r);s.addEventListener('pointermove',e=>{const b=s.getBoundingClientRect();s.style.setProperty('--x',e.clientX-b.left+'px');s.style.setProperty('--y',e.clientY-b.top+'px')})}},
+ fillsweep:{h:`<button class="btn fsw"><span>了解更多</span></button><span class="hint">滑鼠移入</span>`},
+ fade:{h:`<div class="o a-fade"></div>`},
+ up:{h:`<div class="mini a-up" style="font-size:15px;padding:12px 18px">區塊標題</div>`},
+ scale:{h:`<div class="o a-scale" style="width:56px;height:56px"></div>`},
+ stagger:{h:`<div class="row">${N(6,i=>`<div class="o sm a-up${i%2?' b':''}" style="--i:${i}"></div>`)}</div>`},
+ typewriter:{h:`<div class="tw"><span class="tw-t"></span><i class="caret"></i></div>`,
+  i(r){const el=$('.tw-t',r),words=['我們做網站','我們做品牌','我們做體驗'];let w=0,c=0,dir=1,hold=0;return every(80,()=>{if(hold){hold--;return}c+=dir;el.textContent=words[w].slice(0,c);if(c===words[w].length){dir=-1;hold=22}else if(c===0){dir=1;w=(w+1)%words.length;hold=4}})}},
+ split:{h:`<div class="split big">${[...'Hello 動態'].map((c,i)=>`<span style="--i:${i}">${c}</span>`).join('')}</div>`},
+ counter:{h:`<div class="cnt"><b>0</b><span>位客戶</span></div>`,
+  i(r){const b=$('b',r);let raf;const run=()=>{const t0=performance.now();const f=t=>{const p=Math.min(1,(t-t0)/1600),e=1-Math.pow(1-p,3);b.textContent=Math.round(12580*e).toLocaleString('en-US');if(p<1)raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)};run();const s=every(4000,run);return()=>{s();cancelAnimationFrame(raf)}}},
+ scramble:{h:`<div class="scr mono"></div>`,
+  i(r){const el=$('.scr',r),T='MOTION GLOSSARY',C='!<>-_\\/[]{}=+*^?#ABCXYZ';let f=0;el.textContent=T;return every(45,()=>{f=(f+1)%70;const k=Math.floor(f/2.5);el.textContent=f>45?T:[...T].map((ch,i)=>i<k||ch===' '?ch:C[Math.random()*C.length|0]).join('')})}},
+ mask:{h:`<div class="mask big">REVEAL 揭示</div>`},
+ rotate:{h:`<div class="rw">我們設計<span class="rw-w"><b>網站</b></span></div>`,
+  i(r){const w=['網站','品牌','體驗'];let i=0;const box=$('.rw-w',r);return every(1800,()=>{i=(i+1)%w.length;box.innerHTML=`<b>${w[i]}</b>`})}},
+ gradtext:{h:`<div class="gt big">Motion 動態</div>`},
+ stickyheader:{h:`<div class="sc"><div class="hdr"><b>LOGO</b><span><i></i><i></i><i></i></span></div><div class="pad">${L(26)}</div></div><span class="hint">↕ 捲動後縮小</span>`,
+  i(r){const sc=$('.sc',r),h=$('.hdr',r);sc.addEventListener('scroll',()=>h.classList.toggle('sm',sc.scrollTop>10))}},
+ hideheader:{h:`<div class="sc"><div class="hdr"><b>LOGO</b><span><i></i><i></i><i></i></span></div><div class="pad">${L(32)}</div></div><span class="hint">↕ 往下藏、往上出現</span>`,
+  i(r){const sc=$('.sc',r),h=$('.hdr',r);let last=0;sc.addEventListener('scroll',()=>{const s=sc.scrollTop;h.classList.toggle('hid',s>last&&s>40);last=s})}},
+ hamburger:{h:`<button class="hb" aria-label="開關選單" aria-expanded="false"><i></i><i></i><i></i></button><span class="hint">點擊</span>`,
+  i(r){const b=$('.hb',r);b.onclick=()=>{const on=b.classList.toggle('on');b.setAttribute('aria-expanded',on)}}},
+ drawer:{h:`<div class="sx dr"><button class="btn sm dr-o">☰ 開啟選單</button><div class="ov"></div><nav class="dr-p"><b>選單</b>${['首頁','服務','作品','聯絡'].map(x=>`<span>${x}</span>`).join('')}</nav></div>`,
+  i(r){const d=$('.dr',r);$('.dr-o',r).onclick=()=>d.classList.add('open');$('.ov',r).onclick=()=>d.classList.remove('open')}},
+ mega:{h:`<div class="mm"><nav class="mm-bar"><b>LOGO</b><div class="mm-it"><button class="mm-b">產品 ▾</button><div class="mm-p">${N(3,i=>`<div><b>分類 ${'ABC'[i]}</b>${L(3)}</div>`)}</div></div><span>關於</span><span>聯絡</span></nav><div class="pad">${L(5)}</div></div>`,
+  i(r){const it=$('.mm-it',r);$('.mm-b',r).onclick=()=>it.classList.toggle('open')}},
+ accordion:{h:`<div class="ac">${['運費怎麼算？','可以退貨嗎？','多久會到？'].map((q,i)=>`<div class="ac-i${i?'':' open'}"><button class="ac-h">${q}<i>⌄</i></button><div class="ac-b"><div><p>這裡是答案內容，展開時高度以動畫撐開。</p></div></div></div>`).join('')}</div>`,
+  i(r){const its=$$('.ac-i',r);its.forEach(it=>$('.ac-h',it).onclick=()=>{const was=it.classList.contains('open');its.forEach(x=>x.classList.remove('open'));if(!was)it.classList.add('open')})}},
+ tabs:{h:`<div class="tb"><div class="tb-bar" role="tablist">${['方案 A','方案 B','方案 C'].map((t,i)=>`<button role="tab"${i?'':' class="on"'}>${t}</button>`).join('')}<i class="tb-ind"></i></div><div class="tb-c c1">方案 A 內容</div></div>`,
+  i(r){const bs=$$('.tb-bar button',r),ind=$('.tb-ind',r),c=$('.tb-c',r);const pos=()=>{const b=$('.tb-bar .on',r);ind.style.left=b.offsetLeft+'px';ind.style.width=b.offsetWidth+'px'};pos();
+   bs.forEach((b,i)=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));pos();c.className='tb-c c'+(i+1);c.textContent=b.textContent+' 內容';c.animate([{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],{duration:200})});
+   const ro=new ResizeObserver(pos);ro.observe($('.tb-bar',r));return()=>ro.disconnect()}},
+ modal:{h:`<div class="sx md-w"><button class="btn md-o">開啟彈窗</button><div class="ov"></div><div class="md" role="dialog" aria-label="預約諮詢"><b>預約諮詢</b><p>背景加遮罩，點遮罩或按 Esc 關閉。</p><button class="btn sm md-x">關閉</button></div></div>`,
+  i(r){const w=$('.md-w',r),cl=()=>w.classList.remove('open');$('.md-o',r).onclick=()=>{w.classList.add('open');$('.md-x',r).focus()};$('.md-x',r).onclick=cl;$('.ov',r).onclick=cl;w.addEventListener('keydown',e=>{if(e.key==='Escape')cl()})}},
+ lightbox:{h:`<div class="lbg">${N(4,i=>`<button class="c${i+1}" data-i="${i}" aria-label="放大第 ${i+1} 張"></button>`)}</div><div class="lb" role="dialog" aria-label="燈箱"><div class="lb-im c1"></div><button class="lb-x" aria-label="關閉">×</button><button class="lb-p" aria-label="上一張">‹</button><button class="lb-n" aria-label="下一張">›</button><span class="lb-c mono">1 / 4</span></div><span class="hint">點縮圖</span>`,
+  i(r){const lb=$('.lb',r),im=$('.lb-im',r),c=$('.lb-c',r);let i=0;const show=n=>{i=(n+4)%4;im.className='lb-im c'+(i+1);c.textContent=`${i+1} / 4`};
+   $$('.lbg button',r).forEach(b=>b.onclick=()=>{show(+b.dataset.i);lb.classList.add('open');$('.lb-x',r).focus()});$('.lb-x',r).onclick=()=>lb.classList.remove('open');$('.lb-p',r).onclick=()=>show(i-1);$('.lb-n',r).onclick=()=>show(i+1);lb.addEventListener('keydown',e=>{if(e.key==='Escape')lb.classList.remove('open')})}},
+ masonry:{h:`<div class="ms">${[60,90,46,74,40,84,58,66,50,96,44,70].map((h,i)=>`<i class="c${i%4+1}" style="height:${h}px"></i>`).join('')}</div>`},
+ bento:{h:`<div class="bn"><i class="b1 c1">主功能</i><i class="b2 c2">功能 2</i><i class="c4">3</i><i class="c3">4</i></div>`},
+ skeleton:{h:`<div class="sk"><div class="s"><i class="av shim"></i><div class="tx"><i class="ln shim" style="width:80%;height:10px"></i><i class="ln shim" style="width:55%;height:10px"></i></div></div><div class="r"><i class="av c2" style="display:grid;place-items:center;font-style:normal;font-weight:700">M</i><div class="tx"><b style="font-size:14px">真實內容標題</b><span style="font-size:12px;color:var(--mut)">載入完成後淡入</span></div></div></div>`,
+  i(r){const s=$('.sk',r);return every(2200,()=>s.classList.toggle('done'))}},
+ spinner:{h:`<div class="sp"><i class="sp-ring"></i><span class="sp-dots">${N(3,i=>`<i style="--i:${i}"></i>`)}</span><span class="sp-bars">${N(4,i=>`<i style="--i:${i}"></i>`)}</span></div>`},
+ toast:{h:`<button class="btn ts-b">儲存</button><div class="ts" role="status">✓ 已儲存</div>`,
+  i(r){const t=$('.ts',r);let to;$('.ts-b',r).onclick=()=>{t.classList.add('show');clearTimeout(to);to=setTimeout(()=>t.classList.remove('show'),2200)};return()=>clearTimeout(to)}},
+ progressbar:{h:`<div class="pg"><div class="pg-row"><span class="mono">determinate</span><div class="pg-t"><b class="pg-d"></b></div><span class="mono pg-v">0%</span></div><div class="pg-row"><span class="mono">indeterminate</span><div class="pg-t"><b class="pg-i"></b></div><span></span></div></div>`,
+  i(r){const d=$('.pg-d',r),v=$('.pg-v',r);let p=0;return every(120,()=>{p=p>=100?0:Math.min(100,p+Math.random()*7);d.style.width=p+'%';v.textContent=Math.round(p)+'%'})}},
+ shake:{h:`<form class="sh" novalidate><input id="demo-shake" type="email" placeholder="輸入 Email" aria-label="Email"><button class="btn sm">送出</button><p></p></form><span class="hint">空白或格式錯誤時送出</span>`,
+  i(r){const f=$('form',r),inp=$('input',r),m=$('p',r);f.onsubmit=e=>{e.preventDefault();inp.classList.remove('err');void inp.offsetWidth;if(!/^\S+@\S+\.\S+$/.test(inp.value)){inp.classList.add('err');m.className='e';m.textContent='請輸入正確的 Email 格式'}else{m.className='k';m.textContent='✓ 已送出'}}}},
+ toggle:{h:`<label class="tgl"><input type="checkbox" id="demo-toggle" checked><span class="tg"></span><span>接收通知</span></label>`},
+ like:{h:`<button class="lk" aria-pressed="false" aria-label="按讚"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.4-4.5-9.4-9C1.2 8.1 3.2 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.5.7-1.3 2.2-2.5 4.3-2.5 3.5 0 5.5 3.6 4.1 7-2 4.5-9.4 9-9.4 9z"/></svg><span class="lk-p">${N(6,i=>`<i style="--a:${i*60}deg"></i>`)}</span></button><span class="hint">點擊</span>`,
+  i(r){const b=$('.lk',r);b.onclick=()=>{const on=b.classList.toggle('on');b.setAttribute('aria-pressed',on)}}},
+ pulse:{h:`<span class="pl"></span><span style="font-size:13px;color:var(--mut)">3 則新通知</span>`},
+ glass:{h:`<div class="gls"><i class="gb1"></i><i class="gb2"></i><div class="gl">Glass</div></div>`},
+ neu:{h:`<div class="neu"><div class="nu-r">凸起</div><div class="nu-p">凹陷</div></div>`},
+ gradanim:{h:`<div class="ga"></div>`},
+ grain:{h:`<div class="gr"><div><span>無雜訊</span></div><div class="gr-n"><span>加顆粒</span></div></div>`},
+ duotone:{h:`<div class="dt"><div class="dt-im"><span>原圖</span></div><div class="dt-w"><div class="dt-im duo" style="height:100%"></div><span>雙色調</span></div></div>`},
+ blob:{h:`<div class="blb"></div>`},
+ elevation:{h:`<div class="ev">${N(4,i=>`<i class="e${i}">${i}</i>`)}</div>`},
+ easing:{h:`<div class="lanes css">${[['linear','linear'],['ease-in','ease-in'],['ease-out','ease-out'],['ease-in-out','ease-in-out'],['back','cubic-bezier(.34,1.56,.64,1)']].map(([n,v])=>`<div class="lane"><span class="mono">${n}</span><div class="tr"><i style="animation-timing-function:${v}"></i></div></div>`).join('')}</div>`},
+ duration:{h:`<div class="lanes tx">${[150,300,600,1000].map(d=>`<div class="lane"><span class="mono">${d}ms</span><div class="tr"><i style="transition-duration:${d}ms"></i></div></div>`).join('')}</div>`,
+  i(r){const l=$('.lanes',r);return every(1600,()=>l.classList.toggle('go'))}},
+ delay:{h:`<div class="lanes tx">${[0,150,300,450].map(d=>`<div class="lane"><span class="mono">delay ${d}</span><div class="tr"><i style="transition-duration:400ms;transition-delay:${d}ms"></i></div></div>`).join('')}</div>`,
+  i(r){const l=$('.lanes',r);return every(1600,()=>l.classList.toggle('go'))}},
+ spring:{h:`<div class="sprw"><div><div class="o a-ease"></div>ease-out</div><div><div class="o b a-spr"></div>spring</div></div>`},
+ origin:{h:`<div class="og">${[['0 0','左上'],['50% 50%','中心'],['100% 100%','右下']].map(([o,n])=>`<div><b style="left:${o.split(' ')[0]};top:${o.split(' ')[1]}"></b><div class="o" style="transform-origin:${o}"></div><span>${n}</span></div>`).join('')}</div>`},
+ loop:{h:`<div class="lanes">${[['once','1 normal forwards'],['loop','infinite normal'],['yoyo','infinite alternate']].map(([n,v])=>`<div class="lane"><span class="mono">${n}</span><div class="tr"><i style="animation:lane 1.4s ease-in-out ${v}"></i></div></div>`).join('')}</div>`},
+ trigger:{h:`<div class="trg"><div class="t-load">載入</div><div class="t-hover">hover</div><div class="t-click" role="button" tabindex="0">click</div></div>`,
+  i(r){const c=$('.t-click',r);c.onclick=()=>c.classList.toggle('on');c.onkeydown=e=>{if(e.key==='Enter')c.classList.toggle('on')}}},
+};
+
+/* ---------- render ---------- */
+function card(t){
+  const d=t.demo&&DEMOS[t.demo];
+  return `<article class="term" id="t-${esc(t.id)}" data-cat="${esc(t.cat)}" data-s="${esc([t.zh,t.en,t.say,(t.aka||[]).join(' '),t.def].join(' ').toLowerCase())}">
+    <div class="stage${t.browser?' browser':''}"${d?` data-demo="${esc(t.demo)}"`:''}>${d?'<button class="replay" type="button">重播</button>':`<span class="mono" style="color:var(--mut);font-size:12px">尚無示意</span>`}</div>
+    <div class="t-body">
+      <div class="names"><h3>${esc(t.zh)}</h3><span class="en">${esc(t.en)}</span></div>
+      ${t.say?`<p class="t-say">白話：<q>${esc(t.say)}</q></p>`:''}
+      <p class="def">${esc(t.def)}</p>
+      ${t.aka&&t.aka.length?`<div class="aka">${t.aka.map(a=>`<span>${esc(a)}</span>`).join('')}</div>`:''}
+      ${t.ai?`<div class="ai"><span class="lb">對 AI 這樣說</span><p>${esc(t.ai)}</p><button type="button" class="cp">複製</button></div>`:''}
+      ${t.plat?`<p class="plat"><b>平台對應</b>　${esc(t.plat)}</p>`:''}
+    </div></article>`;
+}
+let io;
+function mount(stage){
+  if(stage._c){stage._c();stage._c=null}
+  const d=DEMOS[stage.dataset.demo];if(!d)return;
+  $$('.sx-root',stage).forEach(n=>n.remove());
+  const box=document.createElement('div');box.className='sx sx-root';box.innerHTML=d.h;
+  stage.appendChild(box);
+  try{const c=d.i&&d.i(box);if(typeof c==='function')stage._c=c}catch(e){console.error(stage.dataset.demo,e)}
+}
+function render(){
+  const cats=CATS,terms=TERMS;
+  $('#cats').innerHTML=cats.map(c=>{
+    const ts=terms.filter(t=>t.cat===c.id);
+    return `<section class="cat" id="c-${c.id}" data-cat="${c.id}"><div class="cat-h"><h2>${esc(c.zh)}</h2><span class="en">${esc(c.en)} · ${ts.length}</span><p>${esc(c.d)}</p></div><div class="grid">${ts.map(card).join('')}</div></section>`}).join('');
+  $('#chips').innerHTML=[{id:'all',zh:'全部'},...cats].map(c=>`<button class="chip" type="button" data-c="${c.id}" aria-pressed="${c.id===filter.cat}">${esc(c.zh)}${c.id==='all'?'':`<small>${TERMS.filter(t=>t.cat===c.id).length}</small>`}</button>`).join('');
+  $('#stats').innerHTML=`<span>${terms.length} 個術語</span><span>${CATS.length} 個分類</span><span>每張卡片可直接操作</span>`;
+  $('#top6').innerHTML=TOP6.map((id,i)=>{const t=TERMS.find(x=>x.id===id);return `<a class="t6" href="#t-${id}"><span class="n">${i+1}</span><b>${esc(t.en)}｜${esc(t.zh)}</b><span>${esc(t.say)}</span></a>`}).join('');
+  if(io)io.disconnect();
+  io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!e.target._m){e.target._m=1;mount(e.target)}}),{rootMargin:'200px'});
+  $$('.stage[data-demo]').forEach(s=>io.observe(s));
+  applyFilter();
+}
+
+/* ---------- filter ---------- */
+const filter={q:'',cat:'all'};
+function applyFilter(){
+  let shown=0;
+  $$('.cat').forEach(sec=>{
+    let n=0;const catOk=filter.cat==='all'||filter.cat===sec.dataset.cat;
+    $$('.term',sec).forEach(t=>{const ok=catOk&&(!filter.q||t.dataset.s.includes(filter.q));t.hidden=!ok;if(ok)n++});
+    sec.hidden=!n;shown+=n;
+  });
+  $('#empty').hidden=!!shown;
+  $$('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.c===filter.cat));
+}
+$('#q').addEventListener('input',e=>{filter.q=e.target.value.trim().toLowerCase();applyFilter()});
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;filter.cat=b.dataset.c;applyFilter();try{localStorage.setItem('motion-glossary.cat',filter.cat)}catch(_){}});
+
+/* ---------- copy ---------- */
+async function copy(text,btn,label){
+  const old=btn.textContent;let ok=false;
+  try{await navigator.clipboard.writeText(text);ok=true}catch(e){
+    const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{ok=document.execCommand('copy')}catch(_){}ta.remove()}
+  btn.textContent=ok?(label||'已複製'):'請手動選取';setTimeout(()=>btn.textContent=old,1400);
+}
+$('#cats').addEventListener('click',e=>{
+  const cp=e.target.closest('.cp');if(cp){copy($('p',cp.parentNode).textContent,cp);return}
+  const rp=e.target.closest('.replay');if(rp){mount(rp.closest('.stage'));return}
+});
+
+/* ---------- pause ---------- */
+const pauseBtn=$('#pause');
+function setPaused(p){state.paused=p;$('#root').classList.toggle('paused',p);pauseBtn.setAttribute('aria-pressed',p);pauseBtn.textContent=p?'播放示意動畫':'暫停示意動畫'}
+pauseBtn.onclick=()=>setPaused(!state.paused);
+
+/* ---------- boot ---------- */
+try{const c=localStorage.getItem('motion-glossary.cat');if(c&&(c==='all'||CATS.some(x=>x.id===c)))filter.cat=c}catch(_){}
+render();
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)setPaused(true);
+</script>
+</body>
+</html>
