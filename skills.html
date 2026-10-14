@@ -112,7 +112,7 @@ const CATS = [
   {id:'str',  name:'策略 · 寫作 · 品牌', color:'var(--c-str)', note:'提案、prompt、品牌規範類。'},
   {id:'me',   name:'個人助理', color:'var(--c-me)', note:'claude.ai 內建範例 skill。'},
   {id:'cc',   name:'Claude Code 內建', color:'var(--c-cc)', note:'隨 Claude Code 附帶,不用另外下載;更新 Claude Code 即更新。'},
-  {id:'seo',  name:'SEO 分析', color:'var(--c-seo)', note:'外掛 claude-seo(AgriciDaniel),一套 hub skill 底下掛 26 個子 skill + 19 個子 agent。'},
+  {id:'seo',  name:'SEO 分析', color:'var(--c-seo)', note:'外掛 claude-seo(AgriciDaniel,26 個子 skill + 19 個子 agent)的技術/內容 SEO 全家桶,加上自建的品牌層 GEO 健檢。'},
 ];
 
 const L = {
@@ -195,10 +195,6 @@ const S = [
    subs:['/翻譯 需求翻譯','/發想 提案方向 3–5 個','/收斂 簡報骨架','/潤稿 設計語意'],i:['# 自建 skill,存於 claude.ai 個人 skill 庫,登入即同步'],l:[]},
   {c:'str',n:'prompt-master',src:'自建',d:'為特定 AI 工具(ChatGPT、Cursor、Midjourney、影像/影片 AI、coding agent…)產出一段可直接貼上的最佳化 prompt;會先確認目標工具。',
    use:['/anthropic-skills:prompt-master 幫我寫一段給 Midjourney 的產品情境圖 prompt'],i:['# 自建 skill,存於 claude.ai 個人 skill 庫,登入即同步'],l:[]},
-  {c:'str',n:'brand-geo-precheck',src:'自建 · 本機',d:'品牌層級 GEO 前置健檢:診斷「AI 認不認識這個品牌、認得對不對、跟對手比誰的份量重」。流程依序是撞名檢測、候選名單缺席檢測、敘事權查核、競品定位校正(Tier 1 真競品/Tier 2 品類鄰居)、關鍵字搜量佐證、負評逐篇原文查證、社群生態分層、企業實體架構檢查、SERP 意圖分類收斂。服務對象是已有網站、要加購品牌層診斷的客戶;跟 aio-geo-health-check 不同——那個健檢的是網站技術結構,這個健檢的是品牌在 AI 認知生態裡的位置。',
-   use:['/brand-geo-precheck 幫某品牌做品牌前置健檢','「這個品牌在 AI 搜尋裡的機會點跟風險在哪」'],
-   ex:'核心紀律:搜尋量數字一律由使用者提供、不自行編造;每條負評都要查到原文才能引用;競品用定位軸篩,不是同品類就算數。Step 3、Step 8 會呼叫 competitor-market-analysis、serp-intent-analysis 兩個 skill 做深度分析,需另外確認是否已安裝。',
-   i:['# 自建 skill,本機路徑 ~/.claude/skills/brand-geo-precheck/SKILL.md'],l:[]},
   {c:'str',n:'brand-guidelines',src:'Anthropic',d:'把 Anthropic 官方品牌色與字體套用到產出物上(作為品牌規範 skill 的範例)。',
    use:['/anthropic-skills:brand-guidelines'],i:I.claudeai,l:[L.askills('brand-guidelines')]},
 
@@ -228,6 +224,10 @@ const S = [
   {c:'cc',n:'artifact-design / -diagramming / -capabilities',src:'內建',d:'發佈 claude.ai Artifact 網頁時的設計規範、圖解畫法、以及可用的執行期能力(共享資料、表單、檔案)。',use:['「做一個可分享的追蹤表網頁」'],i:I.builtin,l:[L.ccDocs]},
 
   // ── SEO 分析
+  {c:'seo',n:'brand-geo-precheck',src:'自建 · 本機',d:'品牌層級 GEO 前置健檢:診斷「AI 認不認識這個品牌、認得對不對、跟對手比誰的份量重」。流程依序是撞名檢測、候選名單缺席檢測、敘事權查核、競品定位校正(Tier 1 真競品/Tier 2 品類鄰居)、關鍵字搜量佐證、負評逐篇原文查證、社群生態分層、企業實體架構檢查、SERP 意圖分類收斂。服務對象是已有網站、要加購品牌層診斷的客戶;跟 aio-geo-health-check 不同——那個健檢的是網站技術結構,這個健檢的是品牌在 AI 認知生態裡的位置;跟下面的 seo-geo(claude-seo 子 skill)也不同——seo-geo 是單一網站的頁面可引用性,這個是整個品牌的 AI 認知版圖。',
+   use:['/brand-geo-precheck 幫某品牌做品牌前置健檢','「這個品牌在 AI 搜尋裡的機會點跟風險在哪」'],
+   ex:'核心紀律:搜尋量數字一律由使用者提供、不自行編造;每條負評都要查到原文才能引用;競品用定位軸篩,不是同品類就算數。Step 3、Step 8 會呼叫 competitor-market-analysis、serp-intent-analysis 兩個 skill 做深度分析,需另外確認是否已安裝。',
+   i:['# 自建 skill,本機路徑 ~/.claude/skills/brand-geo-precheck/SKILL.md'],l:[]},
   {c:'seo',n:'seo',src:'外掛 · AgriciDaniel · MIT',d:'全方位 SEO 分析 hub skill:全站稽核、單頁深度分析、技術 SEO(爬取/索引/Core Web Vitals)、Schema 結構化資料、內容品質(E-E-A-T)、圖片 SEO、sitemap、在地 SEO、反向連結、語意分群、SXO,以及 GEO(AI Overviews/ChatGPT/Perplexity 的 AI 引用優化)。依產業(SaaS/電商/在地/媒體/代理商)自動判斷切入角度,另有 9 個可選 MCP 擴充(DataForSEO、Google Search Console/PageSpeed/GA4 等)接即時資料。',
    use:['/seo audit https://example.com','/seo page https://example.com/pricing','/seo geo https://example.com'],
    args:'[command] [url]',
