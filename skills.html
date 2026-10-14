@@ -77,7 +77,7 @@ footer{margin-top:48px;font-size:13px;color:var(--mut)}
   <header>
     <h1>CHENEY的skill清單</h1>
     <p>Claude Code/claude.ai 目前可用的所有 skill:它是做什麼的、怎麼叫、去哪裡下載。</p>
-    <div class="meta">盤點日期 2026-10-07 · 來源:<code>~/.claude/skills</code>、claude.ai 同步 skill、已安裝外掛、Claude Code 內建</div>
+    <div class="meta">盤點日期 2026-10-14 · 來源:<code>~/.claude/skills</code>、claude.ai 同步 skill、已安裝外掛、Claude Code 內建</div>
   </header>
 
   <div class="howto">
@@ -195,6 +195,10 @@ const S = [
    subs:['/翻譯 需求翻譯','/發想 提案方向 3–5 個','/收斂 簡報骨架','/潤稿 設計語意'],i:['# 自建 skill,存於 claude.ai 個人 skill 庫,登入即同步'],l:[]},
   {c:'str',n:'prompt-master',src:'自建',d:'為特定 AI 工具(ChatGPT、Cursor、Midjourney、影像/影片 AI、coding agent…)產出一段可直接貼上的最佳化 prompt;會先確認目標工具。',
    use:['/anthropic-skills:prompt-master 幫我寫一段給 Midjourney 的產品情境圖 prompt'],i:['# 自建 skill,存於 claude.ai 個人 skill 庫,登入即同步'],l:[]},
+  {c:'str',n:'brand-geo-precheck',src:'自建 · 本機',d:'品牌層級 GEO 前置健檢:診斷「AI 認不認識這個品牌、認得對不對、跟對手比誰的份量重」。流程依序是撞名檢測、候選名單缺席檢測、敘事權查核、競品定位校正(Tier 1 真競品/Tier 2 品類鄰居)、關鍵字搜量佐證、負評逐篇原文查證、社群生態分層、企業實體架構檢查、SERP 意圖分類收斂。服務對象是已有網站、要加購品牌層診斷的客戶;跟 aio-geo-health-check 不同——那個健檢的是網站技術結構,這個健檢的是品牌在 AI 認知生態裡的位置。',
+   use:['/brand-geo-precheck 幫某品牌做品牌前置健檢','「這個品牌在 AI 搜尋裡的機會點跟風險在哪」'],
+   ex:'核心紀律:搜尋量數字一律由使用者提供、不自行編造;每條負評都要查到原文才能引用;競品用定位軸篩,不是同品類就算數。Step 3、Step 8 會呼叫 competitor-market-analysis、serp-intent-analysis 兩個 skill 做深度分析,需另外確認是否已安裝。',
+   i:['# 自建 skill,本機路徑 ~/.claude/skills/brand-geo-precheck/SKILL.md'],l:[]},
   {c:'str',n:'brand-guidelines',src:'Anthropic',d:'把 Anthropic 官方品牌色與字體套用到產出物上(作為品牌規範 skill 的範例)。',
    use:['/anthropic-skills:brand-guidelines'],i:I.claudeai,l:[L.askills('brand-guidelines')]},
 
